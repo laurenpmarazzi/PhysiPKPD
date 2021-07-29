@@ -1,0 +1,364 @@
+-- Version 1.3.2
+
+* Fix conserved moieties bug (wcopeland)
+
+-- Version 1.3.1
+
+* Fix #91 for negative spec amts in Gillespie
+
+* Fix #92 for internal bug in Python wrapper
+
+-- Version 1.3
+* New Python ND array type which inherits from the numpy ndarray, contains row/column name info, and
+  prints the row/col names in nicely formatted output. 
+
+* Added row/column fields to DoubleMatrix, these are populated by a majority of RoadRunner methods.
+
+* plotting compatibility between roadrunner and tellurium
+
+* DoubleMatrix correctly writes csv format to stream
+
+* Update to libSBML 5.11
+
+* Add extra time steps in variable step mode to add timesteps at the exact point of event triggers,
+  results in crisp vertical lines on plots.
+
+* C++ and Python documentation updates.
+
+* new C++11 proxy classes to compile on OSX 10.9
+
+* Introduce new LLVM symbol caching optimiztion and scoped cache blocks for read combining
+  -- results in SIGNIFICANT imporovments in both compile time and run time performance.
+
+* memory leak fixes in numpy binding.
+
+* code cleanup and new reset option to apply init assignment rules to global params
+
+* added SBML version converter to optionaly version convert resulting sbml string
+  from getSBML and getCurrentSBML
+
+* many RoadRunner objects are now properly a Dictionary and methods now accept a
+  Dictionary interface.
+
+* SteadyState solvers properly created by factory. 
+
+-- Version 1.2.7
+* made the NLEQ steadystate single threaded -- it will block all other threads
+  and only let one thread at a time be in the steadyState function.
+  The FORTRAN77 code that it was written in uses globals for everything, there was
+  no possible way that it was ever thread safe. 
+
+* NLEQ steadystate function now uses a static var to hold a pointer to the model object
+
+* Added getKMatrix() method to RoadRunner object, updated python and C++ docs to reflect this.
+
+* Added new 'eigenr' and 'eigenc' selections to get real and complex values of eigenvalues,
+  note, the existing 'eigen' is the same as 'eigenr' -- will get real part of eigenvalue.
+
+* new rrtest testing file format.
+
+* Removed RoadRunner::getEigenvalues and replaced with getFullEigenValues and
+  getReducedEigenValues which return the eigenvalues for the respective Jacobians.
+
+* support for 'distrib' SBML package for random distributions. 
+
+-- Version 1.2.6
+*  Python dynamic properties are now on the RoadRunner instead of the RoadRunner.model object 
+
+*  Fixed bug in dynamic properties where they were not cleared when a new model is loaded. 
+
+*  Added boundary species to python dynamics properties
+
+*  Redesign dynamic property generations - new code is much cleaner. 
+
+*  testing files in roadrunner.testing are automatically enumerated and run from
+   roadrunner.testing.test_files
+
+*  Fix for ordering variables correctly when creating an SimulateOptions from a libSBML test suite
+   txt file.
+
+*  If model has comp extension, automatically flatten. 
+   - Note, libSBML comp extension has numerous memory issues, comp extension models *might* cause
+   instability. 
+
+*  Upgrade to libSBML 5.10.2
+
+*  All logging output is re-directed to the IPython socket when running in the QT IPython
+   console. This allows allows logging messages to show up in the IPython console. 
+
+*  Support mixed mode arithmetic. 
+
+*  workarounds for buggy MSVC stdlib functions. 
+
+*  Significantly improve error messages for mal-formed SBML models. 
+
+-- Version 1.2.5
+*  New parallel ensemble function and 'roadrunner.stochastic' python module.
+
+*  Added new example files to python package.
+
+*  New function in C API to create RRDataPtr directly from RoadRunner object, 
+   completly bypassing RoadRunnerData C++ object. 
+
+*  Conserved moiety species amounts and concentrations are directly mutable. 
+
+*  RoadRunner.reset is now very flexible, can reset a variety of values based on args.
+
+-- Version 1.2.4
+*   Extended information such as git branch and last commit available via 
+    getVersionStr()
+
+*   Test case for reduced / full Jacobian in both amount and concentration mode. 
+
+*   Reduced Jacobian now works in either amount or concentration mode.
+
+*   Added getFloatingSpeciesConcentrationRates() function to get rates of change
+    of floating species concentrations. 
+
+*   Made model reset smarter when resetting model with conserved moieties. If users
+    changes CMs, they will only be reset if users also changes init species cond.
+
+*   Correctly display CM ids.
+
+*   Major cleanup in handling temp dir path, added config value for specifiying
+    tmp dir and log file path. 
+
+*   Added model checks to getCurrentSBML, fixes with CM is enabled. 
+
+*   Merged Alex's documentation updates to C API. 
+
+*   Fixed bug with CM being displayed twice in items. 
+
+*   Fix bug when getting stoich matrix when CM is enabled. 
+
+*   New Runge-Kutta integrator, available via simulate using integrator="rk4". 
+
+*   Full Jacobian works in either concentration or amount mode. 
+
+*   Update make_docs.sh shell script to work with spaces in directory names. 
+
+*   More user proofing and robustness. 
+
+-- Version 1.2.3
+*   Improvments to error and display messeges.
+
+*   Integrator state is NOT reset when changing integrators, i.e. if one does a 
+
+       r.simulate(integrator="gillepsie") 
+       r.simulate(integrator="cvode") 
+       r.simulate(integrator="gillepsie") 
+
+    the state of the integrators (including the random number stream) continues from 
+    the previous state. 
+
+*   The 'seed' keyword argument to simulate resets the RNG to the given seed. All subsequent
+    calls to simulate pick up the RNG in its current state. The RNG is ONLY reset when the 
+    'seed' keyword argument is given. 
+
+*   Integrators now implement the dictionary protocol. For example, when using the Gilespie
+    integrator, it supports the following keys:
+
+        r.getIntegrator().keys()
+        ['seed', 'rand']
+
+*   The 'rand' value grabs the next random number from the stream, and the 'seed' resets the RNG 
+    to the given seed. 
+
+*   User specifiable RNG seed. The seed can be specified either via an optional 'seed' argument to
+        simulate, i.e.
+
+        r.simulate(0, 10, seed=23)
+
+    Or, can be specified via the SimulateOptions object, either with a new one, or the existing one:
+
+        o = SimulateOptions()
+        o.start = 0
+        o.end = 10
+        o.integrator = SimulateOptions.GILLESPIE
+        o['seed'] = 23 # SimulatOptions behaves as a dictionary, any new integrator specific values
+                       # can be added here.
+        r.simulate(o)
+
+    Or, the existing one can be modified:
+
+        r.simulateOptions['seed'] = 23
+
+    To get back to the default behavior of using the system time, just delete this value from the
+    existing object:
+
+        del r.simulatOptions['seed']
+
+*   Fixed an issue with conserved moieties not being calculated correctly with multi-compartment
+    models.
+
+*   Added getFullStoichiometryMatrix() and getReducedStochiometryMatrix() methods to RoadRunner
+    object. 
+
+*   Cleanup in steady state solver, introduced new configuration parameters for steady state solver:
+
+      STEADYSTATE_RELATIVE,
+      STEADYSTATE_MAXIMUM_NUM_STEPS,
+      STEADYSTATE_MINIMUM_DAMPING
+
+*   Initial value assignment rules now access the present value of parameters rather than their
+    initial value. 
+
+*   Never-ending memory leak fixes in libSBML. 
+
+*   Added support for global parameter rates via selections if the global parameter has a rate rule. 
+
+*   Fixed atanh but on Windows. 
+
+*   Fixed bug with incorrect model resetting when changing integrators. 
+
+*   Fixed row/column major bug with Python API. 
+
+*   python RoadRunner simulate returns (optionally) a copy of the simulation result.
+
+-- Version 1.2.2
+*   Fixed bug in Python simulate method not accepting 4'th position argument in certain cases.
+
+*   Added LLVM info to version info
+
+*   Added methods to Compiler interface to get info about current JIT processor and system. 
+
+*   Added support for compiling with LLVM 3.5, we now support LLVM version 3.1 - 3.5 
+
+-- Version 1.2.1
+*   Added models and data files from the Discrete Stochastic Models Test Suite,
+    https://code.google.com/p/dsmts/
+    to the roadrunner.testing package.
+
+*   New function in the roadrunner.testing package to enumerate testing data files.
+
+*   Clean up of SBML warning messages (thanks Lucian)
+
+*   Fixed major bug with how absolute and relative tolerances are handled (major thanks to Matthias
+    Koenig)
+
+*   Added support for reading values of reaction rates inside the model (identified by Matthias)
+
+*   Event status is not available as a selection, i.e. r.model["my_event_id"] will return 1 or -1
+    depending on whether or not the event is triggered.
+
+*   The plot method no longer tries to parse labels from SBML ids as LaTeX.
+
+*   made structuredResult behavior backward compatible (some users like the structured result).
+
+*   major revamp of the Python simulate method, it now accepts a variety of positional and named
+    arguments.
+
+*   fix bug when compiling with clang3.4 in c++ 11 mode (identified by Andrew Millspaugh)
+
+*   Gillespie integrator now supports fixed and variable time step mode.
+
+*   Variable time step mode fixes with deterministic solver.
+
+-- Version 1.2.0
+
+*   Enabled mutable initial conditions when conserved moities are used, implemented Jacobian 
+    calculation when conserved moieties are used. 
+
+*   Fixed memory leaks related to how CVODE is used. With the mem leaks fixed, we leak a total of 16
+    bytes ONCE, in a 3rd party library  in the beginning for running the entire test suite. 
+
+*   Fixed bugs with stiff solver not being selected
+
+*   New getValue / setValue methods on SimulationOptions to set arbitrary settings, will be used by
+    future integrators. 
+
+*   Prototype Gillespie stochastic integrator
+
+*   Added missing init amount method to python API
+
+*   Clean up IL code generation
+
+*   Structured result disabled by default
+
+*   New parameters in simulate and plot methods (Herbert has these, waiting on feedback), 
+    simulate now accepts all SimulateOptions field names as keywords and has plot option,
+    i.e. simulate(plot=True)
+
+*   Raise exception on invalid selection strings
+
+*   Removed pointless bool return value on exception raising methods.
+
+*   All instance variables in public classes moved to private internal struct -- result is that we
+    can now add and remove instance variables and never break binary compatibility. Relevant to C++ 
+    users.
+
+*   Future versions may accept more complex types for configuration settings, API is set up so we
+    never break binary compatibility as we add new features like this.
+
+*   Continuous documentation updates and enhancements.
+
+
+-- Version 1.1.0
+
+*   Config system. RoadRunner can now read and write most default configuration parameters 
+    from / to a config file
+
+*   fixed memory leak in moiety conservation converter
+
+*   new colored logging
+
+*   Can read SBML files through HTTP on all platforms. The RoadRunner constructor 
+    or load methods are smart in that accept a string which can be either:
+    a: the contents of a SBML document
+    b: a local file path, i.e. /home/andy/feedback.xml
+    c: a full URI identifier that can be either a local file or a remote file, 
+       this can even be a BioModels identifier, i.e. 
+       r=roadrunner.RoadRunner("http://www.ebi.ac.uk/biomodels-main/download?mid=BIOMD0000000275")
+
+*   upgraded to standard Poco 1.5 distribution. RoadRunner's Poco is now linked 
+    directly to the official Poco git repository. 
+
+*   lots of integrator tuning parameters are now accessible via the SimulateOptions object. 
+
+*   Can run the integrator in new MULTI_STEP mode where the integrator determines 
+    time step size. 
+
+*   New SBML events -- users can register listeners for any SBML event. Whenever a 
+    SBML event is triggered or assigned, the user can be notified. 
+
+*   New integrator events -- users can register listeners for integrator events 
+    such as when a time step completes or an event was detected. 
+
+*   Significantly improved integrator error handling. Whenever CVODE encounters any
+    error such as numeric instability, the error is written directly to the Roadrunner
+    logging system with exact details about the error. Descriptive exceptions are 
+    now raised detailing the exact source of the error. 
+
+*   cleanup of integrator code. 
+
+*   new distutils based python installation system. We now provide binaries for 
+    32/64 bit Linux (Intel), 64 bit Mac OSX and 32 bit Windows. 
+
+
+
+-- Version 1.0.1
+*   Fixed bug where nested SBML functions were not handled properly. Now
+    it correctly reports when SBML functions are called with invalid 
+    number of args. 
+
+*   Fixed bug where where a log trace message incorrectly created. 
+
+*   Display version info correctly in the command line rr program. 
+
+*   Cache selection types and indices in model.getValue / setValue, 
+    significant improvement in SBML symbol access times. 
+
+*   Fixed memory leaks in Python API, performance improvements in 
+    selections. 
+
+*   New RoadRunner constructor which takes a URI and load options. 
+
+*   Plugins moved to Tellurium project.
+
+*   Added getStateVectorRate and getStateVectorIds to ExecutableModel interface,
+    readily allows roadrunner to be used with external integrators.
+
+*   SBML variable access performance improvements. 
+
+-- Version 1.0.0
+*   Initial release
