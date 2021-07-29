@@ -295,32 +295,33 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     return;
 }
 
+
+static double tolerance = 0.01 * diffusion_dt;
+static int dose_count = 0;
+
 void PK_model( double current_time ) // update the Dirichlet boundary conditions as systemic circulation decays and/or new doses given
 {
-    static double dose_interval = 360.0;
-    static double next_dose_time = dose_interval;
-    static double dirichlet_node_value_on_dose = 100.0;
-    static double dirichlet_node_current_value = dirichlet_node_value_on_dose;
-    static double dirichlet_decay_rate = -0.018; // -0.009 makes it so that the apoptosis rate matches the proliferation at 180min. after dose for cells on the Dirichlet boundary
-    static double tolerance = 0.01 * diffusion_dt;
-    
+    static double next_dose_time = 0;
+    static double dirichlet_node_current_value = parameters.doubles("dirichlet_node_value_on_dose");
+
     // update systemic circulation and Dirichlet boundary conditions
-    if( current_time > next_dose_time - tolerance )
+    if( current_time > next_dose_time - tolerance && dose_count < parameters.ints("max_number_doses") )
     {
         for( int n=0; n < microenvironment.number_of_voxels(); n++ )
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                microenvironment.update_dirichlet_node( n, 0, dirichlet_node_value_on_dose);
+                microenvironment.update_dirichlet_node( n, 0, parameters.doubles("dirichlet_node_value_on_dose"));
             }
         }
         
-        dirichlet_node_current_value = dirichlet_node_value_on_dose;
-        next_dose_time += dose_interval;
+        dirichlet_node_current_value = parameters.doubles("dirichlet_node_value_on_dose");
+        next_dose_time += parameters.doubles("dose_interval");
+        dose_count++;
     }
     else
     {
-        dirichlet_node_current_value = dirichlet_node_current_value * exp( dirichlet_decay_rate * diffusion_dt );
+        dirichlet_node_current_value = dirichlet_node_current_value * exp( - parameters.doubles("dirichlet_decay_rate") * diffusion_dt );
         for( int n=0; n < microenvironment.number_of_voxels(); n++ )
         {
             if( microenvironment.is_dirichlet_node( n ) )
