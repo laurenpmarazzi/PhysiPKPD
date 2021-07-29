@@ -69,131 +69,131 @@
 
 void create_cell_types( void )
 {
-	// set the random seed 
-	SeedRandom( parameters.ints("random_seed") );  
-	
-	/* 
-	   Put any modifications to default cell definition here if you 
-	   want to have "inherited" by other cell types. 
-	   
-	   This is a good place to set default functions. 
-	*/ 
-	
-	initialize_default_cell_definition(); 
-	cell_defaults.phenotype.secretion.sync_to_microenvironment( &microenvironment ); 
-	
-	cell_defaults.functions.volume_update_function = standard_volume_update_function;
-	cell_defaults.functions.update_velocity = standard_update_cell_velocity;
+    // set the random seed
+    SeedRandom( parameters.ints("random_seed") );
+    
+    /*
+       Put any modifications to default cell definition here if you
+       want to have "inherited" by other cell types.
+       
+       This is a good place to set default functions.
+    */
+    
+    initialize_default_cell_definition();
+    cell_defaults.phenotype.secretion.sync_to_microenvironment( &microenvironment );
+    
+    cell_defaults.functions.volume_update_function = standard_volume_update_function;
+    cell_defaults.functions.update_velocity = standard_update_cell_velocity;
 
-	cell_defaults.functions.update_migration_bias = NULL; 
-	cell_defaults.functions.update_phenotype = NULL; // update_cell_and_death_parameters_O2_based; 
-	cell_defaults.functions.custom_cell_rule = NULL; 
-	cell_defaults.functions.contact_function = NULL; 
-	
-	cell_defaults.functions.add_cell_basement_membrane_interactions = NULL; 
-	cell_defaults.functions.calculate_distance_to_membrane = NULL; 
-	
-	/*
-	   This parses the cell definitions in the XML config file. 
-	*/
-	
-	initialize_cell_definitions_from_pugixml(); 
-	
-	/* 
-	   Put any modifications to individual cell definitions here. 
-	   
-	   This is a good place to set custom functions. 
-	*/ 
-	
-	cell_defaults.functions.update_phenotype = phenotype_function; 
-	cell_defaults.functions.custom_cell_rule = custom_function; 
-	cell_defaults.functions.contact_function = contact_function;
+    cell_defaults.functions.update_migration_bias = NULL;
+    cell_defaults.functions.update_phenotype = NULL; // update_cell_and_death_parameters_O2_based;
+    cell_defaults.functions.custom_cell_rule = NULL;
+    cell_defaults.functions.contact_function = NULL;
+    
+    cell_defaults.functions.add_cell_basement_membrane_interactions = NULL;
+    cell_defaults.functions.calculate_distance_to_membrane = NULL;
+    
+    /*
+       This parses the cell definitions in the XML config file.
+    */
+    
+    initialize_cell_definitions_from_pugixml();
+    
+    /*
+       Put any modifications to individual cell definitions here.
+       
+       This is a good place to set custom functions.
+    */
+    
+    cell_defaults.functions.update_phenotype = phenotype_function;
+    cell_defaults.functions.custom_cell_rule = custom_function;
+    cell_defaults.functions.contact_function = contact_function;
     
     Cell_Definition* pCD = find_cell_definition( "tumor" );
     pCD->functions.update_phenotype = tumor_phenotype;
-	
-	/*
-	   This builds the map of cell definitions and summarizes the setup. 
-	*/
-		
-	build_cell_definitions_maps(); 
-	display_cell_definitions( std::cout ); 
-	
-	return; 
+    
+    /*
+       This builds the map of cell definitions and summarizes the setup.
+    */
+        
+    build_cell_definitions_maps();
+    display_cell_definitions( std::cout );
+    
+    return;
 }
 
 void setup_microenvironment( void )
 {
-	// set domain parameters 
-	
-	// put any custom code to set non-homogeneous initial conditions or 
-	// extra Dirichlet nodes here. 
-	
-	// initialize BioFVM 
-	
-	initialize_microenvironment(); 	
-	
-	return; 
+    // set domain parameters
+    
+    // put any custom code to set non-homogeneous initial conditions or
+    // extra Dirichlet nodes here.
+    
+    // initialize BioFVM
+    
+    initialize_microenvironment();
+    
+    return;
 }
 
 void setup_tissue( void )
 {
-	double Xmin = microenvironment.mesh.bounding_box[0]; 
-	double Ymin = microenvironment.mesh.bounding_box[1]; 
-	double Zmin = microenvironment.mesh.bounding_box[2]; 
+    double Xmin = microenvironment.mesh.bounding_box[0];
+    double Ymin = microenvironment.mesh.bounding_box[1];
+    double Zmin = microenvironment.mesh.bounding_box[2];
 
-	double Xmax = microenvironment.mesh.bounding_box[3]; 
-	double Ymax = microenvironment.mesh.bounding_box[4]; 
-	double Zmax = microenvironment.mesh.bounding_box[5]; 
-	
-	if( default_microenvironment_options.simulate_2D == true )
-	{
-		Zmin = 0.0; 
-		Zmax = 0.0; 
-	}
-	
-	double Xrange = Xmax - Xmin; 
-	double Yrange = Ymax - Ymin; 
-	double Zrange = Zmax - Zmin; 
-	
-	// create some of each type of cell 
-	
-	Cell* pC;
-	
-	for( int k=0; k < cell_definitions_by_index.size() ; k++ )
-	{
-		Cell_Definition* pCD = cell_definitions_by_index[k]; 
-		std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl; 
-		for( int n = 0 ; n < parameters.ints("number_of_cells") ; n++ )
-		{
-			std::vector<double> position = {0,0,0}; 
-			position[0] = Xmin + UniformRandom()*Xrange; 
-			position[1] = Ymin + UniformRandom()*Yrange; 
-			position[2] = Zmin + UniformRandom()*Zrange; 
-			
-			pC = create_cell( *pCD ); 
-			pC->assign_position( position );
-		}
-	}
-	std::cout << std::endl; 
-	
-	// load cells from your CSV file (if enabled)
-	load_cells_from_pugixml(); 	
-	
-	return; 
+    double Xmax = microenvironment.mesh.bounding_box[3];
+    double Ymax = microenvironment.mesh.bounding_box[4];
+    double Zmax = microenvironment.mesh.bounding_box[5];
+    
+    if( default_microenvironment_options.simulate_2D == true )
+    {
+        Zmin = 0.0;
+        Zmax = 0.0;
+    }
+    
+    double Xrange = Xmax - Xmin;
+    double Yrange = Ymax - Ymin;
+    double Zrange = Zmax - Zmin;
+    
+    // create some of each type of cell
+    
+    Cell* pC;
+    
+    for( int k=0; k < cell_definitions_by_index.size() ; k++ )
+    {
+        Cell_Definition* pCD = cell_definitions_by_index[k];
+        std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl;
+        for( int n = 0 ; n < parameters.ints("number_of_cells") ; n++ )
+        {
+            std::vector<double> position = {0,0,0};
+            position[0] = Xmin + UniformRandom()*Xrange;
+            position[1] = Ymin + UniformRandom()*Yrange;
+            position[2] = Zmin + UniformRandom()*Zrange;
+            
+            pC = create_cell( *pCD );
+            pC->assign_position( position );
+        }
+    }
+    std::cout << std::endl;
+    
+    // load cells from your CSV file (if enabled)
+    load_cells_from_pugixml();
+    
+    return;
 }
 
 std::vector<std::string> my_coloring_function( Cell* pCell )
-{ return damage_coloring(pCell); }
+{ return paint_by_number_cell_coloring(pCell); }
 
 void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt )
 { return; }
 
 void custom_function( Cell* pCell, Phenotype& phenotype , double dt )
-{ return; } 
+{ return; }
 
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt )
-{ return; } 
+{ return; }
 
 //void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
 //{
@@ -295,32 +295,33 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     return;
 }
 
+
+static double tolerance = 0.01 * diffusion_dt;
+static int dose_count = 0;
+
 void PK_model( double current_time ) // update the Dirichlet boundary conditions as systemic circulation decays and/or new doses given
 {
-    static double dose_interval = 360.0;
-    static double next_dose_time = dose_interval;
-    static double dirichlet_node_value_on_dose = 100.0;
-    static double dirichlet_node_current_value = dirichlet_node_value_on_dose;
-    static double dirichlet_decay_rate = -0.018; // -0.009 makes it so that the apoptosis rate matches the proliferation at 180min. after dose for cells on the Dirichlet boundary
-    static double tolerance = 0.01 * diffusion_dt;
-    
+    static double next_dose_time = 0;
+    static double dirichlet_node_current_value = parameters.doubles("dirichlet_node_value_on_dose");
+
     // update systemic circulation and Dirichlet boundary conditions
-    if( current_time > next_dose_time - tolerance )
+    if( current_time > next_dose_time - tolerance && dose_count < parameters.ints("max_number_doses") )
     {
         for( int n=0; n < microenvironment.number_of_voxels(); n++ )
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                microenvironment.update_dirichlet_node( n, 0, dirichlet_node_value_on_dose);
+                microenvironment.update_dirichlet_node( n, 0, parameters.doubles("dirichlet_node_value_on_dose"));
             }
         }
         
-        dirichlet_node_current_value = dirichlet_node_value_on_dose;
-        next_dose_time += dose_interval;
+        dirichlet_node_current_value = parameters.doubles("dirichlet_node_value_on_dose");
+        next_dose_time += parameters.doubles("dose_interval");
+        dose_count++;
     }
     else
     {
-        dirichlet_node_current_value = dirichlet_node_current_value * exp( dirichlet_decay_rate * diffusion_dt );
+        dirichlet_node_current_value = dirichlet_node_current_value * exp( - parameters.doubles("dirichlet_decay_rate") * diffusion_dt );
         for( int n=0; n < microenvironment.number_of_voxels(); n++ )
         {
             if( microenvironment.is_dirichlet_node( n ) )
@@ -333,35 +334,34 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
     return;
  
 }
-
 std::vector<std::string> damage_coloring( Cell* pCell )
 {
-	// Update color of the cell based on damage in the cell
-	// Initial color: grey, damaged cell: gradient of red, dead cell: black
-	
-	std::vector< std::string > output( 4 , "black" );
-	// nucleus and both outlines are already black.
+    // Update color of the cell based on damage in the cell
+    // Initial color: grey, damaged cell: gradient of red, dead cell: black
+    
+    std::vector< std::string > output( 4 , "black" );
+    // nucleus and both outlines are already black.
 
-	// cytoplasm color
-	// first, get the damage (range 0 to 100)
-	
-	// determine damage index
-	static int d_index = pCell->custom_data.find_variable_index( "damage" );
-	double damage_value = pCell->custom_data[d_index];
-	
-	char colorTempString [128];
-	if ( damage_value == 0 ) {
-		sprintf(colorTempString, "rgb(128, 128, 128)");
-	} else if ( damage_value == 100 ) {
-		sprintf(colorTempString, "rgb(0, 0, 0)");
-	} else {
-		// Red gradient goes from (255, 200, 200) to (51, 0, 0) 
-		int color = (int) abs(round(damage_value*100/5000)*2);
-		sprintf(colorTempString, "rgb(%u, %u, %u)", 255+color, 200-color, 200-color);
-	}
-	output[0].assign( colorTempString );
-	output[2].assign( colorTempString );
-	output[3].assign( colorTempString );
-	return output;
+    // cytoplasm color
+    // first, get the damage (range 0 to 100)
+    
+    // determine damage index
+    static int d_index = pCell->custom_data.find_variable_index( "damage" );
+    double damage_value = pCell->custom_data[d_index];
+    
+    char colorTempString [128];
+    if ( damage_value == 0 ) {
+        sprintf(colorTempString, "rgb(128, 128, 128)");
+    } else if ( damage_value == 100 ) {
+        sprintf(colorTempString, "rgb(0, 0, 0)");
+    } else {
+        // Red gradient goes from (255, 200, 200) to (51, 0, 0)
+        int color = (int) abs(round(damage_value*100/5000)*2);
+        sprintf(colorTempString, "rgb(%u, %u, %u)", 255+color, 200-color, 200-color);
+    }
+    output[0].assign( colorTempString );
+    output[2].assign( colorTempString );
+    output[3].assign( colorTempString );
+    return output;
 
 }
