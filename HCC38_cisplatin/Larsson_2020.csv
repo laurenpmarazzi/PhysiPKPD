@@ -1,4 +1,4 @@
-concentration,	cell_count,	cell_count__ctrl,	cell_count__time0,	log10_concentration,	GRvalue,	rel_cell_count,	ctrl_cell_doublings
+concentration	cell_count	cell_count__ctrl	cell_count__time0	log10_concentration	GRvalue	rel_cell_count	ctrl_cell_doublings
 1	344572	347609	206893.8333	0	0.97669175	0.991263172	0.748574791
 5	341563	343054	206893.8333	0.698970004	0.988094635	0.995653745	0.729545044
 10	323975	341170	206893.8333	1	0.861682617	0.949599906	0.721600147
