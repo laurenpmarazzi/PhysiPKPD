@@ -1,3 +1,5 @@
 *.svg
 *.mat
 output*.xml
+*.o
+sample_projects*
