@@ -1,0 +1,28 @@
+concentration	concentration of drug given
+cell_count	number of viable cells after 24h post tx
+cell_count__ctrl	number of viable cells after 24h control
+cell_count__time0	number of cells at time of treatment
+log10_concentration	log10 tx concentration
+GRvalue	growth rate inhibition
+rel_cell_count	Percentage cell viability
+ctrl_cell_doublings	cell population doubling time
+
+experiment	HCC38 carboplatin 24 RPMI+10%FBS
+concentration_points	10
+ctrl_cell_doublings	0.424021034
+GR50	94.56767007
+GRmax	-0.999938613
+GR_AOC	0.702701995
+GEC50	160.9471004
+GRinf	-1
+h_GR	2.065992415
+r2_GR	0.891191496
+pval_GR	3.26E-14
+IC50	316.2343553
+Emax	0.014396856
+AUC	0.769716475
+EC50	316.2343553
+Einf	0
+h	1.997353928
+r2_rel_cell	0.943796268
+pval_rel_cell	3.14E-18
