@@ -91,3 +91,5 @@ void custom_function( Cell* pCell, Phenotype& phenotype , double dt );
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt ); 
 
 void tumor_phenotype( Cell* pC, Phenotype& p, double dt );
+
+void PK_model( double current_time );

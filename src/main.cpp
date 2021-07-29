@@ -112,11 +112,6 @@ int main( int argc, char* argv[] )
 	std::string time_units = "min"; 
 
 	/* Microenvironment setup */ 
-    double dose_interval = 360.0;
-    double next_dose_time = dose_interval;
-    double dirichlet_node_value_on_dose = 100.0;
-    double dirichlet_node_current_value = dirichlet_node_value_on_dose;
-    double dirichlet_decay_rate = -0.018; // -0.009 makes it so that the apoptosis rate matches the proliferation at 180min. after dose for cells on the Dirichlet boundary
 	setup_microenvironment(); // modify this in the custom code 
 	
 	/* PhysiCell setup */ 
@@ -216,31 +211,8 @@ int main( int argc, char* argv[] )
 				}
 			}
 
-            // update systemic circulation and Dirichlet boundary conditions
-            if( fabs( PhysiCell_globals.current_time - next_dose_time  ) < 0.01 * diffusion_dt )
-            {
-                for( int n=0; n < microenvironment.number_of_voxels(); n++ )
-                {
-                    if( microenvironment.is_dirichlet_node( n ) )
-                    {
-                        microenvironment.update_dirichlet_node( n, 0, dirichlet_node_value_on_dose);
-                    }
-                }
-                
-                dirichlet_node_current_value = dirichlet_node_value_on_dose;
-                next_dose_time += dose_interval;
-            }
-            else
-            {
-                dirichlet_node_current_value = dirichlet_node_current_value * exp( dirichlet_decay_rate * diffusion_dt );
-                for( int n=0; n < microenvironment.number_of_voxels(); n++ )
-                {
-                    if( microenvironment.is_dirichlet_node( n ) )
-                    {
-                        microenvironment.update_dirichlet_node( n, 0, dirichlet_node_current_value );
-                    }
-                }
-            }
+            // update Dirichlet conditions
+            PK_model( PhysiCell_globals.current_time );
             
 			// update the microenvironment
 			microenvironment.simulate_diffusion_decay( diffusion_dt );
