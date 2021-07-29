@@ -351,14 +351,17 @@ std::vector<std::string> damage_coloring( Cell* pCell )
 	
 	char colorTempString [128];
 	if ( damage_value == 0 ) {
-		sprintf(colorTempString, "rgb(155, 100, 100)");
+		sprintf(colorTempString, "rgb(128, 128, 128)");
 	} else if ( damage_value == 100 ) {
 		sprintf(colorTempString, "rgb(0, 0, 0)");
 	} else {
-		int color = (int) round(damage_value);
-		sprintf(colorTempString, "rgb(%u, %u, %u)", 155+color, 100-color, 100-color);
+		// Red gradient goes from (255, 200, 200) to (51, 0, 0) 
+		int color = (int) abs(round(damage_value*100/5000)*2);
+		sprintf(colorTempString, "rgb(%u, %u, %u)", 255+color, 200-color, 200-color);
 	}
 	output[0].assign( colorTempString );
+	output[2].assign( colorTempString );
+	output[3].assign( colorTempString );
 	return output;
 
 }
