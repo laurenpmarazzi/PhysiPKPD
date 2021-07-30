@@ -1,26 +1,35 @@
 #!/usr/bin/python
 
-import sys, getopt
+import sys, getopt, csv
 import matplotlib.pyplot as plt
-import csv
+import numpy as np
 
 def createPlots(inputfile, outputfile):
       
-    x = list(range(0, 1081))  # hard-coding for now[]
+    x = []
     y = []
       
-    with open(inputfile,'r') as csvfile:
-        lines = csv.reader(csvfile, delimiter=',')
-        for row in lines:
-            #x.append(row[0])
-            y.append(int(row[1]))
-      
-    plt.plot(x, y)
-    plt.xlabel('Time (in minutes)')
-    plt.ylabel('Cell Count')
-    plt.title('Tumor Cell Count', fontsize = 20)
-    #plt.show()
-    plt.savefig(outputfile)
+    try:
+        with open(inputfile,'r') as csvfile:
+            lines = csv.reader(csvfile, delimiter=',')
+            for row in lines:
+                x.append(row[0])
+                y.append(int(row[1]))
+
+        plt.plot(x, y)
+        ax = plt.gca()
+        ax.set_xticks(ax.get_xticks()[::100])
+        #ax.set_xticks(np.arange(0, max(x), 10)) #step 10 digits
+        plt.xlabel('Time (in minutes)')
+        plt.ylabel('Cell Count')
+        plt.title('Tumor Cell Count', fontsize = 20)
+        #plt.show()
+        plt.savefig(outputfile)
+    except OSError as err:
+        print("OS error: {0}".format(err))
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+        raise
 
 def main(argv):
     inputfile = ''

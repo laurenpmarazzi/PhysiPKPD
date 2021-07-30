@@ -355,13 +355,26 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
  
 }
 
+void create_output_csv_files( void ) {
+	char dataFilename [256];
+	sprintf(dataFilename, "%s/cell_counts.csv", PhysiCell_settings.folder.c_str());
+	
+	std::ofstream file_out;
+	file_out.open(dataFilename, std::ios_base::in);
+	if( file_out ) {
+		file_out.close();
+		std::remove(dataFilename);
+	}
+}
+	
 void write_cell_data_for_plots( double current_time, char delim = ',') {
 	// Write cell number data to a CSV file format time,tumor_cell_count
 	// Can add different classes of tumor cells - apoptotic, necrotic, hypoxic, etc to this
 	
-	// NEED TO FIX - get the time in terms of minutes from start
 	static double next_write_time = 0;
 	if( current_time > next_write_time - tolerance ) {
+		//std::cout << "TIMEEEE" << current_time << std::endl;
+		int data_time = (int) current_time;
 		char dataFilename [256];
 		sprintf(dataFilename, "%s/cell_counts.csv", PhysiCell_settings.folder.c_str());
 
@@ -370,18 +383,25 @@ void write_cell_data_for_plots( double current_time, char delim = ',') {
 		
 		for( int i=0; i < (*all_cells).size(); i++ ) {
 			pC = (*all_cells)[i];
-			if ( pC->type == 0 ) {
+			if ( pC->type == 0 && pC->phenotype.death.dead == false ) {
 				tumorCount += 1;
 			}
 		}
+		
 		char dataToAppend [1024];
-		sprintf(dataToAppend, "%d%c%d", next_write_time, delim, tumorCount);
+		sprintf(dataToAppend, "%d%c%d", data_time, delim, tumorCount);
+		//std::cout << "DATAAAAAA::: " << dataToAppend << std::endl;
 
 		// append to file
 		std::ofstream file_out;
 
 		file_out.open(dataFilename, std::ios_base::app);
+		if( !file_out ) {
+			std::cout << "Error: could not open file " << dataFilename << "!" << std::endl;
+			return;
+		}
 		file_out << dataToAppend << std::endl;
+		file_out.close();
 		next_write_time += parameters.doubles("csv_data_interval");
 	}
 	return;
