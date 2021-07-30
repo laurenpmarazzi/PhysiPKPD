@@ -301,33 +301,47 @@ static int dose_count = 0;
 void PK_model( double current_time ) // update the Dirichlet boundary conditions as systemic circulation decays and/or new doses given
 {
     static double next_dose_time = 0;
-    static double dirichlet_node_current_value = parameters.doubles("dirichlet_node_value_on_dose");
+    static double systemic_circulation_concentration = 0.0;
+    static double periphery_concentration = 0.0;
 
     // update systemic circulation and Dirichlet boundary conditions
     if( current_time > next_dose_time - tolerance && dose_count < parameters.ints("max_number_doses") )
     {
+        systemic_circulation_concentration += parameters.doubles("systemic_circulation_increase_on_dose");
         for( int n=0; n < microenvironment.number_of_voxels(); n++ )
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                microenvironment.update_dirichlet_node( n, 0, parameters.doubles("dirichlet_node_value_on_dose"));
+                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_concentration * parameters.doubles("biot_number") );
             }
         }
         
-        dirichlet_node_current_value = parameters.doubles("dirichlet_node_value_on_dose");
         next_dose_time += parameters.doubles("dose_interval");
         dose_count++;
     }
     else
     {
-        dirichlet_node_current_value = dirichlet_node_current_value * exp( - parameters.doubles("dirichlet_decay_rate") * diffusion_dt );
+        double systemic_circulation_change_rate = - parameters.doubles("systemic_circulation_elimination_rate");
+        double periphery_change_rate = 0;
+        double k = parameters.doubles("drug_flux_across_capillaries");
+        double R = parameters.doubles("systemic_circulation_to_periphery_volume_ratio");
+        
+        systemic_circulation_change_rate += k * ( periphery_concentration/R -systemic_circulation_concentration );
+        periphery_change_rate += k * ( systemic_circulation_concentration*R - periphery_change_rate );
+        
+        systemic_circulation_concentration +=  systemic_circulation_change_rate * diffusion_dt;
+        periphery_concentration +=  periphery_change_rate * diffusion_dt;
+        
         for( int n=0; n < microenvironment.number_of_voxels(); n++ )
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                microenvironment.update_dirichlet_node( n, 0, dirichlet_node_current_value );
+                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_concentration * parameters.doubles("biot_number") );
             }
         }
+        
+        
+        
     }
     
     return;
