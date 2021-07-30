@@ -284,7 +284,6 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     }
     
     
-
     if( p.death.dead == true )
     {
         p.secretion.set_all_secretion_to_zero();
