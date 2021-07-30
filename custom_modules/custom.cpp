@@ -241,6 +241,12 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     static int nM = pC->custom_data.find_variable_index( "AO_metabolism_rate" );
     // find index of repair parameter
     static int nR = pC->custom_data.find_variable_index( "repair_rate" );
+    // find index of drug effect variable
+    static int nDE = pC->custom_data.find_variable_index( "drug_effect" );
+    // hill function parameters for modeling treatment effect
+    static double EC_50 = parameters.doubles( "EC_50" );
+    static double Hill_power =  parameters.doubles( "Hill_power" );
+    static bool use_AUC_into_hill = (parameters.ints( "use_AUC_into_hill" ) == 1);
     
     // use pressure to arrest proliferation
     if( pC->state.simple_pressure < pC->custom_data["pressure_threshold"] )
@@ -280,7 +286,14 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     }
     else // update apoptosis rate if there is damage
     {
-        p.death.rates[nApop] = base_rate * ( 1 + pC->custom_data[nD] );
+        if(use_AUC_into_hill)
+        {
+            pC->custom_data[nDE] = Hill_function( pC->custom_data[nD] , Hill_power , EC_50 ); // scale damage effect between 0 and 1
+            p.death.rates[nApop] = base_rate + pC->custom_data[nDE] * parameters.doubles("max_increase_to_apoptosis"); // add this multiple of max increase to base apoptosis rate
+        }
+        else {
+            p.death.rates[nApop] = base_rate * ( 1 + pC->custom_data[nD] );
+        }
     }
     
     
@@ -293,6 +306,17 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     return;
 }
 
+double Hill_function( double input, double Hill_power , double EC_50 )
+{
+    double temp = input; // c
+    temp /= EC_50; // c/c0
+    temp = std::pow( temp, Hill_power ); // (c/c0)^n
+    double output = temp; // (c/c0)^n
+    temp += 1.0; // 1 + (c/c0)^n
+    output /= temp; // // (c/c0)^n / ( 1 + (c/c0)^n )
+    
+    return output;
+}
 
 static double tolerance = 0.01 * diffusion_dt; // using this in PK_model and write_cell_data_for_plots
 static int dose_count = 0;
