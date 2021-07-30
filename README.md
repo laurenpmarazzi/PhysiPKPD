@@ -20,3 +20,11 @@ If on Mac, the last command will instead read
 ```
 ./project ./config/mymodel.xml
 ```
+
+### Data visualization 
+Run the following commands from the PhysiCell root directory (assuming you have this repository as a subfolder within that directory) to create a GIF, movie, and/or data plots.
+```
+make gif
+make movie
+make data-plots
+```
