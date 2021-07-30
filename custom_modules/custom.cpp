@@ -302,33 +302,43 @@ static int dose_count = 0;
 void PK_model( double current_time ) // update the Dirichlet boundary conditions as systemic circulation decays and/or new doses given
 {
     static double next_dose_time = 0;
-    static double dirichlet_node_current_value = parameters.doubles("dirichlet_node_value_on_dose");
+    static double systemic_circulation_current_value = 0.0;
 
     // update systemic circulation and Dirichlet boundary conditions
     if( current_time > next_dose_time - tolerance && dose_count < parameters.ints("max_number_doses") )
     {
+        systemic_circulation_current_value += parameters.doubles("systemic_circulation_increase_on_dose");
         for( int n=0; n < microenvironment.number_of_voxels(); n++ )
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                microenvironment.update_dirichlet_node( n, 0, parameters.doubles("dirichlet_node_value_on_dose"));
+                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_current_value * parameters.doubles("biot_number") );
             }
         }
         
-        dirichlet_node_current_value = parameters.doubles("dirichlet_node_value_on_dose");
         next_dose_time += parameters.doubles("dose_interval");
         dose_count++;
     }
     else
     {
-        dirichlet_node_current_value = dirichlet_node_current_value * exp( - parameters.doubles("dirichlet_decay_rate") * diffusion_dt );
+        double total_elimination_rate = parameters.doubles("systemic_circulation_elimination_rate");
+        double distro_rate = 0.0;
+        int nDN = 0;
         for( int n=0; n < microenvironment.number_of_voxels(); n++ )
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                microenvironment.update_dirichlet_node( n, 0, dirichlet_node_current_value );
+                // compare y-component of gradient at Dirichlet voxel (that is the direction away from blood vessel) with biggest possible gradient there (in absolute terms because the boundary will be larger than the interior)
+                distro_rate += microenvironment.gradient_vector( n )[0][1] * microenvironment.mesh.dy / (-systemic_circulation_current_value);
+                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_current_value * parameters.doubles("biot_number") );
+                nDN++;
             }
         }
+        distro_rate /= nDN; // average over all Dirichlet nodes
+        distro_rate *= parameters.doubles("systemic_max_distribution_loss"); // use this to determine additional loss in circulation concentration due to distribution
+        total_elimination_rate += distro_rate;
+        
+        systemic_circulation_current_value = systemic_circulation_current_value * exp( - total_elimination_rate * diffusion_dt );
     }
     
     return;
@@ -350,15 +360,17 @@ std::vector<std::string> damage_coloring( Cell* pCell )
     double damage_value = pCell->custom_data[d_index];
     
     char colorTempString [128];
-    if ( damage_value == 0 ) {
-        sprintf(colorTempString, "rgb(128, 128, 128)");
-    } else if ( damage_value == 100 ) {
-        sprintf(colorTempString, "rgb(0, 0, 0)");
-    } else {
-        // Red gradient goes from (255, 200, 200) to (51, 0, 0)
-        int color = (int) abs(round(damage_value*100/5000)*2);
-        sprintf(colorTempString, "rgb(%u, %u, %u)", 255+color, 200-color, 200-color);
-    }
+    int color = (int) round(127 * damage_value / ( 50 + damage_value ));
+    sprintf(colorTempString, "rgb(%u, 128, 128)", 128+color );
+//    if ( damage_value == 0 ) {
+//        sprintf(colorTempString, "rgb(128, 128, 128)");
+//    } else if ( damage_value == 100 ) {
+//        sprintf(colorTempString, "rgb(0, 0, 0)");
+//    } else {
+//        // Red gradient goes from (255, 200, 200) to (51, 0, 0)
+//        int color = (int) abs(round(damage_value*100/5000)*2);
+//        sprintf(colorTempString, "rgb(%u, %u, %u)", 255+color, 200-color, 200-color);
+//    }
     output[0].assign( colorTempString );
     output[2].assign( colorTempString );
     output[3].assign( colorTempString );

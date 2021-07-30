@@ -200,8 +200,10 @@
         <dirichlet_node_value_on_dose type="double" units="mmHg" description="concentration on boundary after dosing">100.0</dirichlet_node_value_on_dose>
         <systemic_circulation_increase_on_dose type="double" units="mmHg" description="concentration added to systemic circulation on dose">40.0</systemic_circulation_increase_on_dose>
         <dirichlet_decay_rate type="double" units="1/min" description="decay rate of Dirichlet nodes as systemic circulation drops">0.018</dirichlet_decay_rate>
-        <systemic_circulation_elimination_rate type="double" units="1/min" description="decay rate of drug in systemic circulation">0.009</systemic_circulation_elimination_rate>
+        <systemic_circulation_elimination_rate type="double" units="1/min" description="decay rate of drug in systemic circulation">0.0027</systemic_circulation_elimination_rate>
+        <systemic_max_distribution_loss type="double" units="1/min" description="max rate of loss of systemic concentration due to distribution">0.0048</systemic_max_distribution_loss>
         <systemic_circulation_to_periphery_volume_ratio type="double" units="dimensionless" description="ratio of volume in systemic circulation to the volume of the periphery">1.0</systemic_circulation_to_periphery_volume_ratio>
+        <biot_number type="double" units="dimensionless" description="ratio of drug concentration outside capillary to inside capillary (or just all systemic circulation">1.0</biot_number>
     </user_parameters>
 	
 </PhysiCell_settings>
