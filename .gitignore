@@ -1,0 +1,10 @@
+*.svg
+*.mat
+output*.xml
+*.o
+sample_projects*
+.DS_Store
+BioFVM*
+output/*
+core/*
+modules/*

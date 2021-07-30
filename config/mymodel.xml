@@ -13,7 +13,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">1080</max_time>
+		<max_time units="min">360</max_time>
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -35,7 +35,7 @@
 		</full_data>
 		
 		<SVG>
-			<interval units="min">15</interval>
+			<interval units="min">5</interval>
 			<enable>true</enable>
 		</SVG>
 		
@@ -195,10 +195,13 @@
 	<user_parameters>
 		<random_seed type="int" units="dimensionless" description="">0</random_seed>
         <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">1500</number_of_cells>
-        <dose_interval type="double" units="min" description="time between dosings">360.0</dose_interval>
-        <dirichlet_node_value_on_dose type="double" units="mmHg" description="concentration on boundary after dosing">100.0</dirichlet_node_value_on_dose>
-        <dirichlet_decay_rate type="double" units="1/min" description="decay rate of Dirichlet nodes as systemic circulation drops">0.018</dirichlet_decay_rate>
         <max_number_doses type="int" units="none" description="how many doses of the drug to simulate">5</max_number_doses>
+        <dose_interval type="double" units="min" description="time between dosings">30.0</dose_interval>
+        <dirichlet_node_value_on_dose type="double" units="mmHg" description="concentration on boundary after dosing">100.0</dirichlet_node_value_on_dose>
+        <systemic_circulation_increase_on_dose type="double" units="mmHg" description="concentration added to systemic circulation on dose">40.0</systemic_circulation_increase_on_dose>
+        <dirichlet_decay_rate type="double" units="1/min" description="decay rate of Dirichlet nodes as systemic circulation drops">0.018</dirichlet_decay_rate>
+        <systemic_circulation_elimination_rate type="double" units="1/min" description="decay rate of drug in systemic circulation">0.009</systemic_circulation_elimination_rate>
+        <systemic_circulation_to_periphery_volume_ratio type="double" units="dimensionless" description="ratio of volume in systemic circulation to the volume of the periphery">1.0</systemic_circulation_to_periphery_volume_ratio>
     </user_parameters>
 	
 </PhysiCell_settings>
