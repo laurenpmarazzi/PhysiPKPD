@@ -13,7 +13,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">1080</max_time>
+		<max_time units="min">1440</max_time>
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -86,7 +86,7 @@
         <phenotype>
           <cycle code="5" name="live">
             <phase_transition_rates units="1/min">
-              <rate start_index="0" end_index="0" fixed_duration="false">0</rate>
+              <rate start_index="0" end_index="0" fixed_duration="false">1e-3</rate>
             </phase_transition_rates>
             </cycle>
 
@@ -196,8 +196,8 @@
 		<random_seed type="int" units="dimensionless" description="">0</random_seed>
         <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">1500</number_of_cells>
         
-        <max_number_doses type="int" units="none" description="how many doses of the drug to simulate">3</max_number_doses>
-        <dose_interval type="double" units="min" description="time between dosings">30.0</dose_interval>
+        <max_number_doses type="int" units="none" description="how many doses of the drug to simulate">5</max_number_doses>
+        <dose_interval type="double" units="min" description="time between dosings">360.0</dose_interval>
         
         <systemic_circulation_increase_on_dose type="double" units="mmHg" description="concentration added to systemic circulation on dose">20.0</systemic_circulation_increase_on_dose>
         
@@ -208,7 +208,7 @@
         <systemic_circulation_elimination_rate type="double" units="1/min" description="decay rate of drug in systemic circulation">0.0027</systemic_circulation_elimination_rate>
         <systemic_circulation_to_periphery_volume_ratio type="double" units="dimensionless" description="ratio of volume in systemic circulation to the volume of the periphery">1.0</systemic_circulation_to_periphery_volume_ratio>
         <biot_number type="double" units="dimensionless" description="ratio of drug concentration outside capillary to inside capillary (or just all systemic circulation">1.0</biot_number>
-        <drug_flux_across_capillaries type="double" units="1/min" description="rate of drug crossing capillary walls assuming passive diffusion">0.0048</drug_flux_across_capillaries>
+        <drug_flux_across_capillaries type="double" units="1/min" description="rate of systemic circulation concentration change due to distribution and redistribution">0.0048</drug_flux_across_capillaries>
     </user_parameters>
 	
 </PhysiCell_settings>

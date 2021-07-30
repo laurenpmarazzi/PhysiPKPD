@@ -302,8 +302,10 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
 {
     static double next_dose_time = 0;
     static double systemic_circulation_concentration = 0.0;
-    static double periphery_concentration = 0.0;
-
+    static double periphery_concentration = 0.0; // just a bucket to model drug distributing into the entire periphery; TME is not linked to this!!!
+    static double k = parameters.doubles("drug_flux_across_capillaries");
+    static double R = parameters.doubles("systemic_circulation_to_periphery_volume_ratio");
+    
     // update systemic circulation and Dirichlet boundary conditions
     if( current_time > next_dose_time - tolerance && dose_count < parameters.ints("max_number_doses") )
     {
@@ -321,16 +323,23 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
     }
     else
     {
-        double systemic_circulation_change_rate = - parameters.doubles("systemic_circulation_elimination_rate");
-        double periphery_change_rate = 0;
-        double k = parameters.doubles("drug_flux_across_capillaries");
-        double R = parameters.doubles("systemic_circulation_to_periphery_volume_ratio");
+        double systemic_circulation_change_rate = -1 * parameters.doubles("systemic_circulation_elimination_rate") * systemic_circulation_concentration;
+        double concentration_gradient = systemic_circulation_concentration - periphery_concentration;
         
-        systemic_circulation_change_rate += k * ( periphery_concentration/R -systemic_circulation_concentration );
-        periphery_change_rate += k * ( systemic_circulation_concentration*R - periphery_change_rate );
+        systemic_circulation_change_rate -= k * concentration_gradient;
         
         systemic_circulation_concentration +=  systemic_circulation_change_rate * diffusion_dt;
-        periphery_concentration +=  periphery_change_rate * diffusion_dt;
+        periphery_concentration +=  k * R * concentration_gradient * diffusion_dt;
+        
+        if( systemic_circulation_concentration<0 )
+        {
+            systemic_circulation_concentration = 0;
+        }
+        
+        if( periphery_concentration<0 )
+        {
+            periphery_concentration = 0;
+        }
         
         for( int n=0; n < microenvironment.number_of_voxels(); n++ )
         {
@@ -339,8 +348,6 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
                 microenvironment.update_dirichlet_node( n, 0, systemic_circulation_concentration * parameters.doubles("biot_number") );
             }
         }
-        
-        
         
     }
     
