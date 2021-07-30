@@ -302,17 +302,18 @@ static int dose_count = 0;
 void PK_model( double current_time ) // update the Dirichlet boundary conditions as systemic circulation decays and/or new doses given
 {
     static double next_dose_time = 0;
-    static double systemic_circulation_current_value = 0.0;
+    static double systemic_circulation_concentration = 0.0;
+    static double periphery_concentration = 0.0;
 
     // update systemic circulation and Dirichlet boundary conditions
     if( current_time > next_dose_time - tolerance && dose_count < parameters.ints("max_number_doses") )
     {
-        systemic_circulation_current_value += parameters.doubles("systemic_circulation_increase_on_dose");
+        systemic_circulation_concentration += parameters.doubles("systemic_circulation_increase_on_dose");
         for( int n=0; n < microenvironment.number_of_voxels(); n++ )
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_current_value * parameters.doubles("biot_number") );
+                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_concentration * parameters.doubles("biot_number") );
             }
         }
         
@@ -321,24 +322,27 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
     }
     else
     {
-        double total_elimination_rate = parameters.doubles("systemic_circulation_elimination_rate");
-        double distro_rate = 0.0;
-        int nDN = 0;
+        double systemic_circulation_change_rate = - parameters.doubles("systemic_circulation_elimination_rate");
+        double periphery_change_rate = 0;
+        double k = parameters.doubles("drug_flux_across_capillaries");
+        double R = parameters.doubles("systemic_circulation_to_periphery_volume_ratio");
+        
+        systemic_circulation_change_rate += k * ( periphery_concentration/R -systemic_circulation_concentration );
+        periphery_change_rate += k * ( systemic_circulation_concentration*R - periphery_change_rate );
+        
+        systemic_circulation_concentration +=  systemic_circulation_change_rate * diffusion_dt;
+        periphery_concentration +=  periphery_change_rate * diffusion_dt;
+        
         for( int n=0; n < microenvironment.number_of_voxels(); n++ )
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                // compare y-component of gradient at Dirichlet voxel (that is the direction away from blood vessel) with biggest possible gradient there (in absolute terms because the boundary will be larger than the interior)
-                distro_rate += microenvironment.gradient_vector( n )[0][1] * microenvironment.mesh.dy / (-systemic_circulation_current_value);
-                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_current_value * parameters.doubles("biot_number") );
-                nDN++;
+                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_concentration * parameters.doubles("biot_number") );
             }
         }
-        distro_rate /= nDN; // average over all Dirichlet nodes
-        distro_rate *= parameters.doubles("systemic_max_distribution_loss"); // use this to determine additional loss in circulation concentration due to distribution
-        total_elimination_rate += distro_rate;
         
-        systemic_circulation_current_value = systemic_circulation_current_value * exp( - total_elimination_rate * diffusion_dt );
+        
+        
     }
     
     return;
