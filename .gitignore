@@ -6,3 +6,4 @@ sample_projects*
 .DS_Store
 BioFVM*
 output/*
+core*
