@@ -3,3 +3,4 @@
 output*.xml
 *.o
 sample_projects*
+.DS_Store
