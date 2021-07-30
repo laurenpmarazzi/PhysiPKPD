@@ -200,7 +200,7 @@
         <max_number_doses type="int" units="none" description="how many doses of the drug to simulate">5</max_number_doses>
         <dose_interval type="double" units="min" description="time between dosings">360.0</dose_interval>
         
-        <systemic_circulation_increase_on_dose type="double" units="mmHg" description="concentration added to systemic circulation on dose">20.0</systemic_circulation_increase_on_dose>
+        <systemic_circulation_increase_on_dose type="double" units="mmHg" description="concentration added to systemic circulation on dose">10.0</systemic_circulation_increase_on_dose>
         
         <dirichlet_node_value_on_dose type="double" units="mmHg" description="concentration on boundary after dosing">100.0</dirichlet_node_value_on_dose>
         <dirichlet_decay_rate type="double" units="1/min" description="decay rate of Dirichlet nodes as systemic circulation drops">0.018</dirichlet_decay_rate>

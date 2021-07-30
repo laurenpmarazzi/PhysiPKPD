@@ -75,6 +75,7 @@ using namespace PhysiCell;
 
 void create_cell_types( void );
 void setup_tissue( void ); 
+void create_output_csv_files( void );
 
 // set up the BioFVM microenvironment 
 void setup_microenvironment( void ); 
