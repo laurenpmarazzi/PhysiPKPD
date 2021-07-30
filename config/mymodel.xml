@@ -13,7 +13,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">1440</max_time>
+		<max_time units="min">1000</max_time>
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -195,7 +195,7 @@
 	
 	<user_parameters>
 		<random_seed type="int" units="dimensionless" description="">0</random_seed>
-        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">1500</number_of_cells>
+        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">50</number_of_cells>
         
         <max_number_doses type="int" units="none" description="how many doses of the drug to simulate">5</max_number_doses>
         <dose_interval type="double" units="min" description="time between dosings">360.0</dose_interval>
@@ -216,6 +216,9 @@
         <max_increase_to_apoptosis type="double" units="1/min" description="max increase to apoptosis rate with drug">1E-3</max_increase_to_apoptosis>
         <use_AUC_into_hill type="int" units="none" description="0 is allow damage to grow unboudned and increase apoptosis unbounded (original way); 1 is feed damage into Hill function to set how much of max increase in apoptosis is actually added">1</use_AUC_into_hill>
 
+        <moa_apoptosis type="bool" units="none" description="drug causes apoptotic signaling">True</moa_apoptosis>
+        <moa_proliferation type="bool" units="none" description="drug causes proliferation arrest">False</moa_proliferation>
+    
         
     </user_parameters>
 	

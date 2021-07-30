@@ -248,6 +248,11 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     static double Hill_power =  parameters.doubles( "Hill_power" );
     static bool use_AUC_into_hill = (parameters.ints( "use_AUC_into_hill" ) == 1);
     
+    // find if drug causes apoptosis
+    static bool moa_apop = parameters.bools( "moa_apoptosis" );
+    // find if drug causes proliferation block
+    static bool moa_prolif = parameters.bools( "moa_proliferation" );
+
     // use pressure to arrest proliferation
     if( pC->state.simple_pressure < pC->custom_data["pressure_threshold"] )
     {
@@ -268,6 +273,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
         pAO=0;
     }
     p.molecular.internalized_total_substrates[nAO] = pAO; // set antioxygen based on this
+
     if(pAO>0)
     {
         pC->custom_data[nD] += pC->custom_data[nDA] * pAO * dt; // later can add proportionality constant, but this is just an abstract quantity, so why? could add to PD model linking to cell fate decisions
@@ -279,24 +285,42 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     
     // cell repairs damage
     pC->custom_data[nD] -= pC->custom_data[nR] * dt;
+    
     if(pC->custom_data[nD]<=0)
-    {
-        pC->custom_data[nD]=0; // handle negative damage becuase of "too much" repair
-        p.death.rates[nApop] = base_rate;
-    }
-    else // update apoptosis rate if there is damage
-    {
-        if(use_AUC_into_hill)
         {
-            pC->custom_data[nDE] = Hill_function( pC->custom_data[nD] , Hill_power , EC_50 ); // scale damage effect between 0 and 1
-            p.death.rates[nApop] = base_rate + pC->custom_data[nDE] * parameters.doubles("max_increase_to_apoptosis"); // add this multiple of max increase to base apoptosis rate
+            pC->custom_data[nD]=0;
         }
-        else {
-            p.death.rates[nApop] = base_rate * ( 1 + pC->custom_data[nD] );
+
+    if (moa_apop){
+        if(pC->custom_data[nD]<=0)
+        {
+            p.death.rates[nApop] = base_rate;
+        }
+        else // update apoptosis rate if there is damage
+        {
+            if(use_AUC_into_hill)
+            {
+                pC->custom_data[nDE] = Hill_function( pC->custom_data[nD] , Hill_power , EC_50 ); // scale damage effect between 0 and 1
+                p.death.rates[nApop] = base_rate + pC->custom_data[nDE] * parameters.doubles("max_increase_to_apoptosis"); // add this multiple of max increase to base apoptosis rate
+            }
+            else {
+                p.death.rates[nApop] = base_rate * ( 1 + pC->custom_data[nD] );
+            }
         }
     }
     
     
+    if (moa_prolif){
+        if(pC->custom_data[nD]>0)
+        { 
+            p.cycle.data.transition_rate(0,0) = 0;
+        }
+        else
+        {
+            p.cycle.data.transition_rate(0,0) = pCD->phenotype.cycle.data.transition_rate(0,0);
+
+        }
+    }
     if( p.death.dead == true )
     {
         p.secretion.set_all_secretion_to_zero();
@@ -462,12 +486,12 @@ std::vector<std::string> damage_coloring( Cell* pCell )
 			if ( color < 256) {
 				sprintf(colorTempString, "rgb(%u, %u, %u)", 255-color, 200-color, 200-color); 
 			} else {
-			sprintf(colorTempString, "rgb(0, 0, 0)"); }
+			sprintf(colorTempString, "rgb(255, 255, 255)"); }
 		}
 
-		output[0].assign( colorTempString );
-		output[2].assign( colorTempString );
-		output[3].assign( colorTempString );
+		output[0].assign( colorTempString ); //cytoplasm
+		output[2].assign( colorTempString ); //outline of nucleus
+		output[3].assign( colorTempString ); //outline of nucleus
 	}		
 	return output;
 
