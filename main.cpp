@@ -223,7 +223,8 @@ int main( int argc, char* argv[] )
 			/*
 			  Custom add-ons could potentially go here. 
 			*/
-			
+			write_cell_data_for_plots( PhysiCell_globals.current_time, ',' );
+
 			PhysiCell_globals.current_time += diffusion_dt;
 		}
 		

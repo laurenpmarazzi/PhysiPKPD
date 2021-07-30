@@ -64,7 +64,8 @@
 #                                                                             #
 ###############################################################################
 */
-
+#include <iostream>
+#include <fstream>
 #include "./custom.h"
 
 void create_cell_types( void )
@@ -174,9 +175,7 @@ void setup_tissue( void )
             pC = create_cell( *pCD );
             pC->assign_position( position );
         }
-    }
-    std::cout << std::endl;
-    
+    }    
     // load cells from your CSV file (if enabled)
     load_cells_from_pugixml();
     
@@ -296,7 +295,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
 }
 
 
-static double tolerance = 0.01 * diffusion_dt;
+static double tolerance = 0.01 * diffusion_dt; // using this in PK_model and write_cell_data_for_plots
 static int dose_count = 0;
 
 void PK_model( double current_time ) // update the Dirichlet boundary conditions as systemic circulation decays and/or new doses given
@@ -348,6 +347,40 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
     return;
  
 }
+
+void write_cell_data_for_plots( double current_time, char delim = ',') {
+	// Write cell number data to a CSV file format time,tumor_cell_count
+	// Can add different classes of tumor cells - apoptotic, necrotic, hypoxic, etc to this
+	
+	// NEED TO FIX - get the time in terms of minutes from start
+	static double next_write_time = 0;
+	if( current_time > next_write_time - tolerance ) {
+		char dataFilename [256];
+		sprintf(dataFilename, "%s/cell_counts.csv", PhysiCell_settings.folder.c_str());
+
+		int tumorCount = 0;
+		Cell* pC = NULL;
+		
+		for( int i=0; i < (*all_cells).size(); i++ ) {
+			pC = (*all_cells)[i];
+			if ( pC->type == 0 ) {
+				tumorCount += 1;
+			}
+		}
+		char dataToAppend [1024];
+		sprintf(dataToAppend, "%d%c%d", next_write_time, delim, tumorCount);
+
+		// append to file
+		std::ofstream file_out;
+
+		file_out.open(dataFilename, std::ios_base::app);
+		file_out << dataToAppend << std::endl;
+		next_write_time += parameters.doubles("csv_data_interval");
+	}
+	return;
+
+}
+
 std::vector<std::string> damage_coloring( Cell* pCell )
 {
 	// Update color of the cell based on damage in the cell
