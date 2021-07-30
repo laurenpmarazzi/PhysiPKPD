@@ -148,6 +148,7 @@ int main( int argc, char* argv[] )
 
 	// for simplicity, set a pathology coloring function 
 	
+	//std::vector<std::string> (*cell_coloring_function)(Cell*) = my_coloring_function;
 	std::vector<std::string> (*cell_coloring_function)(Cell*) = damage_coloring;	
 	
 	sprintf( filename , "%s/initial.svg" , PhysiCell_settings.folder.c_str() ); 
@@ -223,7 +224,8 @@ int main( int argc, char* argv[] )
 			/*
 			  Custom add-ons could potentially go here. 
 			*/
-			
+			write_cell_data_for_plots( PhysiCell_globals.current_time, ',' );
+
 			PhysiCell_globals.current_time += diffusion_dt;
 		}
 		
