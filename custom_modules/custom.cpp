@@ -323,7 +323,8 @@ static int dose_count = 0;
 
 void PK_model( double current_time ) // update the Dirichlet boundary conditions as systemic circulation decays and/or new doses given
 {
-    static double next_dose_time = 0;
+    static int nAO = microenvironment.find_density_index( "antioxygen" );
+    static double next_dose_time = parameters.doubles("first_dose_time");
     static double systemic_circulation_concentration = 0.0;
     static double periphery_concentration = 0.0; // just a bucket to model drug distributing into the entire periphery; TME is not linked to this!!!
     static double k = parameters.doubles("drug_flux_across_capillaries");
@@ -337,7 +338,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_concentration * parameters.doubles("biot_number") );
+                microenvironment.update_dirichlet_node( n, nAO, systemic_circulation_concentration * parameters.doubles("biot_number") );
             }
         }
         
@@ -354,11 +355,13 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
         systemic_circulation_concentration +=  systemic_circulation_change_rate * diffusion_dt;
         periphery_concentration +=  k * R * concentration_gradient * diffusion_dt;
         
+        // handle negative concentrations
         if( systemic_circulation_concentration<0 )
         {
             systemic_circulation_concentration = 0;
         }
         
+        // handle negative concentrations
         if( periphery_concentration<0 )
         {
             periphery_concentration = 0;
@@ -368,7 +371,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_concentration * parameters.doubles("biot_number") );
+                microenvironment.update_dirichlet_node( n, nAO, systemic_circulation_concentration * parameters.doubles("biot_number") );
             }
         }
         

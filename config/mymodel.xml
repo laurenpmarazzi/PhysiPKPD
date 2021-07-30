@@ -13,7 +13,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">1440</max_time>
+		<max_time units="min">720</max_time>
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -195,16 +195,16 @@
 	
 	<user_parameters>
 		<random_seed type="int" units="dimensionless" description="">0</random_seed>
-        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">1500</number_of_cells>
-        
+        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">1300</number_of_cells>
+        <csv_data_interval type="double" units="min" description="time between writing data to CSV">1</csv_data_interval>
+
         <max_number_doses type="int" units="none" description="how many doses of the drug to simulate">5</max_number_doses>
-        <dose_interval type="double" units="min" description="time between dosings">360.0</dose_interval>
+        <dose_interval type="double" units="min" description="time between dosings">180.0</dose_interval>
         
         <systemic_circulation_increase_on_dose type="double" units="mmHg" description="concentration added to systemic circulation on dose">10.0</systemic_circulation_increase_on_dose>
         
         <dirichlet_node_value_on_dose type="double" units="mmHg" description="concentration on boundary after dosing">100.0</dirichlet_node_value_on_dose>
         <dirichlet_decay_rate type="double" units="1/min" description="decay rate of Dirichlet nodes as systemic circulation drops">0.018</dirichlet_decay_rate>
-        <csv_data_interval type="double" units="min" description="time between writing data to CSV">1</csv_data_interval>
         
         <systemic_circulation_elimination_rate type="double" units="1/min" description="decay rate of drug in systemic circulation">0.0027</systemic_circulation_elimination_rate>
         <systemic_circulation_to_periphery_volume_ratio type="double" units="dimensionless" description="ratio of volume in systemic circulation to the volume of the periphery">1.0</systemic_circulation_to_periphery_volume_ratio>
@@ -214,8 +214,9 @@
         <EC_50 type="double" units="none" description="EC50 for effect of damage on apoptosis">1.0</EC_50>
         <Hill_power type="double" units="none" description="hill power for effect of damage on apoptosis">2.0</Hill_power>
         <max_increase_to_apoptosis type="double" units="1/min" description="max increase to apoptosis rate with drug">1E-3</max_increase_to_apoptosis>
-        <use_AUC_into_hill type="int" units="none" description="0 is allow damage to grow unboudned and increase apoptosis unbounded (original way); 1 is feed damage into Hill function to set how much of max increase in apoptosis is actually added">1</use_AUC_into_hill>
+        <use_AUC_into_hill type="int" units="none" description="0 is allow damage to grow unboudned and increase apoptosis unbounded (original way); 1 is feed damage into Hill function to set how much of max increase in apoptosis is actually added">0</use_AUC_into_hill>
 
+        <first_dose_time type="double" units="min" description="time of first dose">0.0</first_dose_time>
         
     </user_parameters>
 	
