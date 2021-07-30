@@ -184,7 +184,7 @@ void setup_tissue( void )
 }
 
 std::vector<std::string> my_coloring_function( Cell* pCell )
-{ return paint_by_number_cell_coloring(pCell); }
+{ return damage_coloring(pCell); }
 
 void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt )
 { return; }
@@ -336,32 +336,42 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
 }
 std::vector<std::string> damage_coloring( Cell* pCell )
 {
-    // Update color of the cell based on damage in the cell
-    // Initial color: grey, damaged cell: gradient of red, dead cell: black
-    
-    std::vector< std::string > output( 4 , "black" );
-    // nucleus and both outlines are already black.
+	// Update color of the cell based on damage in the cell
+	// Initial color: grey, damaged cell: gradient of red, dead cell: black
+	std::vector< std::string > output( 4 , "black" );
+	// nucleus and both outlines are already black.
 
-    // cytoplasm color
-    // first, get the damage (range 0 to 100)
-    
-    // determine damage index
-    static int d_index = pCell->custom_data.find_variable_index( "damage" );
-    double damage_value = pCell->custom_data[d_index];
-    
-    char colorTempString [128];
-    if ( damage_value == 0 ) {
-        sprintf(colorTempString, "rgb(128, 128, 128)");
-    } else if ( damage_value == 100 ) {
-        sprintf(colorTempString, "rgb(0, 0, 0)");
-    } else {
-        // Red gradient goes from (255, 200, 200) to (51, 0, 0)
-        int color = (int) abs(round(damage_value*100/5000)*2);
-        sprintf(colorTempString, "rgb(%u, %u, %u)", 255+color, 200-color, 200-color);
-    }
-    output[0].assign( colorTempString );
-    output[2].assign( colorTempString );
-    output[3].assign( colorTempString );
-    return output;
+	// cytoplasm color
+	// first, get the damage and convert to a value between 0 to 1
+	
+	// determine damage index
+	int d_index = pCell->custom_data.find_variable_index( "damage" );
+	double damage_value = pCell->custom_data[d_index];
+	double norm_damage_value = damage_value/(1 + damage_value);
+	
+	if (pCell->phenotype.cycle.current_phase().code == PhysiCell_constants::apoptotic ) { // apoptotic - black
+		return output;
+	}
+
+	char colorTempString [128];
+	if( pCell->phenotype.death.dead == false ) { // live cells
+		if ( norm_damage_value <= 0 ) {
+			sprintf(colorTempString, "rgb(128, 128, 128)");
+		} else if ( norm_damage_value >= 1 ) {
+			sprintf(colorTempString, "rgb(0, 0, 0)");
+		} else {
+			// Red gradient goes from (255, 200, 200) to (51, 0, 0) 
+			int color = (int) round(norm_damage_value*100)*2; // converting to percentage to make the color gradient easier to set
+			if ( color < 256) {
+				sprintf(colorTempString, "rgb(%u, %u, %u)", 255-color, 200-color, 200-color); 
+			} else {
+			sprintf(colorTempString, "rgb(0, 0, 0)"); }
+		}
+
+		output[0].assign( colorTempString );
+		output[2].assign( colorTempString );
+		output[3].assign( colorTempString );
+	}		
+	return output;
 
 }
