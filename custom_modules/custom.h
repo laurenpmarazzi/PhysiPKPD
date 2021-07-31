@@ -75,6 +75,7 @@ using namespace PhysiCell;
 
 void create_cell_types( void );
 void setup_tissue( void ); 
+void create_output_csv_files( void );
 
 // set up the BioFVM microenvironment 
 void setup_microenvironment( void ); 
@@ -90,5 +91,8 @@ void custom_function( Cell* pCell, Phenotype& phenotype , double dt );
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt ); 
 void tumor_phenotype( Cell* pC, Phenotype& p, double dt );
 void PK_model( double current_time );
+void PK_model_2( double current_time );
 void write_cell_data_for_plots( double current_time, char delim);
 std::vector<std::string> damage_coloring( Cell* pCell );
+double Hill_function( double input, double Hill_power , double EC_50 );
+double confluence_computation( void );

@@ -231,8 +231,10 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     Cell_Definition* pCD = find_cell_definition( pC->type );
     // find index of aO2 in the microenvironment
     static int nAO = microenvironment.find_density_index( "antioxygen" );
-    // find index of necrosis death model
+    // find index of apoptosis death model
     static int nApop = p.death.find_death_model_index( "apoptosis" );
+    // find index of necrosis death model
+    static int nNec = p.death.find_death_model_index( "necrosis" );
     // find index of damage variable
     static int nD = pC->custom_data.find_variable_index( "damage" );
     //find index of damage accumulation rate
@@ -241,7 +243,19 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     static int nM = pC->custom_data.find_variable_index( "AO_metabolism_rate" );
     // find index of repair parameter
     static int nR = pC->custom_data.find_variable_index( "repair_rate" );
+    // find index of drug effect variable
+    static int nDE = pC->custom_data.find_variable_index( "drug_effect" );
+    // hill function parameters for modeling treatment effect
+    static double EC_50 = parameters.doubles( "EC_50" );
+    static double Hill_power =  parameters.doubles( "Hill_power" );
+    static bool use_AUC_into_hill = (parameters.ints( "use_AUC_into_hill" ) == 1);
     
+    // find if drug causes apoptosis
+    static bool moa_apop = parameters.bools( "moa_apoptosis" );
+    // find if drug causes proliferation block
+    static bool moa_prolif = parameters.bools( "moa_proliferation" );
+    static bool moa_necro = parameters.bools( "moa_necrosis" );
+
     // use pressure to arrest proliferation
     if( pC->state.simple_pressure < pC->custom_data["pressure_threshold"] )
     {
@@ -262,6 +276,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
         pAO=0;
     }
     p.molecular.internalized_total_substrates[nAO] = pAO; // set antioxygen based on this
+
     if(pAO>0)
     {
         pC->custom_data[nD] += pC->custom_data[nDA] * pAO * dt; // later can add proportionality constant, but this is just an abstract quantity, so why? could add to PD model linking to cell fate decisions
@@ -269,22 +284,59 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     
     // set apoptosis rate
     // get base rate from cell definition
-    double base_rate = pCD->phenotype.death.rates[nApop];
-    
+    double base_rate_apop = pCD->phenotype.death.rates[nApop];
+    double base_rate_necro = pCD->phenotype.death.rates[nNec];
     // cell repairs damage
     pC->custom_data[nD] -= pC->custom_data[nR] * dt;
+    
     if(pC->custom_data[nD]<=0)
-    {
-        pC->custom_data[nD]=0; // handle negative damage becuase of "too much" repair
-        p.death.rates[nApop] = base_rate;
-    }
-    else // update apoptosis rate if there is damage
-    {
-        p.death.rates[nApop] = base_rate * ( 1 + pC->custom_data[nD] );
-    }
-    
-    
+        {
+            pC->custom_data[nD]=0;
+        }
 
+    if (moa_apop){
+        if(pC->custom_data[nD]<=0)
+        {
+            p.death.rates[nApop] = base_rate_apop;
+        }
+        else // update apoptosis rate if there is damage
+        {
+            if(use_AUC_into_hill)
+            {
+                pC->custom_data[nDE] = Hill_function( pC->custom_data[nD] , Hill_power , EC_50 ); // scale damage effect between 0 and 1
+                p.death.rates[nApop] = base_rate_apop + pC->custom_data[nDE] * parameters.doubles("max_increase_to_apoptosis"); // add this multiple of max increase to base apoptosis rate
+            }
+            else {
+                p.death.rates[nApop] = base_rate_apop * ( 1 + pC->custom_data[nD] );
+            }
+        }
+   
+    }
+    if (moa_necro){
+        // if(use_AUC_into_hill)
+        //     {
+        //         pC->custom_data[nDE] = Hill_function( pC->custom_data[nD] , Hill_power , EC_50 ); // scale damage effect between 0 and 1
+        //         p.death.rates[nNec] = base_rate_necro + pC->custom_data[nDE] * parameters.doubles("max_increase_to_apoptosis"); // add this multiple of max increase to base apoptosis rate
+        //     }
+        //     else {
+                p.death.rates[nNec] = base_rate_necro * ( 1 + pC->custom_data[nD] );
+            // }
+        
+        
+    }
+    
+    
+    if (moa_prolif){
+        if(pC->custom_data[nD]>0)
+        { 
+            p.cycle.data.transition_rate(0,0) = 0;
+        }
+        else
+        {
+            p.cycle.data.transition_rate(0,0) = pCD->phenotype.cycle.data.transition_rate(0,0);
+
+        }
+    }
     if( p.death.dead == true )
     {
         p.secretion.set_all_secretion_to_zero();
@@ -294,17 +346,49 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     return;
 }
 
+double Hill_function( double input, double Hill_power , double EC_50 )
+{
+    double temp = input; // c
+    temp /= EC_50; // c/c0
+    temp = std::pow( temp, Hill_power ); // (c/c0)^n
+    double output = temp; // (c/c0)^n
+    temp += 1.0; // 1 + (c/c0)^n
+    output /= temp; // // (c/c0)^n / ( 1 + (c/c0)^n )
+    
+    return output;
+}
 
 static double tolerance = 0.01 * diffusion_dt; // using this in PK_model and write_cell_data_for_plots
 static int dose_count = 0;
 
 void PK_model( double current_time ) // update the Dirichlet boundary conditions as systemic circulation decays and/or new doses given
 {
-    static double next_dose_time = 0;
+    static int nAO = microenvironment.find_density_index( "antioxygen" );
+    static double next_dose_time = NAN; // set to null for checking when to start a confluence-based therapy
+
     static double systemic_circulation_concentration = 0.0;
     static double periphery_concentration = 0.0; // just a bucket to model drug distributing into the entire periphery; TME is not linked to this!!!
     static double k = parameters.doubles("drug_flux_across_capillaries");
     static double R = parameters.doubles("systemic_circulation_to_periphery_volume_ratio");
+    static double CC = 0.0; // next time to check for confluence
+    
+    // set up time of first dose
+    if( std::isnan(next_dose_time) )
+    {
+        if( parameters.bools("set_first_dose_time") )
+            { next_dose_time = parameters.doubles("first_dose_time"); }
+        else if( (current_time > CC - tolerance) ) // otherwise, using confluence to determine time of first dose
+        {
+            if( confluence_computation() > parameters.doubles("confluence_condition") )
+            {
+                next_dose_time = current_time;
+            }
+            else
+            {
+                CC += phenotype_dt;
+            }
+        }
+    }
     
     // update systemic circulation and Dirichlet boundary conditions
     if( current_time > next_dose_time - tolerance && dose_count < parameters.ints("max_number_doses") )
@@ -314,7 +398,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_concentration * parameters.doubles("biot_number") );
+                microenvironment.update_dirichlet_node( n, nAO, systemic_circulation_concentration * parameters.doubles("biot_number") );
             }
         }
         
@@ -345,7 +429,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_concentration * parameters.doubles("biot_number") );
+                microenvironment.update_dirichlet_node( n, nAO, systemic_circulation_concentration * parameters.doubles("biot_number") );
             }
         }
         
@@ -355,13 +439,106 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
  
 }
 
+
+void PK_model_2( double current_time ) // update the Dirichlet boundary conditions as systemic circulation decays and/or new doses given
+{
+    static int nD2 = microenvironment.find_density_index( "drug2" );
+    static double next_dose_time = NAN; // set to null for checking when to start a confluence-based therapy
+
+    static double systemic_circulation_concentration = 0.0;
+    static double periphery_concentration = 0.0; // just a bucket to model drug distributing into the entire periphery; TME is not linked to this!!!
+    static double k = parameters.doubles("drug_flux_across_capillaries");
+    static double R = parameters.doubles("systemic_circulation_to_periphery_volume_ratio");
+    static double CC = 0.0; // next time to check for confluence
+    
+    // set up time of first dose
+    if( std::isnan(next_dose_time) )
+    {
+        if( parameters.bools("set_first_dose_time_2") )
+            { next_dose_time = parameters.doubles("first_dose_time_2"); }
+        else if( (current_time > CC - tolerance) ) // otherwise, using confluence to determine time of first dose
+        {
+            if( confluence_computation() > parameters.doubles("confluence_condition") )
+            {
+                next_dose_time = current_time;
+            }
+            else
+            {
+                CC += phenotype_dt;
+            }
+        }
+    }
+    
+    // update systemic circulation and Dirichlet boundary conditions
+    if( current_time > next_dose_time - tolerance && dose_count < parameters.ints("max_number_doses") )
+    {
+        systemic_circulation_concentration += parameters.doubles("systemic_circulation_increase_on_dose");
+        for( int n=0; n < microenvironment.number_of_voxels(); n++ )
+        {
+            if( microenvironment.is_dirichlet_node( n ) )
+            {
+                microenvironment.update_dirichlet_node( n, nD2, systemic_circulation_concentration * parameters.doubles("biot_number") );
+            }
+        }
+        
+        next_dose_time += parameters.doubles("dose_interval");
+        dose_count++;
+    }
+    else
+    {
+        double systemic_circulation_change_rate = -1 * parameters.doubles("systemic_circulation_elimination_rate") * systemic_circulation_concentration;
+        double concentration_gradient = systemic_circulation_concentration - periphery_concentration;
+        
+        systemic_circulation_change_rate -= k * concentration_gradient;
+        
+        systemic_circulation_concentration +=  systemic_circulation_change_rate * diffusion_dt;
+        periphery_concentration +=  k * R * concentration_gradient * diffusion_dt;
+        
+        if( systemic_circulation_concentration<0 )
+        {
+            systemic_circulation_concentration = 0;
+        }
+        
+        if( periphery_concentration<0 )
+        {
+            periphery_concentration = 0;
+        }
+        
+        for( int n=0; n < microenvironment.number_of_voxels(); n++ )
+        {
+            if( microenvironment.is_dirichlet_node( n ) )
+            {
+                microenvironment.update_dirichlet_node( n, nD2, systemic_circulation_concentration * parameters.doubles("biot_number") );
+            }
+        }
+        
+    }
+    
+    return;
+ 
+}
+
+
+void create_output_csv_files( void ) {
+	char dataFilename [256];
+	sprintf(dataFilename, "%s/cell_counts.csv", PhysiCell_settings.folder.c_str());
+	
+	std::ofstream file_out;
+	file_out.open(dataFilename, std::ios_base::in);
+	if( file_out ) {
+		file_out.close();
+		std::remove(dataFilename);
+	}
+}
+	
 void write_cell_data_for_plots( double current_time, char delim = ',') {
 	// Write cell number data to a CSV file format time,tumor_cell_count
 	// Can add different classes of tumor cells - apoptotic, necrotic, hypoxic, etc to this
 	
-	// NEED TO FIX - get the time in terms of minutes from start
 	static double next_write_time = 0;
 	if( current_time > next_write_time - tolerance ) {
+		//std::cout << "TIMEEEE" << current_time << std::endl;
+		int data_time = (int) current_time;
 		char dataFilename [256];
 		sprintf(dataFilename, "%s/cell_counts.csv", PhysiCell_settings.folder.c_str());
 
@@ -370,18 +547,25 @@ void write_cell_data_for_plots( double current_time, char delim = ',') {
 		
 		for( int i=0; i < (*all_cells).size(); i++ ) {
 			pC = (*all_cells)[i];
-			if ( pC->type == 0 ) {
+			if ( pC->type == 0 && pC->phenotype.death.dead == false ) {
 				tumorCount += 1;
 			}
 		}
+		
 		char dataToAppend [1024];
-		sprintf(dataToAppend, "%d%c%d", next_write_time, delim, tumorCount);
+		sprintf(dataToAppend, "%d%c%d", data_time, delim, tumorCount);
+		//std::cout << "DATAAAAAA::: " << dataToAppend << std::endl;
 
 		// append to file
 		std::ofstream file_out;
 
 		file_out.open(dataFilename, std::ios_base::app);
+		if( !file_out ) {
+			std::cout << "Error: could not open file " << dataFilename << "!" << std::endl;
+			return;
+		}
 		file_out << dataToAppend << std::endl;
+		file_out.close();
 		next_write_time += parameters.doubles("csv_data_interval");
 	}
 	return;
@@ -419,13 +603,38 @@ std::vector<std::string> damage_coloring( Cell* pCell )
 			if ( color < 256) {
 				sprintf(colorTempString, "rgb(%u, %u, %u)", 255-color, 200-color, 200-color); 
 			} else {
-			sprintf(colorTempString, "rgb(0, 0, 0)"); }
+			sprintf(colorTempString, "rgb(255, 255, 255)"); }
 		}
 
-		output[0].assign( colorTempString );
-		output[2].assign( colorTempString );
-		output[3].assign( colorTempString );
+		output[0].assign( colorTempString ); //cytoplasm
+		output[2].assign( colorTempString ); //outline of nucleus
+		output[3].assign( colorTempString ); //outline of nucleus
 	}		
 	return output;
 
+}
+
+// compute confluence as total cellular volume divided by 2D area of TME
+double confluence_computation( void )
+{
+    double output = 0;
+    Cell* pC = NULL;
+    double cV;
+    for( int i=0; i < (*all_cells).size(); i++ ) {
+        pC = (*all_cells)[i];
+        cV = pC->phenotype.volume.total; // stop here if using cell volume for confluence
+        if(!std::isnan(cV)) // only do these calculations for cells that have a volume
+        {
+            cV *= 0.75; // (3/4)V
+            cV *= cV; // ( (3/4)V )^2
+            cV *= 3.14;//M_PI; // pi * ( (3/4)V )^2
+            cV = cbrt(cV); // pi^(1/3) * ( (3/4)V )^(2/3) <--formula for converting volume of sphere with radius r to area of circle with radius r
+            output += cV;
+        }
+    }
+    
+    output /= microenvironment.mesh.bounding_box[3] - microenvironment.mesh.bounding_box[0];
+    output /= microenvironment.mesh.bounding_box[4] - microenvironment.mesh.bounding_box[1];
+//    output /= microenvironment.mesh.bounding_box[5] - microenvironment.mesh.bounding_box[2]; // use this if doing a 3D check for confluence (see choice of cell volume/area above)
+    return output;
 }
