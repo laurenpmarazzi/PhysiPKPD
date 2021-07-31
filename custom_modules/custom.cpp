@@ -231,8 +231,10 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     Cell_Definition* pCD = find_cell_definition( pC->type );
     // find index of aO2 in the microenvironment
     static int nAO = microenvironment.find_density_index( "antioxygen" );
-    // find index of necrosis death model
+    // find index of apoptosis death model
     static int nApop = p.death.find_death_model_index( "apoptosis" );
+    // find index of necrosis death model
+    static int nNec = p.death.find_death_model_index( "necrosis" );
     // find index of damage variable
     static int nD = pC->custom_data.find_variable_index( "damage" );
     //find index of damage accumulation rate
@@ -246,12 +248,13 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     // hill function parameters for modeling treatment effect
     static double EC_50 = parameters.doubles( "EC_50" );
     static double Hill_power =  parameters.doubles( "Hill_power" );
-    static bool use_AUC_into_hill = parameters.bools( "use_AUC_into_hill" );
+    static bool use_AUC_into_hill = (parameters.ints( "use_AUC_into_hill" ) == 1);
     
     // find if drug causes apoptosis
     static bool moa_apop = parameters.bools( "moa_apoptosis" );
     // find if drug causes proliferation block
     static bool moa_prolif = parameters.bools( "moa_proliferation" );
+    static bool moa_necro = parameters.bools( "moa_necrosis" );
 
     // use pressure to arrest proliferation
     if( pC->state.simple_pressure < pC->custom_data["pressure_threshold"] )
@@ -281,8 +284,8 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     
     // set apoptosis rate
     // get base rate from cell definition
-    double base_rate = pCD->phenotype.death.rates[nApop];
-    
+    double base_rate_apop = pCD->phenotype.death.rates[nApop];
+    double base_rate_necro = pCD->phenotype.death.rates[nNec];
     // cell repairs damage
     pC->custom_data[nD] -= pC->custom_data[nR] * dt;
     
@@ -294,19 +297,32 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     if (moa_apop){
         if(pC->custom_data[nD]<=0)
         {
-            p.death.rates[nApop] = base_rate;
+            p.death.rates[nApop] = base_rate_apop;
         }
         else // update apoptosis rate if there is damage
         {
             if(use_AUC_into_hill)
             {
                 pC->custom_data[nDE] = Hill_function( pC->custom_data[nD] , Hill_power , EC_50 ); // scale damage effect between 0 and 1
-                p.death.rates[nApop] = base_rate + pC->custom_data[nDE] * parameters.doubles("max_increase_to_apoptosis"); // add this multiple of max increase to base apoptosis rate
+                p.death.rates[nApop] = base_rate_apop + pC->custom_data[nDE] * parameters.doubles("max_increase_to_apoptosis"); // add this multiple of max increase to base apoptosis rate
             }
             else {
-                p.death.rates[nApop] = base_rate * ( 1 + pC->custom_data[nD] );
+                p.death.rates[nApop] = base_rate_apop * ( 1 + pC->custom_data[nD] );
             }
         }
+   
+    }
+    if (moa_necro){
+        // if(use_AUC_into_hill)
+        //     {
+        //         pC->custom_data[nDE] = Hill_function( pC->custom_data[nD] , Hill_power , EC_50 ); // scale damage effect between 0 and 1
+        //         p.death.rates[nNec] = base_rate_necro + pC->custom_data[nDE] * parameters.doubles("max_increase_to_apoptosis"); // add this multiple of max increase to base apoptosis rate
+        //     }
+        //     else {
+                p.death.rates[nNec] = base_rate_necro * ( 1 + pC->custom_data[nD] );
+            // }
+        
+        
     }
     
     
@@ -349,6 +365,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
 {
     static int nAO = microenvironment.find_density_index( "antioxygen" );
     static double next_dose_time = NAN; // set to null for checking when to start a confluence-based therapy
+
     static double systemic_circulation_concentration = 0.0;
     static double periphery_concentration = 0.0; // just a bucket to model drug distributing into the entire periphery; TME is not linked to this!!!
     static double k = parameters.doubles("drug_flux_across_capillaries");
@@ -381,7 +398,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                microenvironment.update_dirichlet_node( n, nAO, systemic_circulation_concentration * parameters.doubles("biot_number") );
+                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_concentration * parameters.doubles("biot_number") );
             }
         }
         
@@ -398,13 +415,11 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
         systemic_circulation_concentration +=  systemic_circulation_change_rate * diffusion_dt;
         periphery_concentration +=  k * R * concentration_gradient * diffusion_dt;
         
-        // handle negative concentrations
         if( systemic_circulation_concentration<0 )
         {
             systemic_circulation_concentration = 0;
         }
         
-        // handle negative concentrations
         if( periphery_concentration<0 )
         {
             periphery_concentration = 0;
@@ -414,7 +429,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
         {
             if( microenvironment.is_dirichlet_node( n ) )
             {
-                microenvironment.update_dirichlet_node( n, nAO, systemic_circulation_concentration * parameters.doubles("biot_number") );
+                microenvironment.update_dirichlet_node( n, 0, systemic_circulation_concentration * parameters.doubles("biot_number") );
             }
         }
         
