@@ -328,8 +328,16 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     
     if (moa_prolif){
         if(pC->custom_data[nD]>0)
-        { 
-            p.cycle.data.transition_rate(0,0) = 0;
+        {
+            if(use_AUC_into_hill && pC->custom_data["arrested"] == 0)
+            {
+                double prop_decrease = Hill_function(pC->custom_data[nD], Hill_power , EC_50 ); // proportion of max change to enact based on damage
+                p.cycle.data.transition_rate(0,0) -= prop_decrease * ( p.cycle.data.transition_rate(0,0) - parameters.doubles("proliferation_saturation_rate")); //
+            }
+            else
+            {
+                p.cycle.data.transition_rate(0,0) = 0;
+            }
         }
         else
         {
