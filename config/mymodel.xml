@@ -13,7 +13,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">1000</max_time>
+		<max_time units="min">7200</max_time>
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -195,7 +195,7 @@
 	
 	<user_parameters>
 		<random_seed type="int" units="dimensionless" description="">0</random_seed>
-        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">1300</number_of_cells>
+        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">500</number_of_cells>
         <csv_data_interval type="double" units="min" description="time between writing data to CSV">1</csv_data_interval>
 
         
@@ -217,10 +217,13 @@
         <max_increase_to_apoptosis type="double" units="1/min" description="max increase to apoptosis rate with drug">1E-3</max_increase_to_apoptosis>
         <use_AUC_into_hill type="bool" units="none" description="0 is allow damage to grow unboudned and increase apoptosis unbounded (original way); 1 is feed damage into Hill function to set how much of max increase in apoptosis is actually added">False</use_AUC_into_hill>
 
-        <first_dose_time type="double" units="min" description="time of first dose">0.0</first_dose_time>
         <moa_apoptosis type="bool" units="none" description="drug causes apoptotic signaling">True</moa_apoptosis>
         <moa_proliferation type="bool" units="none" description="drug causes proliferation arrest">False</moa_proliferation>
     
+        <set_first_dose_time type="bool" units="none" description="user sets first dose time to start therapy; false=user gives confluence condition">False</set_first_dose_time>
+        <first_dose_time type="double" units="min" description="time of first dose">0.0</first_dose_time>
+        <confluence_condition type="double" units="none" description="confluence as proportion at which to start therapy">0.6</confluence_condition>
+
         
     </user_parameters>
 	

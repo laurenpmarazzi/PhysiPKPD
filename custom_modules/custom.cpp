@@ -348,11 +348,30 @@ static int dose_count = 0;
 void PK_model( double current_time ) // update the Dirichlet boundary conditions as systemic circulation decays and/or new doses given
 {
     static int nAO = microenvironment.find_density_index( "antioxygen" );
-    static double next_dose_time = parameters.doubles("first_dose_time");
+    static double next_dose_time = NAN; // set to null for checking when to start a confluence-based therapy
     static double systemic_circulation_concentration = 0.0;
     static double periphery_concentration = 0.0; // just a bucket to model drug distributing into the entire periphery; TME is not linked to this!!!
     static double k = parameters.doubles("drug_flux_across_capillaries");
     static double R = parameters.doubles("systemic_circulation_to_periphery_volume_ratio");
+    static double CC = 0.0; // next time to check for confluence
+    
+    // set up time of first dose
+    if( std::isnan(next_dose_time) )
+    {
+        if( parameters.bools("set_first_dose_time") )
+            { next_dose_time = parameters.doubles("first_dose_time"); }
+        else if( (current_time > CC - tolerance) ) // otherwise, using confluence to determine time of first dose
+        {
+            if( confluence_computation() > parameters.doubles("confluence_condition") )
+            {
+                next_dose_time = current_time;
+            }
+            else
+            {
+                CC += phenotype_dt;
+            }
+        }
+    }
     
     // update systemic circulation and Dirichlet boundary conditions
     if( current_time > next_dose_time - tolerance && dose_count < parameters.ints("max_number_doses") )
@@ -498,4 +517,29 @@ std::vector<std::string> damage_coloring( Cell* pCell )
 	}		
 	return output;
 
+}
+
+// compute confluence as total cellular volume divided by 2D area of TME
+double confluence_computation( void )
+{
+    double output = 0;
+    Cell* pC = NULL;
+    double cV;
+    for( int i=0; i < (*all_cells).size(); i++ ) {
+        pC = (*all_cells)[i];
+        cV = pC->phenotype.volume.total; // stop here if using cell volume for confluence
+        if(!std::isnan(cV)) // only do these calculations for cells that have a volume
+        {
+            cV *= 0.75; // (3/4)V
+            cV *= cV; // ( (3/4)V )^2
+            cV *= M_PI; // pi * ( (3/4)V )^2
+            cV = cbrt(cV); // pi^(1/3) * ( (3/4)V )^(2/3) <--formula for converting volume of sphere with radius r to area of circle with radius r
+            output += cV;
+        }
+    }
+    
+    output /= microenvironment.mesh.bounding_box[3] - microenvironment.mesh.bounding_box[0];
+    output /= microenvironment.mesh.bounding_box[4] - microenvironment.mesh.bounding_box[1];
+//    output /= microenvironment.mesh.bounding_box[5] - microenvironment.mesh.bounding_box[2]; // use this if doing a 3D check for confluence (see choice of cell volume/area above)
+    return output;
 }
