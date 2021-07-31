@@ -194,24 +194,27 @@
 	</initial_conditions>	
 	
 	<user_parameters>
+        
+<div_initialization type="divider" description="---Initialization settings---"/>
 		<random_seed type="int" units="dimensionless" description="">0</random_seed>
         <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">50</number_of_cells>
         <csv_data_interval type="double" units="min" description="time between writing data to CSV">1</csv_data_interval>
 
-        
+<div_antioxygen type="divider" description="---Antioxygen Settings---"/>
         <max_number_doses type="int" units="none" description="how many doses of the drug to simulate">5</max_number_doses>
         <dose_interval type="double" units="min" description="time between dosings">360.0</dose_interval>
-        
+        <set_first_dose_time type="bool" units="none" description="user sets first dose time to start therapy; false=user gives confluence condition">True</set_first_dose_time>
+        <first_dose_time type="double" units="min" description="time of first dose">0.0</first_dose_time>
+        <confluence_condition type="double" units="none" description="confluence as proportion at which to start therapy">0.6</confluence_condition>
+            
+<div_antioxygen_PK type="divider" description="---Antioxygen PK---"/>
         <systemic_circulation_increase_on_dose type="double" units="mmHg" description="concentration added to systemic circulation on dose">10.0</systemic_circulation_increase_on_dose>
-        
-        <dirichlet_node_value_on_dose type="double" units="mmHg" description="concentration on boundary after dosing">100.0</dirichlet_node_value_on_dose>
-        <dirichlet_decay_rate type="double" units="1/min" description="decay rate of Dirichlet nodes as systemic circulation drops">0.018</dirichlet_decay_rate>
-        
         <systemic_circulation_elimination_rate type="double" units="1/min" description="decay rate of drug in systemic circulation">0.0027</systemic_circulation_elimination_rate>
         <systemic_circulation_to_periphery_volume_ratio type="double" units="dimensionless" description="ratio of volume in systemic circulation to the volume of the periphery">1.0</systemic_circulation_to_periphery_volume_ratio>
-        <biot_number type="double" units="dimensionless" description="ratio of drug concentration outside capillary to inside capillary (or just all systemic circulation">1.0</biot_number>
         <drug_flux_across_capillaries type="double" units="1/min" description="rate of systemic circulation concentration change due to distribution and redistribution">0.0048</drug_flux_across_capillaries>
-        
+        <biot_number type="double" units="dimensionless" description="ratio of drug concentration outside capillary to inside capillary (or just all systemic circulation">1.0</biot_number>
+
+<div_antioxygen_PD type="divider" description="---Drug effects of antioxygen---"/>
         <EC_50 type="double" units="none" description="EC50 for effect of damage on apoptosis">1.0</EC_50>
         <Hill_power type="double" units="none" description="hill power for effect of damage on apoptosis">2.0</Hill_power>
         <max_increase_to_apoptosis type="double" units="1/min" description="max increase to apoptosis rate with drug">1E-3</max_increase_to_apoptosis>
@@ -220,11 +223,10 @@
         <moa_apoptosis type="bool" units="none" description="drug causes apoptotic signaling">True</moa_apoptosis>
         <moa_proliferation type="bool" units="none" description="drug causes proliferation arrest">False</moa_proliferation>
         <moa_necrosis type="bool" units="none" description="drug causes necrosis">False</moa_necrosis>
-    
-        <set_first_dose_time type="bool" units="none" description="user sets first dose time to start therapy; false=user gives confluence condition">True</set_first_dose_time>
-        <first_dose_time type="double" units="min" description="time of first dose">0.0</first_dose_time>
-        <confluence_condition type="double" units="none" description="confluence as proportion at which to start therapy">0.6</confluence_condition>
-
+        
+<div_deprecated type="divider" description="---Parameters no longer in use (I think)---"/>
+        <dirichlet_node_value_on_dose type="double" units="mmHg" description="concentration on boundary after dosing">100.0</dirichlet_node_value_on_dose>
+        <dirichlet_decay_rate type="double" units="1/min" description="decay rate of Dirichlet nodes as systemic circulation drops">0.018</dirichlet_decay_rate>
         
     </user_parameters>
 	

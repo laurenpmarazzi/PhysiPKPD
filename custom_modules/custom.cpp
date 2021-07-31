@@ -432,7 +432,6 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
                 microenvironment.update_dirichlet_node( n, nAO, systemic_circulation_concentration * parameters.doubles("biot_number") );
             }
         }
-        
     }
     
     return;
