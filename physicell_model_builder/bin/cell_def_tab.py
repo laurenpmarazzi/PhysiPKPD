@@ -2696,6 +2696,8 @@ class CellDef(QWidget):
         self.param_d[self.current_cell_def]['damage_accumulation_rate'] = text
     def AO_metabolism_rate_changed(self, text):
         self.param_d[self.current_cell_def]['AO_metabolism_rate'] = text
+    def drug_effect_changed(self, text):
+        self.param_d[self.current_cell_def]['drug_effect'] = text
           
     # --- custom data (rwh: OMG, this took a lot of time to solve!)
     def custom_data_value_changed(self, text):
@@ -2873,6 +2875,22 @@ class CellDef(QWidget):
         glayout.addWidget(self.AO_metabolism_rate, idr,1, 1,1) # w, row, column, rowspan, colspan
 
         units = QLabel("1/min")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
+        
+        #--------------------
+        label = QLabel("Drug effect")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+
+        self.drug_effect = QLineEdit()
+        self.drug_effect.textChanged.connect(self.drug_effect_changed)
+        self.drug_effect.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.drug_effect, idr,1, 1,1) # w, row, column, rowspan, colspan
+
+        units = QLabel("dimensionless")
         units.setFixedWidth(self.units_width)
         units.setAlignment(QtCore.Qt.AlignLeft)
         glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
@@ -3623,6 +3641,7 @@ class CellDef(QWidget):
         self.param_d[cdname]['repair_rate'] = sval
         self.param_d[cdname]["damage_accumulation_rate"] = sval
         self.param_d[cdname]["AO_metabolism_rate"] = sval
+        self.param_d[cdname]["drug_effect"] = sval
         
     def add_new_substrate(self, sub_name):
         self.add_new_substrate_comboboxes(sub_name)
@@ -3898,6 +3917,7 @@ class CellDef(QWidget):
         self.repair_rate.setText(self.param_d[cdname]['repair_rate'])
         self.damage_accumulation_rate.setText(self.param_d[cdname]["damage_accumulation_rate"])
         self.AO_metabolism_rate.setText(self.param_d[cdname]["AO_metabolism_rate"])
+        self.drug_effect.setText(self.param_d[cdname]["drug_effect"])
 
     #-----------------------------------------------------------------------------------------
     def update_secretion_params(self):
@@ -4848,6 +4868,9 @@ class CellDef(QWidget):
                 val = uep.find(pkpd_path+"AO_metabolism_rate").text
                 self.param_d[cell_def_name]["AO_metabolism_rate"] = val
 
+                val = uep.find(pkpd_path+"drug_effect").text
+                self.param_d[cell_def_name]["drug_effect"] = val
+
                 # # ---------  custom data 
                 print("\n===== populate():  custom data")
                 # <custom_data>  
@@ -5741,6 +5764,10 @@ class CellDef(QWidget):
         
         elm = ET.SubElement(pkpd_data, 'AO_metabolism_rate')
         elm.text = self.param_d[cdef]['AO_metabolism_rate']
+        elm.tail = self.indent10
+        
+        elm = ET.SubElement(pkpd_data, 'drug_effect')
+        elm.text = self.param_d[cdef]['drug_effect']
         elm.tail = self.indent10
 
     #-------------------------------------------------------------------

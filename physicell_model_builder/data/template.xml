@@ -296,6 +296,7 @@
 				<repair_rate>10</repair_rate>
 				<damage_accumulation_rate>1.0E-6</damage_accumulation_rate>
 				<AO_metabolism_rate>0.01</AO_metabolism_rate>
+				<drug_effect>0</drug_effect>
 			</pkpd_data>
 			<custom_data>  
 				<sample units="dimensionless">1.0</sample>
@@ -323,6 +324,22 @@
         <dirichlet_node_value_on_dose type="double" units="mmHg" description="concentration on boundary after dosing">100.0</dirichlet_node_value_on_dose>
         <dirichlet_decay_rate type="double" units="1/min" description="decay rate of Dirichlet nodes as systemic circulation drops">0.018</dirichlet_decay_rate>
         <max_number_doses type="int" units="dimensionless" description="how many doses of the drug to simulate">5</max_number_doses>
+		<systemic_circulation_increase_on_dose type="double" units="mmHg" description="concentration added to systemic circulation on dose">10.0</systemic_circulation_increase_on_dose>
+        <systemic_circulation_elimination_rate type="double" units="1/min" description="decay rate of drug in systemic circulation">0.0027</systemic_circulation_elimination_rate>
+        <systemic_circulation_to_periphery_volume_ratio type="double" units="dimensionless" description="ratio of volume in systemic circulation to the volume of the periphery">1.0</systemic_circulation_to_periphery_volume_ratio>
+        <biot_number type="double" units="dimensionless" description="ratio of drug concentration outside capillary to inside capillary (or just all systemic circulation">1.0</biot_number>
+        <drug_flux_across_capillaries type="double" units="1/min" description="rate of systemic circulation concentration change due to distribution and redistribution">0.0048</drug_flux_across_capillaries>
+        <EC_50 type="double" units="none" description="EC50 for effect of damage on apoptosis">1.0</EC_50>
+        <Hill_power type="double" units="none" description="hill power for effect of damage on apoptosis">2.0</Hill_power>
+        <max_increase_to_apoptosis type="double" units="1/min" description="max increase to apoptosis rate with drug">1E-3</max_increase_to_apoptosis>
+        <use_AUC_into_hill type="int" units="none" description="0 is allow damage to grow unboudned and increase apoptosis unbounded (original way); 1 is feed damage into Hill function to set how much of max increase in apoptosis is actually added">1</use_AUC_into_hill>
+
+        <moa_apoptosis type="bool" units="none" description="drug causes apoptotic signaling">True</moa_apoptosis>
+        <moa_proliferation type="bool" units="none" description="drug causes proliferation arrest">False</moa_proliferation>
+        <moa_necrosis type="bool" units="none" description="drug causes necrosis">False</moa_necrosis>
+		<set_first_dose_time type="bool" units="none" description="user sets first dose time to start therapy; false=user gives confluence condition">True</set_first_dose_time>
+        <first_dose_time type="double" units="min" description="time of first dose">0.0</first_dose_time>
+        <confluence_condition type="double" units="none" description="confluence as proportion at which to start therapy">0.6</confluence_condition>
 	</pkpd_parameters>
 	
 </PhysiCell_settings>
