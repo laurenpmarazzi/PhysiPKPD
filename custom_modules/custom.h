@@ -94,3 +94,4 @@ void PK_model( double current_time );
 void write_cell_data_for_plots( double current_time, char delim);
 std::vector<std::string> damage_coloring( Cell* pCell );
 double Hill_function( double input, double Hill_power , double EC_50 );
+double confluence_computation( void );
