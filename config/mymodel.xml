@@ -222,7 +222,7 @@
         <moa_proliferation type="bool" units="none" description="drug causes proliferation arrest">False</moa_proliferation>
         <moa_necrosis type="bool" units="none" description="drug causes necrosis">False</moa_necrosis>
     
-        <set_first_dose_time type="bool" units="none" description="user sets first dose time to start therapy; false=user gives confluence condition">False</set_first_dose_time>
+        <set_first_dose_time type="bool" units="none" description="user sets first dose time to start therapy; false=user gives confluence condition">True</set_first_dose_time>
         <first_dose_time type="double" units="min" description="time of first dose">0.0</first_dose_time>
         <confluence_condition type="double" units="none" description="confluence as proportion at which to start therapy">0.6</confluence_condition>
 
