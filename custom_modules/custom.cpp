@@ -234,7 +234,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     // find index of apoptosis death model
     static int nApop = p.death.find_death_model_index( "apoptosis" );
     // find index of necrosis death model
-    static int nNec = p.death.find_death_model_index( "necrosis" );
+    static int nNec = p.death.find_death_model_index( "Necrosis" );
     // find index of damage variable
     static int nD = pC->custom_data.find_variable_index( "damage" );
     //find index of damage accumulation rate
@@ -313,16 +313,14 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
    
     }
     if (moa_necro){
-        // if(use_AUC_into_hill)
-        //     {
-        //         pC->custom_data[nDE] = Hill_function( pC->custom_data[nD] , Hill_power , EC_50 ); // scale damage effect between 0 and 1
-        //         p.death.rates[nNec] = base_rate_necro + pC->custom_data[nDE] * parameters.doubles("max_increase_to_apoptosis"); // add this multiple of max increase to base apoptosis rate
-        //     }
-        //     else {
+        if(use_AUC_into_hill)
+            {
+                pC->custom_data[nDE] = Hill_function( pC->custom_data[nD] , Hill_power , EC_50 ); // scale damage effect between 0 and 1
+                p.death.rates[nNec] = base_rate_necro + pC->custom_data[nDE] * parameters.doubles("max_increase_to_apoptosis"); // add this multiple of max increase to base apoptosis rate
+            }
+            else {
                 p.death.rates[nNec] = base_rate_necro * ( 1 + pC->custom_data[nD] );
-            // }
-        
-        
+            }    
     }
     
     
@@ -547,7 +545,7 @@ double confluence_computation( void )
         {
             cV *= 0.75; // (3/4)V
             cV *= cV; // ( (3/4)V )^2
-            cV *= M_PI; // pi * ( (3/4)V )^2
+            cV *= 3.14; // since not all computers know what pi is @drbergman M_PI; // pi * ( (3/4)V )^2
             cV = cbrt(cV); // pi^(1/3) * ( (3/4)V )^(2/3) <--formula for converting volume of sphere with radius r to area of circle with radius r
             output += cV;
         }
