@@ -206,7 +206,6 @@
         
         <dirichlet_node_value_on_dose type="double" units="mmHg" description="concentration on boundary after dosing">100.0</dirichlet_node_value_on_dose>
         <dirichlet_decay_rate type="double" units="1/min" description="decay rate of Dirichlet nodes as systemic circulation drops">0.018</dirichlet_decay_rate>
-        <csv_data_interval type="double" units="min" description="time between writing data to CSV">1</csv_data_interval>
         
         <systemic_circulation_elimination_rate type="double" units="1/min" description="decay rate of drug in systemic circulation">0.0027</systemic_circulation_elimination_rate>
         <systemic_circulation_to_periphery_volume_ratio type="double" units="dimensionless" description="ratio of volume in systemic circulation to the volume of the periphery">1.0</systemic_circulation_to_periphery_volume_ratio>
