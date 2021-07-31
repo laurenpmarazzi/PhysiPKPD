@@ -545,7 +545,7 @@ double confluence_computation( void )
         {
             cV *= 0.75; // (3/4)V
             cV *= cV; // ( (3/4)V )^2
-            cV *= M_PI; // pi * ( (3/4)V )^2
+            cV *= 3.14; // since not all computers know what pi is @drbergman M_PI; // pi * ( (3/4)V )^2
             cV = cbrt(cV); // pi^(1/3) * ( (3/4)V )^(2/3) <--formula for converting volume of sphere with radius r to area of circle with radius r
             output += cV;
         }
