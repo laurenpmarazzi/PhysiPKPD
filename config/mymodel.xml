@@ -13,7 +13,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">1080</max_time>
+		<max_time units="min">7200</max_time>
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -190,7 +190,7 @@
 	
 	<user_parameters>
 		<random_seed type="int" units="dimensionless" description="">0</random_seed>
-        <number_of_cells type="int" units="dimensionless" description="initial number of cells (for each cell type)">1500</number_of_cells>
+        <number_of_cells type="int" units="dimensionless" description="initial number of cells (for each cell type)">50</number_of_cells>
         <csv_data_interval type="double" units="min" description="time between writing data to CSV">1</csv_data_interval>
     </user_parameters>
 	
@@ -212,5 +212,8 @@
         <moa_apoptosis type="bool" units="none" description="drug causes apoptotic signaling">True</moa_apoptosis>
         <moa_proliferation type="bool" units="none" description="drug causes proliferation arrest">False</moa_proliferation>
         <moa_necrosis type="bool" units="none" description="drug causes necrosis">False</moa_necrosis>
+		<set_first_dose_time type="bool" units="none" description="user sets first dose time to start therapy; false=user gives confluence condition">True</set_first_dose_time>
+        <first_dose_time type="double" units="min" description="time of first dose">0.0</first_dose_time>
+        <confluence_condition type="double" units="none" description="confluence as proportion at which to start therapy">0.6</confluence_condition>
 	</pkpd_parameters>
 </PhysiCell_settings>
