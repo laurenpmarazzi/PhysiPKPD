@@ -248,7 +248,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     // hill function parameters for modeling treatment effect
     static double EC_50 = parameters.doubles( "EC_50" );
     static double Hill_power =  parameters.doubles( "Hill_power" );
-    static bool use_AUC_into_hill = (parameters.ints( "use_AUC_into_hill" ) == 1);
+    static bool use_AUC_into_hill = parameters.bools( "use_AUC_into_hill" );
     
     // find if drug causes apoptosis
     static bool moa_apop = parameters.bools( "moa_apoptosis" );

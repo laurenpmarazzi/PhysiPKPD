@@ -230,13 +230,13 @@
 
         <EC_50 type="double" units="none" description="EC50 for effect of damage on apoptosis">1.0</EC_50>
         <Hill_power type="double" units="none" description="hill power for effect of damage on apoptosis">2.0</Hill_power>
-        <use_AUC_into_hill type="int" units="none" description="0 is allow damage to grow unboudned and increase apoptosis unbounded (original way); 1 is feed damage into Hill function to set how much of max increase in apoptosis is actually added">1</use_AUC_into_hill>
+        <use_AUC_into_hill type="bool" units="none" description="false does not use a hill function; true feeds damage into Hill function to set how much of an effect drug damage will have">False</use_AUC_into_hill>
         <max_increase_to_apoptosis type="double" units="1/min" description="max increase to apoptosis rate with drug">1E-3</max_increase_to_apoptosis>
         <proliferation_saturation_rate type="double" units="1/min" description="proliferation rate at saturation of damage">1e-6</proliferation_saturation_rate>
 
         
-        <moa_apoptosis type="bool" units="none" description="drug causes apoptotic signaling">False</moa_apoptosis>
-        <moa_proliferation type="bool" units="none" description="drug causes proliferation arrest">True</moa_proliferation>
+        <moa_apoptosis type="bool" units="none" description="drug causes apoptotic signaling">True</moa_apoptosis>
+        <moa_proliferation type="bool" units="none" description="drug causes proliferation arrest">False</moa_proliferation>
         <moa_necrosis type="bool" units="none" description="drug causes necrosis">False</moa_necrosis>
         
         
