@@ -13,7 +13,7 @@
     </domain>
 
     <overall>
-        <max_time units="min">900</max_time>
+        <max_time units="min">30240</max_time>
         <time_units>min</time_units>
         <space_units>micron</space_units>
 
@@ -30,12 +30,12 @@
         <folder>output</folder>
 
         <full_data>
-            <interval units="min">360</interval>
+            <interval units="min">1440</interval>
             <enable>true</enable>
         </full_data>
 
         <SVG>
-            <interval units="min">10</interval>
+            <interval units="min">240</interval>
             <enable>true</enable>
         </SVG>
 
@@ -275,7 +275,7 @@
 
 <!--<div_drugs type="divider" description="---Done with PD parameters---"/>-->
 
-                <pressure_threshold>.5</pressure_threshold>
+                <pressure_threshold>1e9</pressure_threshold>
                 <arrested>0</arrested>
                 
                 <pO2_proliferation_saturation>38</pO2_proliferation_saturation>
@@ -311,8 +311,8 @@
 
 <div_drug1 type="divider" description="---Drug 1 Settings---"/>
 
-        <PKPD_D1_max_number_doses type="int" units="none" description="max doses of drug 1">5</PKPD_D1_max_number_doses>
-        <PKPD_D1_dose_interval type="double" units="min" description="time between dosings of drug 1">180.0</PKPD_D1_dose_interval>
+        <PKPD_D1_max_number_doses type="int" units="none" description="max doses of drug 1">15</PKPD_D1_max_number_doses>
+        <PKPD_D1_dose_interval type="double" units="min" description="time between dosings of drug 1">1440.0</PKPD_D1_dose_interval>
         <PKPD_D1_set_first_dose_time type="bool" units="none" description="user sets first dose time to start therapy for drug 1; false=user gives confluence condition">True</PKPD_D1_set_first_dose_time>
         <PKPD_D1_first_dose_time type="double" units="min" description="time of first dose for drug 1">0.0</PKPD_D1_first_dose_time>
         <PKPD_D1_confluence_condition type="double" units="none" description="confluence as proportion at which to start therapy for drug 1">0.6</PKPD_D1_confluence_condition>
@@ -323,7 +323,7 @@
 
 <div_drug1_PK type="divider" description="---Drug 1 PK---"/>
 
-        <PKPD_D1_central_increase_on_dose type="double" units="mmHg" description="concentration added to systemic circulation on dose of drug 1">40.0</PKPD_D1_central_increase_on_dose>
+        <PKPD_D1_central_increase_on_dose type="double" units="mmHg" description="concentration added to systemic circulation on dose of drug 1">100.0</PKPD_D1_central_increase_on_dose>
         <PKPD_D1_central_elimination_rate type="double" units="1/min" description="decay rate of drug 1 in systemic circulation">0.0027</PKPD_D1_central_elimination_rate>
         <PKPD_D1_flux_across_capillaries type="double" units="1/min" description="rate of central concentration change of drug 1 due to distribution and redistribution">0.0048</PKPD_D1_flux_across_capillaries>
         <PKPD_D1_biot_number type="double" units="dimensionless" description="ratio of drug concentration outside capillary to inside capillary (or just all systemic circulation">1.0</PKPD_D1_biot_number>
@@ -332,8 +332,8 @@
         
 <div_drug2 type="divider" description="---Drug 2 Settings---"/>
 
-        <PKPD_D2_max_number_doses type="int" units="none" description="max doses of drug 2">5</PKPD_D2_max_number_doses>
-        <PKPD_D2_dose_interval type="double" units="min" description="time between dosings of drug 2">180.0</PKPD_D2_dose_interval>
+        <PKPD_D2_max_number_doses type="int" units="none" description="max doses of drug 2">15</PKPD_D2_max_number_doses>
+        <PKPD_D2_dose_interval type="double" units="min" description="time between dosings of drug 2">1440.0</PKPD_D2_dose_interval>
         <PKPD_D2_set_first_dose_time type="bool" units="none" description="user sets first dose time to start therapy for drug 2; false=user gives confluence condition">True</PKPD_D2_set_first_dose_time>
         <PKPD_D2_first_dose_time type="double" units="min" description="time of first dose for drug 2">0.0</PKPD_D2_first_dose_time>
         <PKPD_D2_confluence_condition type="double" units="none" description="confluence as proportion at which to start therapy for drug 2">0.6</PKPD_D2_confluence_condition>
@@ -344,7 +344,7 @@
         
 <div_drug2_PK type="divider" description="---Drug 2 PK---"/>
 
-        <PKPD_D2_central_increase_on_dose type="double" units="mmHg" description="concentration added to systemic circulation on dose of drug 2">40.0</PKPD_D2_central_increase_on_dose>
+        <PKPD_D2_central_increase_on_dose type="double" units="mmHg" description="concentration added to systemic circulation on dose of drug 2">100.0</PKPD_D2_central_increase_on_dose>
         <PKPD_D2_central_elimination_rate type="double" units="1/min" description="decay rate of drug 2 in systemic circulation">0.0027</PKPD_D2_central_elimination_rate>
         <PKPD_D2_flux_across_capillaries type="double" units="1/min" description="rate of central concentration change of drug 2 due to distribution and redistribution">0.0048</PKPD_D2_flux_across_capillaries>
         <PKPD_D2_biot_number type="double" units="dimensionless" description="ratio of drug concentration outside capillary to inside capillary (or just all systemic circulation">1.0</PKPD_D2_biot_number>
