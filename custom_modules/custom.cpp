@@ -183,7 +183,7 @@ void setup_tissue( void )
 }
 
 std::vector<std::string> my_coloring_function( Cell* pCell )
-{ return paint_by_number_cell_coloring(pCell); }
+{ return damage_coloring(pCell); }
 
 void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt )
 { return; }
@@ -209,33 +209,33 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     // find index of damage variable
     static int nPKPD_D1_damage = pC->custom_data.find_variable_index( "PKPD_D1_damage" );
     //find index of PKPD_drug_number_1 metabolism within cells
-    static int nPKPD_D1_M = pC->custom_data.find_variable_index( "PKPD_D1_metabolism_rate" );
+    static double PKPD_D1_M = pC->custom_data["PKPD_D1_metabolism_rate"];
     // find index of repair parameter
-    static int nPKPD_D1_R = pC->custom_data.find_variable_index( "PKPD_D1_repair_rate" );
+    static double PKPD_D1_R = pC->custom_data["PKPD_D1_repair_rate"];
     
     // hill function parameters for modeling proliferation effect
-    static bool PKPD_D1_moa_is_prolif = pC->custom_data.find_variable_index( "PKPD_D1_moa_is_prolif" ) > 0.5;
-    static double nPKPD_D1_prolif_sat_rate = parameters.doubles( "PKPD_D1_prolif_saturation_rate" );
-    static double nPKPD_D1_prolif_EC50 = parameters.doubles( "PKPD_D1_prolif_EC50" );
-    static double nPKPD_D1_prolif_HP = parameters.doubles( "PKPD_D1_prolif_hill_power" );
+    static bool PKPD_D1_moa_is_prolif = pC->custom_data["PKPD_D1_moa_is_prolif"] > 0.5;
+    static double PKPD_D1_prolif_sat_rate = pC->custom_data["PKPD_D1_prolif_saturation_rate"];
+    static double PKPD_D1_prolif_EC50 = pC->custom_data["PKPD_D1_prolif_EC50"];
+    static double PKPD_D1_prolif_HP = pC->custom_data["PKPD_D1_prolif_hill_power"];
     
     // hill function parameters for modeling apoptosis effect
-    static bool PKPD_D1_moa_is_apop = pC->custom_data.find_variable_index( "PKPD_D1_moa_is_apop" ) > 0.5;
-    static double nPKPD_D1_apop_sat_rate = parameters.doubles( "PKPD_D1_apop_saturation_rate" );
-    static double nPKPD_D1_apop_EC50 = parameters.doubles( "PKPD_D1_apop_EC50" );
-    static double nPKPD_D1_apop_HP = parameters.doubles( "PKPD_D1_apop_hill_power" );
+    static bool PKPD_D1_moa_is_apop = pC->custom_data["PKPD_D1_moa_is_apop"] > 0.5;
+    static double PKPD_D1_apop_sat_rate = pC->custom_data["PKPD_D1_apop_saturation_rate"];
+    static double PKPD_D1_apop_EC50 = pC->custom_data["PKPD_D1_apop_EC50"];
+    static double PKPD_D1_apop_HP = pC->custom_data["PKPD_D1_apop_hill_power"];
     
     // hill function parameters for modeling necrosis effect
-    static bool PKPD_D1_moa_is_necrosis = pC->custom_data.find_variable_index( "PKPD_D1_moa_is_necrosis" ) > 0.5;
-    static double nPKPD_D1_necrosis_sat_rate = parameters.doubles( "PKPD_D1_necrosis_saturation_rate" );
-    static double nPKPD_D1_necrosis_EC50 = parameters.doubles( "PKPD_D1_necrosis_EC50" );
-    static double nPKPD_D1_necrosis_HP = parameters.doubles( "PKPD_D1_necrosis_hill_power" );
+    static bool PKPD_D1_moa_is_necrosis = pC->custom_data["PKPD_D1_moa_is_necrosis"] > 0.5;
+    static double PKPD_D1_necrosis_sat_rate = pC->custom_data["PKPD_D1_necrosis_saturation_rate"];
+    static double PKPD_D1_necrosis_EC50 = pC->custom_data["PKPD_D1_necrosis_EC50"];
+    static double PKPD_D1_necrosis_HP = pC->custom_data["PKPD_D1_necrosis_hill_power"];
     
     // hill function parameters for modeling motility effect
-    static bool PKPD_D1_moa_is_motility = pC->custom_data.find_variable_index( "PKPD_D1_moa_is_motility" ) > 0.5;
-    static double nPKPD_D1_motility_sat_rate = parameters.doubles( "PKPD_D1_motility_saturation_rate" );
-    static double nPKPD_D1_motility_EC50 = parameters.doubles( "PKPD_D1_motility_EC50" );
-    static double nPKPD_D1_motility_HP = parameters.doubles( "PKPD_D1_motility_hill_power" );
+    static bool PKPD_D1_moa_is_motility = pC->custom_data["PKPD_D1_moa_is_motility"] > 0.5;
+    static double PKPD_D1_motility_sat_rate = pC->custom_data["PKPD_D1_motility_saturation_rate"];
+    static double PKPD_D1_motility_EC50 = pC->custom_data["PKPD_D1_motility_EC50"];
+    static double PKPD_D1_motility_HP = pC->custom_data["PKPD_D1_motility_hill_power"];
     
     
     // now on to drug 2!
@@ -245,33 +245,33 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     // find index of damage variable
     static int nPKPD_D2_damage = pC->custom_data.find_variable_index( "PKPD_D2_damage" );
     //find index of PKPD_drug_number_2 metabolism within cells
-    static int nPKPD_D2_M = pC->custom_data.find_variable_index( "PKPD_D2_metabolism_rate" );
+    static double PKPD_D2_M = pC->custom_data["PKPD_D2_metabolism_rate"];
     // find index of repair parameter
-    static int nPKPD_D2_R = pC->custom_data.find_variable_index( "PKPD_D2_repair_rate" );
+    static double PKPD_D2_R = pC->custom_data["PKPD_D2_repair_rate"];
     
     // hill function parameters for modeling proliferation effect
-    static bool PKPD_D2_moa_is_prolif = pC->custom_data.find_variable_index( "PKPD_D2_moa_is_prolif" ) > 0.5;
-    static double nPKPD_D2_prolif_sat_rate = parameters.doubles( "PKPD_D2_prolif_saturation_rate" );
-    static double nPKPD_D2_prolif_EC50 = parameters.doubles( "PKPD_D2_prolif_EC50" );
-    static double nPKPD_D2_prolif_HP = parameters.doubles( "PKPD_D2_prolif_hill_power" );
+    static bool PKPD_D2_moa_is_prolif = pC->custom_data["PKPD_D2_moa_is_prolif"] > 0.5;
+    static double PKPD_D2_prolif_sat_rate = pC->custom_data["PKPD_D2_prolif_saturation_rate"];
+    static double PKPD_D2_prolif_EC50 = pC->custom_data["PKPD_D2_prolif_EC50"];
+    static double PKPD_D2_prolif_HP = pC->custom_data["PKPD_D2_prolif_hill_power"];
     
     // hill function parameters for modeling apoptosis effect
-    static bool PKPD_D2_moa_is_apop = pC->custom_data.find_variable_index( "PKPD_D2_moa_is_apop" ) > 0.5;
-    static double nPKPD_D2_apop_sat_rate = parameters.doubles( "PKPD_D2_apop_saturation_rate" );
-    static double nPKPD_D2_apop_EC50 = parameters.doubles( "PKPD_D2_apop_EC50" );
-    static double nPKPD_D2_apop_HP = parameters.doubles( "PKPD_D2_apop_hill_power" );
+    static bool PKPD_D2_moa_is_apop = pC->custom_data["PKPD_D2_moa_is_apop"] > 0.5;
+    static double PKPD_D2_apop_sat_rate = pC->custom_data["PKPD_D2_apop_saturation_rate"];
+    static double PKPD_D2_apop_EC50 = pC->custom_data["PKPD_D2_apop_EC50"];
+    static double PKPD_D2_apop_HP = pC->custom_data["PKPD_D2_apop_hill_power"];
     
     // hill function parameters for modeling necrosis effect
-    static bool PKPD_D2_moa_is_necrosis = pC->custom_data.find_variable_index( "PKPD_D2_moa_is_necrosis" ) > 0.5;
-    static double nPKPD_D2_necrosis_sat_rate = parameters.doubles( "PKPD_D2_necrosis_saturation_rate" );
-    static double nPKPD_D2_necrosis_EC50 = parameters.doubles( "PKPD_D2_necrosis_EC50" );
-    static double nPKPD_D2_necrosis_HP = parameters.doubles( "PKPD_D2_necrosis_hill_power" );
+    static bool PKPD_D2_moa_is_necrosis = pC->custom_data["PKPD_D2_moa_is_necrosis"] > 0.5;
+    static double PKPD_D2_necrosis_sat_rate = pC->custom_data["PKPD_D2_necrosis_saturation_rate"];
+    static double PKPD_D2_necrosis_EC50 = pC->custom_data["PKPD_D2_necrosis_EC50"];
+    static double PKPD_D2_necrosis_HP = pC->custom_data["PKPD_D2_necrosis_hill_power"];
     
     // hill function parameters for modeling motility effect
-    static bool PKPD_D2_moa_is_motility = pC->custom_data.find_variable_index( "PKPD_D2_moa_is_motility" ) > 0.5;
-    static double nPKPD_D2_motility_sat_rate = parameters.doubles( "PKPD_D2_motility_saturation_rate" );
-    static double nPKPD_D2_motility_EC50 = parameters.doubles( "PKPD_D2_motility_EC50" );
-    static double nPKPD_D2_motility_HP = parameters.doubles( "PKPD_D2_motility_hill_power" );
+    static bool PKPD_D2_moa_is_motility = pC->custom_data["PKPD_D2_moa_is_motility"] > 0.5;
+    static double PKPD_D2_motility_sat_rate = pC->custom_data["PKPD_D2_motility_saturation_rate"];
+    static double PKPD_D2_motility_EC50 = pC->custom_data["PKPD_D2_motility_EC50"];
+    static double PKPD_D2_motility_HP = pC->custom_data["PKPD_D2_motility_hill_power"];
     
     
     // use pressure to arrest proliferation
@@ -288,7 +288,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     
     // internalized drug 1 causes damage
     double PKPD_D1 = p.molecular.internalized_total_substrates[nPKPD_D1];
-    PKPD_D1 -= pC->custom_data[nPKPD_D1_M] * PKPD_D1 * dt; // create metabolism within cell to clear drug 1
+    PKPD_D1 -= PKPD_D1_M * PKPD_D1 * dt; // create metabolism within cell to clear drug 1
     if(PKPD_D1<0)
     {
         PKPD_D1=0;
@@ -300,7 +300,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
         pC->custom_data[nPKPD_D1_damage] += PKPD_D1 * dt; // this damage can be understood as AUC of the internalized drug, but with cellular repair mechanisms continuously decreasing it
     }
     
-    pC->custom_data[nPKPD_D1_damage] -= pC->custom_data[nPKPD_D1_R] * dt; // repair damage at constant rate
+    pC->custom_data[nPKPD_D1_damage] -= PKPD_D1_R * dt; // repair damage at constant rate
     if(pC->custom_data[nPKPD_D1_damage]<=0)
     {
         pC->custom_data[nPKPD_D1_damage]=0; // very likely that cells will end up with negative damage without this because the repair rate is assumed constant (not proportional to amount of damage)
@@ -309,7 +309,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     
     // internalized drug 2 causes damage
     double PKPD_D2 = p.molecular.internalized_total_substrates[nPKPD_D2];
-    PKPD_D2 -= pC->custom_data[nPKPD_D2_M] * PKPD_D2 * dt; // create metabolism within cell to clear drug 2
+    PKPD_D2 -= PKPD_D2_M * PKPD_D2 * dt; // create metabolism within cell to clear drug 2
     if(PKPD_D2<0)
     {
         PKPD_D2=0;
@@ -321,7 +321,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
         pC->custom_data[nPKPD_D2_damage] += PKPD_D2 * dt; // this damage can be understood as AUC of the internalized drug, but with cellular repair mechanisms continuously decreasing it
     }
     
-    pC->custom_data[nPKPD_D2_damage] -= pC->custom_data[nPKPD_D2_R] * dt; // repair damage at constant rate
+    pC->custom_data[nPKPD_D2_damage] -= PKPD_D2_R * dt; // repair damage at constant rate
     if(pC->custom_data[nPKPD_D2_damage]<=0)
     {
         pC->custom_data[nPKPD_D2_damage]=0; // very likely that cells will end up with negative damage without this because the repair rate is assumed constant (not proportional to amount of damage)
@@ -343,30 +343,28 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
         // don't need to reset to base proliferation rate here because the pressure-arrested block already does that
         if( PKPD_D1_moa_is_prolif )
         {
-            static double fs_prolif_D1 = pC->custom_data[nPKPD_D1_prolif_sat_rate]/pCD->phenotype.cycle.data.transition_rate(0,0); // saturation factor of proliferation for drug 1
+            static double fs_prolif_D1 = PKPD_D1_prolif_sat_rate/pCD->phenotype.cycle.data.transition_rate(0,0); // saturation factor of proliferation for drug 1
             if(pC->custom_data[nPKPD_D1_damage]>0)
             {
                 if( p.cycle.model().code != PhysiCell_constants::live_cells_cycle_model )
                 {
                     return; // don't continue with proliferative effects until we've implemented them for other model types
                 }
-                temp = Hill_function(pC->custom_data[nPKPD_D1_damage], pC->custom_data[nPKPD_D1_prolif_EC50],
-                                            pC->custom_data[nPKPD_D1_prolif_HP]);
+                temp = Hill_function(pC->custom_data[nPKPD_D1_damage], PKPD_D1_prolif_EC50, PKPD_D1_prolif_HP);
                 factor_change *= 1 + (fs_prolif_D1-1)*temp;
             }
         }
         
         if( PKPD_D2_moa_is_prolif )
         {
-            static double fs_prolif_D2 = pC->custom_data[nPKPD_D2_prolif_sat_rate]/pCD->phenotype.cycle.data.transition_rate(0,0); // saturation factor of proliferation for drug 2
+            static double fs_prolif_D2 = PKPD_D2_prolif_sat_rate/pCD->phenotype.cycle.data.transition_rate(0,0); // saturation factor of proliferation for drug 2
             if(pC->custom_data[nPKPD_D2_damage]>0)
             {
                 if( p.cycle.model().code != PhysiCell_constants::live_cells_cycle_model )
                 {
                     return; // don't continue with proliferative effects until we've implemented them for other model types
                 }
-                temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data[nPKPD_D2_prolif_EC50],
-                                            pC->custom_data[nPKPD_D2_prolif_HP]);
+                temp = Hill_function(pC->custom_data[nPKPD_D2_damage], PKPD_D2_prolif_EC50, PKPD_D2_prolif_HP);
                 factor_change *= 1 + (fs_prolif_D2-1)*temp;
             }
         }
@@ -378,52 +376,49 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     factor_change = 1.0; // set factor
     if( PKPD_D1_moa_is_apop )
     {
-        static double fs_apop_D1 = pC->custom_data[nPKPD_D1_apop_sat_rate]/pCD->phenotype.death.rates[nApop]; // saturation factor of apoptosis for drug 1
+        static double fs_apop_D1 = PKPD_D1_apop_sat_rate/pCD->phenotype.death.rates[nApop]; // saturation factor of apoptosis for drug 1
         p.death.rates[nApop] = pCD->phenotype.death.rates[nApop]; // always reset to base apoptosis rate
         if( pC->custom_data[nPKPD_D1_damage]>0 )
         {
-            temp = Hill_function(pC->custom_data[nPKPD_D1_damage], pC->custom_data[nPKPD_D1_apop_EC50],
-                                        pC->custom_data[nPKPD_D1_apop_HP]);
+            temp = Hill_function(pC->custom_data[nPKPD_D1_damage], PKPD_D1_apop_EC50, PKPD_D1_apop_HP);
             factor_change *= 1 + (fs_apop_D1-1)*temp;
         }
     }
     
     if( PKPD_D2_moa_is_apop )
     {
-        static double fs_apop_D2 = pC->custom_data[nPKPD_D2_apop_sat_rate]/pCD->phenotype.death.rates[nApop]; // saturation factor of apoptosis for drug 2
+        static double fs_apop_D2 = PKPD_D2_apop_sat_rate/pCD->phenotype.death.rates[nApop]; // saturation factor of apoptosis for drug 2
         p.death.rates[nApop] = pCD->phenotype.death.rates[nApop]; // always reset to base apoptosis rate (this is unecesary when D1 also affects apoptosis, but this is necessary when only D2 affects apoptosis)
         if( pC->custom_data[nPKPD_D2_damage]>0 )
         {
-            temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data[nPKPD_D2_apop_EC50],
-                                        pC->custom_data[nPKPD_D2_apop_HP]);
+            temp = Hill_function(pC->custom_data[nPKPD_D2_damage], PKPD_D2_apop_EC50, PKPD_D2_apop_HP);
             factor_change *= 1 + (fs_apop_D2-1)*temp;
         }
     }
     p.death.rates[nApop] *= factor_change;
     
+
     
     // necrosis effect
     factor_change = 1.0; // set factor
     if( PKPD_D1_moa_is_necrosis )
     {
-        static double fs_necrosis_D1 = pC->custom_data[nPKPD_D1_necrosis_sat_rate]/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 1
+        static double fs_necrosis_D1 = PKPD_D1_necrosis_sat_rate/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 1
         p.death.rates[nNec] = pCD->phenotype.death.rates[nNec]; // always reset to base necrosis rate
         if(pC->custom_data[nPKPD_D1_damage]>0)
         {
-            temp = Hill_function(pC->custom_data[nPKPD_D1_damage], pC->custom_data[nPKPD_D1_necrosis_EC50],
-                                        pC->custom_data[nPKPD_D1_necrosis_HP]);
+            temp = Hill_function(pC->custom_data[nPKPD_D1_damage], PKPD_D1_necrosis_EC50, PKPD_D1_necrosis_HP);
             factor_change *= 1 + (fs_necrosis_D1-1)*temp;
         }
     }
     
     if( PKPD_D2_moa_is_necrosis )
     {
-        static double fs_necrosis_D2 = pC->custom_data[nPKPD_D2_necrosis_sat_rate]/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 2
+        static double fs_necrosis_D2 = PKPD_D2_necrosis_sat_rate/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 2
         p.death.rates[nNec] = pCD->phenotype.death.rates[nNec]; // always reset to base necrosis rate (this is unecesary when D1 also affects necrosis, but this is necessary when only D2 affects necrosis)
         if(pC->custom_data[nPKPD_D2_damage]>0)
         {
-            temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data[nPKPD_D2_necrosis_EC50],
-                                        pC->custom_data[nPKPD_D2_necrosis_HP]);
+            temp = Hill_function(pC->custom_data[nPKPD_D2_damage], PKPD_D2_necrosis_EC50, PKPD_D2_necrosis_HP);
             factor_change *= 1 + (fs_necrosis_D2-1)*temp;
         }
     }
@@ -435,24 +430,22 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     factor_change = 1.0; // set factor
     if( PKPD_D1_moa_is_motility )
     {
-        static double fs_motility_D1 = pC->custom_data[nPKPD_D1_motility_sat_rate]/pCD->phenotype.death.rates[nNec]; // saturation factor of motility for drug 1
+        static double fs_motility_D1 = PKPD_D1_motility_sat_rate/pCD->phenotype.motility.migration_speed; // saturation factor of motility for drug 1
         p.motility.migration_speed = pCD->phenotype.motility.migration_speed; // always reset to base motility rate
         if(pC->custom_data[nPKPD_D1_damage]>0)
         {
-            temp = Hill_function(pC->custom_data[nPKPD_D1_damage], pC->custom_data[nPKPD_D1_motility_EC50],
-                                        pC->custom_data[nPKPD_D1_motility_HP]);
+            temp = Hill_function(pC->custom_data[nPKPD_D1_damage], PKPD_D1_motility_EC50, PKPD_D1_motility_HP);
             factor_change *= 1 + (fs_motility_D1-1)*temp;
         }
     }
     
     if( PKPD_D2_moa_is_motility )
     {
-        static double fs_motility_D2 = pC->custom_data[nPKPD_D2_motility_sat_rate]/pCD->phenotype.death.rates[nNec]; // saturation factor of motility for drug 2
+        static double fs_motility_D2 = PKPD_D2_motility_sat_rate/pCD->phenotype.motility.migration_speed; // saturation factor of motility for drug 2
         p.motility.migration_speed = pCD->phenotype.motility.migration_speed; // always reset to base motility rate (this is unecesary when D1 also affects motility, but this is necessary when only D2 affects motility)
         if(pC->custom_data[nPKPD_D2_damage]>0)
         {
-            temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data[nPKPD_D2_motility_EC50],
-                                        pC->custom_data[nPKPD_D2_motility_HP]);
+            temp = Hill_function(pC->custom_data[nPKPD_D2_damage], PKPD_D2_motility_EC50, PKPD_D2_motility_HP);
             factor_change *= 1 + (fs_motility_D2-1)*temp;
         }
     }
@@ -544,7 +537,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
         }
     }
     
-    // add doses if time
+    // add doses if time for that
     if( current_time > PKPD_D1_next_dose_time - tolerance && PKPD_D1_dose_count < parameters.ints("PKPD_D1_max_number_doses") )
     {
         PKPD_D1_central_concentration += parameters.doubles("PKPD_D1_central_increase_on_dose");
@@ -596,6 +589,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
         PKPD_D2_periphery_concentration = 0;
     }
     
+    /* this block works when both drugs are entering at the same spatial location (same Dirichlet nodes)
     for( int n=0; n < microenvironment.number_of_voxels(); n++ )
     {
         if( microenvironment.is_dirichlet_node( n ) )
@@ -603,6 +597,18 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
             microenvironment.update_dirichlet_node( n, nPKPD_D1, PKPD_D1_central_concentration * parameters.doubles("PKPD_D1_biot_number") );
             microenvironment.update_dirichlet_node( n, nPKPD_D2, PKPD_D2_central_concentration * parameters.doubles("PKPD_D2_biot_number") );
         }
+    }
+    */
+    
+    for( int i=0; i < microenvironment.mesh.x_coordinates.size() ; i++ )
+    {
+        // put drug 1 along the "floor" (y=0)
+        microenvironment.update_dirichlet_node( microenvironment.voxel_index(i,0,0),
+                                               nPKPD_D1, PKPD_D1_central_concentration * parameters.doubles("PKPD_D1_biot_number") );
+        // put drug 2 along the "ceiling" (y=max)
+        microenvironment.update_dirichlet_node( microenvironment.voxel_index(i,microenvironment.mesh.y_coordinates.size()-1,0),
+                                               nPKPD_D2, PKPD_D2_central_concentration * parameters.doubles("PKPD_D2_biot_number") );
+
     }
     
     return;
@@ -673,45 +679,46 @@ std::vector<std::string> damage_coloring( Cell* pCell )
 	// first, get the damage and convert to a value between 0 to 1
 	
 	// determine damage index
-    int d1_index = pCell->custom_data.find_variable_index( "PKPD_D1_damage" );
-    int d2_index = pCell->custom_data.find_variable_index( "PKPD_D2_damage" );
-    double d1_val = pCell->custom_data[d1_index];
-    double d2_val = pCell->custom_data[d2_index];
-    double d1_norm_val = d1_val/(1e6 + d1_val);
-    double d2_norm_val = d2_val/(1e6 + d2_val);
-
+    double d1_val = pCell->custom_data["PKPD_D1_damage"];
+    double d2_val = pCell->custom_data["PKPD_D2_damage"];
+//    double d1_norm_val = d1_val*d1_val/(parameters.doubles("d1_color_ec50") + d1_val*d1_val);
+    double d1_norm_val = Hill_function(d1_val, parameters.doubles("d1_color_ec50"), parameters.doubles("d1_color_hp"));
+//    double d2_norm_val = d2_val*d2_val/(parameters.doubles("d2_color_ec50") + d2_val*d2_val);
+    double d2_norm_val = Hill_function(d2_val, parameters.doubles("d2_color_ec50"), parameters.doubles("d2_color_hp"));
+    
 	if (pCell->phenotype.cycle.current_phase().code == PhysiCell_constants::apoptotic ) { // apoptotic - black
 		return output;
 	}
 
-    char colorTempString1 [128];
-    char colorTempString2 [128];
-	if( pCell->phenotype.death.dead == false )
+
+    if( pCell->phenotype.death.dead == false )
     { // live cells
-        if ( d1_norm_val <= 0 ) {
+        char colorTempString1 [128];
+        char colorTempString2 [128];
+        if ( d1_norm_val < 0 ) {
             sprintf(colorTempString1, "rgb(128, 128, 128)");
         } else if ( d1_norm_val >= 1 ) {
             sprintf(colorTempString1, "rgb(0, 0, 0)");
         } else {
-            // Red gradient goes from (255, 200, 200) to (51, 0, 0)
-            int color = (int) round(d1_norm_val*100)*2; // converting to percentage to make the color gradient easier to set
-            if ( color < 256) {
-                sprintf(colorTempString1, "rgb(%u, %u, %u)", 255-color, 200-color, 200-color);
-            } else {
-            sprintf(colorTempString1, "rgb(255, 255, 255)"); }
+            // Red gradient goes from (128, 128, 128) to (228, 50, 78)
+            int rd = (int) round(d1_norm_val*100); // red differential
+            int gd = (int) -round(d1_norm_val*50); // green differential
+            int bd = (int) -round(d1_norm_val*78); // blue differential
+            sprintf(colorTempString1, "rgb(%u, %u, %u)", 128+rd, 128+gd, 128+bd);
         }
         
-        if ( d2_norm_val <= 0 ) {
+        if ( d2_norm_val < 0 ) {
             sprintf(colorTempString2, "rgb(128, 128, 128)");
-        } else if ( d2_norm_val >= 1 ) {
+        } else if ( d2_norm_val > 1 )
+        {
             sprintf(colorTempString2, "rgb(0, 0, 0)");
-        } else {
-            // Red gradient goes from (200, 255, 200) to (0, 51, 0)
-            int color = (int) round(d2_norm_val*100)*2; // converting to percentage to make the color gradient easier to set
-            if ( color < 256) {
-                sprintf(colorTempString2, "rgb(%u, %u, %u)", 200-color, 255-color, 200-color);
-            } else {
-            sprintf(colorTempString2, "rgb(255, 255, 255)"); }
+        } else
+        {
+            // Green gradient goes from (128, 128, 128) to (50, 228, 78)
+            int rd = (int) -round(d2_norm_val*78); // red differential
+            int gd = (int) -round(d2_norm_val*50); // green differential
+            int bd = (int) round(d2_norm_val*100); // blue differential
+            sprintf(colorTempString2, "rgb(%u, %u, %u)", 128+rd, 128+gd, 128+bd);
         }
 
 		output[0].assign( colorTempString1 ); //cytoplasm
