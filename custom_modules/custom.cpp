@@ -72,17 +72,17 @@ void create_cell_types( void )
 {
     // set the random seed
     SeedRandom( parameters.ints("random_seed") );
-    
+
     /*
        Put any modifications to default cell definition here if you
        want to have "inherited" by other cell types.
-       
+
        This is a good place to set default functions.
     */
-    
+
     initialize_default_cell_definition();
     cell_defaults.phenotype.secretion.sync_to_microenvironment( &microenvironment );
-    
+
     cell_defaults.functions.volume_update_function = standard_volume_update_function;
     cell_defaults.functions.update_velocity = standard_update_cell_velocity;
 
@@ -90,50 +90,50 @@ void create_cell_types( void )
     cell_defaults.functions.update_phenotype = NULL; // update_cell_and_death_parameters_O2_based;
     cell_defaults.functions.custom_cell_rule = NULL;
     cell_defaults.functions.contact_function = NULL;
-    
+
     cell_defaults.functions.add_cell_basement_membrane_interactions = NULL;
     cell_defaults.functions.calculate_distance_to_membrane = NULL;
-    
+
     /*
        This parses the cell definitions in the XML config file.
     */
-    
+
     initialize_cell_definitions_from_pugixml();
-    
+
     /*
        Put any modifications to individual cell definitions here.
-       
+
        This is a good place to set custom functions.
     */
-    
+
     cell_defaults.functions.update_phenotype = phenotype_function;
     cell_defaults.functions.custom_cell_rule = custom_function;
     cell_defaults.functions.contact_function = contact_function;
-    
+
     Cell_Definition* pCD = find_cell_definition( "tumor" );
     pCD->functions.update_phenotype = tumor_phenotype;
-    
+
     /*
        This builds the map of cell definitions and summarizes the setup.
     */
-        
+
     build_cell_definitions_maps();
     display_cell_definitions( std::cout );
-    
+
     return;
 }
 
 void setup_microenvironment( void )
 {
     // set domain parameters
-    
+
     // put any custom code to set non-homogeneous initial conditions or
     // extra Dirichlet nodes here.
-    
+
     // initialize BioFVM
-    
+
     initialize_microenvironment();
-    
+
     return;
 }
 
@@ -146,21 +146,21 @@ void setup_tissue( void )
     double Xmax = microenvironment.mesh.bounding_box[3];
     double Ymax = microenvironment.mesh.bounding_box[4];
     double Zmax = microenvironment.mesh.bounding_box[5];
-    
+
     if( default_microenvironment_options.simulate_2D == true )
     {
         Zmin = 0.0;
         Zmax = 0.0;
     }
-    
+
     double Xrange = Xmax - Xmin;
     double Yrange = Ymax - Ymin;
     double Zrange = Zmax - Zmin;
-    
+
     // create some of each type of cell
-    
+
     Cell* pC;
-    
+
 //    for( int k=0; k < cell_definitions_by_index.size() ; k++ )
 //    {
 //        Cell_Definition* pCD = cell_definitions_by_index[k];
@@ -188,7 +188,7 @@ void setup_tissue( void )
     pC->assign_position( position ); }
     // load cells from your CSV file (if enabled)
     load_cells_from_pugixml();
-    
+
     return;
 }
 
@@ -208,12 +208,12 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
 {
     // find my cell definition
     Cell_Definition* pCD = find_cell_definition( pC->type );
-    
+
     // find index of apoptosis death model
     static int nApop = p.death.find_death_model_index( "apoptosis" );
     // find index of necrosis death model
     static int nNec = p.death.find_death_model_index( "Necrosis" );
-    
+
     // find index of drug 1 in the microenvironment
     static int nPKPD_D1 = microenvironment.find_density_index( "PKPD_drug_number_1" );
     // find index of damage variable
@@ -222,34 +222,34 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     static double PKPD_D1_M = pC->custom_data["PKPD_D1_metabolism_rate"];
     // find index of repair parameter
     static double PKPD_D1_R = pC->custom_data["PKPD_D1_repair_rate"];
-    
+
     // hill function parameters for modeling proliferation effect
     static bool PKPD_D1_moa_is_prolif = pC->custom_data["PKPD_D1_moa_is_prolif"] > 0.5;
     static double PKPD_D1_prolif_sat_rate = pC->custom_data["PKPD_D1_prolif_saturation_rate"];
     static double PKPD_D1_prolif_EC50 = pC->custom_data["PKPD_D1_prolif_EC50"];
     static double PKPD_D1_prolif_HP = pC->custom_data["PKPD_D1_prolif_hill_power"];
-    
+
     // hill function parameters for modeling apoptosis effect
     static bool PKPD_D1_moa_is_apop = pC->custom_data["PKPD_D1_moa_is_apop"] > 0.5;
     static double PKPD_D1_apop_sat_rate = pC->custom_data["PKPD_D1_apop_saturation_rate"];
     static double PKPD_D1_apop_EC50 = pC->custom_data["PKPD_D1_apop_EC50"];
     static double PKPD_D1_apop_HP = pC->custom_data["PKPD_D1_apop_hill_power"];
-    
+
     // hill function parameters for modeling necrosis effect
     static bool PKPD_D1_moa_is_necrosis = pC->custom_data["PKPD_D1_moa_is_necrosis"] > 0.5;
     static double PKPD_D1_necrosis_sat_rate = pC->custom_data["PKPD_D1_necrosis_saturation_rate"];
     static double PKPD_D1_necrosis_EC50 = pC->custom_data["PKPD_D1_necrosis_EC50"];
     static double PKPD_D1_necrosis_HP = pC->custom_data["PKPD_D1_necrosis_hill_power"];
-    
+
     // hill function parameters for modeling motility effect
     static bool PKPD_D1_moa_is_motility = pC->custom_data["PKPD_D1_moa_is_motility"] > 0.5;
     static double PKPD_D1_motility_sat_rate = pC->custom_data["PKPD_D1_motility_saturation_rate"];
     static double PKPD_D1_motility_EC50 = pC->custom_data["PKPD_D1_motility_EC50"];
     static double PKPD_D1_motility_HP = pC->custom_data["PKPD_D1_motility_hill_power"];
-    
-    
+
+
     // now on to drug 2!
-    
+
     // find index of drug 2 in the microenvironment
     static int nPKPD_D2 = microenvironment.find_density_index( "PKPD_drug_number_2" );
     // find index of damage variable
@@ -258,32 +258,32 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     static double PKPD_D2_M = pC->custom_data["PKPD_D2_metabolism_rate"];
     // find index of repair parameter
     static double PKPD_D2_R = pC->custom_data["PKPD_D2_repair_rate"];
-    
+
     // hill function parameters for modeling proliferation effect
     static bool PKPD_D2_moa_is_prolif = pC->custom_data["PKPD_D2_moa_is_prolif"] > 0.5;
     static double PKPD_D2_prolif_sat_rate = pC->custom_data["PKPD_D2_prolif_saturation_rate"];
     static double PKPD_D2_prolif_EC50 = pC->custom_data["PKPD_D2_prolif_EC50"];
     static double PKPD_D2_prolif_HP = pC->custom_data["PKPD_D2_prolif_hill_power"];
-    
+
     // hill function parameters for modeling apoptosis effect
     static bool PKPD_D2_moa_is_apop = pC->custom_data["PKPD_D2_moa_is_apop"] > 0.5;
     static double PKPD_D2_apop_sat_rate = pC->custom_data["PKPD_D2_apop_saturation_rate"];
     static double PKPD_D2_apop_EC50 = pC->custom_data["PKPD_D2_apop_EC50"];
     static double PKPD_D2_apop_HP = pC->custom_data["PKPD_D2_apop_hill_power"];
-    
+
     // hill function parameters for modeling necrosis effect
     static bool PKPD_D2_moa_is_necrosis = pC->custom_data["PKPD_D2_moa_is_necrosis"] > 0.5;
     static double PKPD_D2_necrosis_sat_rate = pC->custom_data["PKPD_D2_necrosis_saturation_rate"];
     static double PKPD_D2_necrosis_EC50 = pC->custom_data["PKPD_D2_necrosis_EC50"];
     static double PKPD_D2_necrosis_HP = pC->custom_data["PKPD_D2_necrosis_hill_power"];
-    
+
     // hill function parameters for modeling motility effect
     static bool PKPD_D2_moa_is_motility = pC->custom_data["PKPD_D2_moa_is_motility"] > 0.5;
     static double PKPD_D2_motility_sat_rate = pC->custom_data["PKPD_D2_motility_saturation_rate"];
     static double PKPD_D2_motility_EC50 = pC->custom_data["PKPD_D2_motility_EC50"];
     static double PKPD_D2_motility_HP = pC->custom_data["PKPD_D2_motility_hill_power"];
-    
-    
+
+
     // grab oxygen details
     static int nO2 = microenvironment.find_density_index( "oxygen" );
     double pO2 = pC->nearest_density_vector()[nO2];
@@ -309,7 +309,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
         p.cycle.data.transition_rate(0,0) = 0;
         pC->custom_data["arrested"] = 1;
     }
-    
+
     // use oxygen to increase necrosis
     multiplier = 0.0;
     if( pO2 < pC->custom_data["pO2_necrosis_threshold"] )
@@ -326,14 +326,14 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     { multiplier = 1.0; }
     // necrosis rate = max_necrosis_rate * multiplier
     p.death.rates[nNec] = pC->custom_data["max_necrosis_rate"] * multiplier;
-    
+
     // check for deterministic necrosis
     if( pC->parameters.necrosis_type == PhysiCell_constants::deterministic_necrosis && multiplier > 1e-16 )
     { pC->phenotype.death.rates[nNec] = 9e99; }
-    
-    
-    
-    
+
+
+
+
     // internalized drug 1 causes damage
     double PKPD_D1 = p.molecular.internalized_total_substrates[nPKPD_D1];
     PKPD_D1 -= PKPD_D1_M * PKPD_D1 * dt; // create metabolism within cell to clear drug 1
@@ -347,14 +347,14 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     {
         pC->custom_data[nPKPD_D1_damage] += PKPD_D1 * dt; // this damage can be understood as AUC of the internalized drug, but with cellular repair mechanisms continuously decreasing it
     }
-    
+
     pC->custom_data[nPKPD_D1_damage] -= PKPD_D1_R * dt; // repair damage at constant rate
     if(pC->custom_data[nPKPD_D1_damage]<=0)
     {
         pC->custom_data[nPKPD_D1_damage]=0; // very likely that cells will end up with negative damage without this because the repair rate is assumed constant (not proportional to amount of damage)
     }
-    
-    
+
+
     // internalized drug 2 causes damage
     double PKPD_D2 = p.molecular.internalized_total_substrates[nPKPD_D2];
     PKPD_D2 -= PKPD_D2_M * PKPD_D2 * dt; // create metabolism within cell to clear drug 2
@@ -368,22 +368,22 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     {
         pC->custom_data[nPKPD_D2_damage] += PKPD_D2 * dt; // this damage can be understood as AUC of the internalized drug, but with cellular repair mechanisms continuously decreasing it
     }
-    
+
     pC->custom_data[nPKPD_D2_damage] -= PKPD_D2_R * dt; // repair damage at constant rate
     if(pC->custom_data[nPKPD_D2_damage]<=0)
     {
         pC->custom_data[nPKPD_D2_damage]=0; // very likely that cells will end up with negative damage without this because the repair rate is assumed constant (not proportional to amount of damage)
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     double temp; // used for Hill calculations
-    
+
     // this is to handle the case when the two drugs have the same target. then will multiply these factors
     double factor_change; // factor change from drugs
-    
+
     // THIS REQUIRES THE LIVE CELL CYCLE; NEED TO UPDATE TO INCLUDE OTHER CELL CYCLES
     if( pC->custom_data["arrested"] < 0.5 ) // only need to update proliferation if it is not pressure-arrested
     {
@@ -402,7 +402,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
                 factor_change *= 1 + (fs_prolif_D1-1)*temp;
             }
         }
-        
+
         if( PKPD_D2_moa_is_prolif )
         {
             static double fs_prolif_D2 = PKPD_D2_prolif_sat_rate/pCD->phenotype.cycle.data.transition_rate(0,0); // saturation factor of proliferation for drug 2
@@ -416,11 +416,11 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
                 factor_change *= 1 + (fs_prolif_D2-1)*temp;
             }
         }
-        
+
         p.cycle.data.transition_rate(0,0) *= factor_change;
 
     }
-    
+
     // apoptosis effect
     factor_change = 1.0; // set factor
     if( PKPD_D1_moa_is_apop )
@@ -433,7 +433,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
             factor_change *= 1 + (fs_apop_D1-1)*temp;
         }
     }
-    
+
     if( PKPD_D2_moa_is_apop )
     {
         static double fs_apop_D2 = PKPD_D2_apop_sat_rate/pCD->phenotype.death.rates[nApop]; // saturation factor of apoptosis for drug 2
@@ -445,9 +445,9 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
         }
     }
     p.death.rates[nApop] *= factor_change;
-    
 
-    
+
+
     // necrosis effect
     factor_change = 1.0; // set factor
     if( PKPD_D1_moa_is_necrosis )
@@ -460,7 +460,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
             factor_change *= 1 + (fs_necrosis_D1-1)*temp;
         }
     }
-    
+
     if( PKPD_D2_moa_is_necrosis )
     {
         static double fs_necrosis_D2 = PKPD_D2_necrosis_sat_rate/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 2
@@ -472,9 +472,9 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
         }
     }
     p.death.rates[nNec] *= factor_change;
-    
-    
-    
+
+
+
     // motility effect
     factor_change = 1.0; // set factor
     if( PKPD_D1_moa_is_motility )
@@ -487,7 +487,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
             factor_change *= 1 + (fs_motility_D1-1)*temp;
         }
     }
-    
+
     if( PKPD_D2_moa_is_motility )
     {
         static double fs_motility_D2 = PKPD_D2_motility_sat_rate/pCD->phenotype.motility.migration_speed; // saturation factor of motility for drug 2
@@ -499,8 +499,8 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
         }
     }
     p.motility.migration_speed *= factor_change;
-    
-    
+
+
     if( p.death.dead == true )
     {
         p.secretion.set_all_secretion_to_zero();
@@ -518,7 +518,7 @@ double Hill_function( double input, double EC_50, double hill_power )
     double output = temp; // (x/g)^n
     temp += 1.0; // 1 + (x/g)^n
     output /= temp; // // (x/g)^n / ( 1 + (x/g)^n )
-    
+
     return output;
 }
 
@@ -533,10 +533,10 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
 
     static double PKPD_D1_central_concentration = 0.0;
     static double PKPD_D1_periphery_concentration = 0.0; // just a bucket to model drug distributing into the entire periphery; TME is not linked to this!!!
-    
+
     static double PKPD_D1_flux_rate = parameters.doubles("PKPD_D1_flux_across_capillaries");
     static double PKPD_D1_confluence_check_time = 0.0; // next time to check for confluence
-    
+
     // Set up drug 2
     static int nPKPD_D2 = microenvironment.find_density_index( "PKPD_drug_number_2" );
     static double PKPD_D2_next_dose_time = NAN; // set to NAN for checking when to start a confluence-based therapy
@@ -544,13 +544,13 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
 
     static double PKPD_D2_central_concentration = 0.0;
     static double PKPD_D2_periphery_concentration = 0.0; // just a bucket to model drug distributing into the entire periphery; TME is not linked to this!!!
-    
+
     static double PKPD_D2_flux_rate = parameters.doubles("PKPD_D2_flux_across_capillaries");
     static double PKPD_D2_confluence_check_time = 0.0; // next time to check for confluence
-    
+
     static double PKPD_volume_ratio = parameters.doubles("central_to_periphery_volume_ratio");
 
-    // set up time of first dose for drug 1
+    // check for new dose of drug 1
     if( std::isnan(PKPD_D1_next_dose_time) )
     {
         if( parameters.bools("PKPD_D1_set_first_dose_time") )
@@ -567,8 +567,8 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
             }
         }
     }
-    
-    // set up time of first dose for drug 2
+
+    // check for new dose of drug 2
     if( std::isnan(PKPD_D2_next_dose_time) )
     {
         if( parameters.bools("PKPD_D2_set_first_dose_time") )
@@ -585,7 +585,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
             }
         }
     }
-    
+
     // add doses if time for that
     if( current_time > PKPD_D1_next_dose_time - tolerance && PKPD_D1_dose_count < parameters.ints("PKPD_D1_max_number_doses") )
     {
@@ -603,41 +603,41 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
     // update PK model for drug 1
     double PKPD_D1_central_change_rate = -1 * parameters.doubles("PKPD_D1_central_elimination_rate") * PKPD_D1_central_concentration;
     double PKPD_D1_concentration_gradient = PKPD_D1_central_concentration - PKPD_D1_periphery_concentration;
-    
+
     PKPD_D1_central_change_rate -= PKPD_D1_flux_rate * PKPD_D1_concentration_gradient;
-    
+
     PKPD_D1_central_concentration +=  PKPD_D1_central_change_rate * diffusion_dt;
     PKPD_D1_periphery_concentration +=  PKPD_D1_flux_rate * PKPD_volume_ratio * PKPD_D1_concentration_gradient * diffusion_dt;
-    
+
     if( PKPD_D1_central_concentration<0 )
     {
         PKPD_D1_central_concentration = 0;
     }
-    
+
     if( PKPD_D1_periphery_concentration<0 )
     {
         PKPD_D1_periphery_concentration = 0;
     }
-    
+
     // update PK model for drug 2
     double PKPD_D2_central_change_rate = -1 * parameters.doubles("PKPD_D2_central_elimination_rate") * PKPD_D2_central_concentration;
     double PKPD_D2_concentration_gradient = PKPD_D2_central_concentration - PKPD_D2_periphery_concentration;
-    
+
     PKPD_D2_central_change_rate -= PKPD_D2_flux_rate * PKPD_D2_concentration_gradient;
-    
+
     PKPD_D2_central_concentration +=  PKPD_D2_central_change_rate * diffusion_dt;
     PKPD_D2_periphery_concentration +=  PKPD_D2_flux_rate * PKPD_volume_ratio * PKPD_D2_concentration_gradient * diffusion_dt;
-    
+
     if( PKPD_D2_central_concentration<0 )
     {
         PKPD_D2_central_concentration = 0;
     }
-    
+
     if( PKPD_D2_periphery_concentration<0 )
     {
         PKPD_D2_periphery_concentration = 0;
     }
-    
+
     /* this block works when both drugs are entering at the same spatial location (same Dirichlet nodes)
     for( int n=0; n < microenvironment.number_of_voxels(); n++ )
     {
@@ -648,7 +648,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
         }
     }
     */
-    
+
     for( int i=0; i < microenvironment.mesh.x_coordinates.size() ; i++ )
     {
         // put drug 1 along the "floor" (y=0)
@@ -659,15 +659,15 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
                                                nPKPD_D2, PKPD_D2_central_concentration * parameters.doubles("PKPD_D2_biot_number") );
 
     }
-    
+
     return;
- 
+
 }
 
 void create_output_csv_files( void ) {
 	char dataFilename [256];
 	sprintf(dataFilename, "%s/cell_counts.csv", PhysiCell_settings.folder.c_str());
-	
+
 	std::ofstream file_out;
 	file_out.open(dataFilename, std::ios_base::in);
 	if( file_out ) {
@@ -675,11 +675,11 @@ void create_output_csv_files( void ) {
 		std::remove(dataFilename);
 	}
 }
-	
+
 void write_cell_data_for_plots( double current_time, char delim = ',') {
 	// Write cell number data to a CSV file format time,tumor_cell_count
 	// Can add different classes of tumor cells - apoptotic, necrotic, hypoxic, etc to this
-	
+
 	static double next_write_time = 0;
 	if( current_time > next_write_time - tolerance ) {
 		//std::cout << "TIMEEEE" << current_time << std::endl;
@@ -689,14 +689,14 @@ void write_cell_data_for_plots( double current_time, char delim = ',') {
 
 		int tumorCount = 0;
 		Cell* pC = NULL;
-		
+
 		for( int i=0; i < (*all_cells).size(); i++ ) {
 			pC = (*all_cells)[i];
 			if ( pC->type == 0 && pC->phenotype.death.dead == false ) {
 				tumorCount += 1;
 			}
 		}
-		
+
 		char dataToAppend [1024];
 		sprintf(dataToAppend, "%d%c%d", data_time, delim, tumorCount);
 		//std::cout << "DATAAAAAA::: " << dataToAppend << std::endl;
@@ -726,7 +726,7 @@ std::vector<std::string> damage_coloring( Cell* pCell )
 
 	// cytoplasm color
 	// first, get the damage and convert to a value between 0 to 1
-	
+
 	// determine damage index
     double d1_val = pCell->custom_data["PKPD_D1_damage"];
     double d2_val = pCell->custom_data["PKPD_D2_damage"];
@@ -734,11 +734,11 @@ std::vector<std::string> damage_coloring( Cell* pCell )
     double d1_norm_val = Hill_function(d1_val, parameters.doubles("d1_color_ec50"), parameters.doubles("d1_color_hp"));
 //    double d2_norm_val = d2_val*d2_val/(parameters.doubles("d2_color_ec50") + d2_val*d2_val);
     double d2_norm_val = Hill_function(d2_val, parameters.doubles("d2_color_ec50"), parameters.doubles("d2_color_hp"));
-    
+
     if (pCell->phenotype.cycle.current_phase().code == PhysiCell_constants::apoptotic ) { // apoptotic - black
         return output;
     }
-    
+
     if (pCell->phenotype.cycle.current_phase().code != PhysiCell_constants::apoptotic && pCell->phenotype.death.dead == true) { // necrotic - brown
         std::vector< std::string > output( 4 , "peru" );
         return output;
@@ -760,7 +760,7 @@ std::vector<std::string> damage_coloring( Cell* pCell )
             int bd = (int) -round(d1_norm_val*78); // blue differential
             sprintf(colorTempString1, "rgb(%u, %u, %u)", 128+rd, 128+gd, 128+bd);
         }
-        
+
         if ( d2_norm_val < 0 ) {
             sprintf(colorTempString2, "rgb(128, 128, 128)");
         } else if ( d2_norm_val > 1 )
@@ -778,7 +778,7 @@ std::vector<std::string> damage_coloring( Cell* pCell )
 		output[0].assign( colorTempString1 ); //cytoplasm
 		output[2].assign( colorTempString2 ); //nucleus
 //		output[3].assign( colorTempString1 ); //outline of nucleus
-	}		
+	}
 	return output;
 
 }
@@ -801,7 +801,7 @@ double confluence_computation( void )
             output += cV;
         }
     }
-    
+
     output /= microenvironment.mesh.bounding_box[3] - microenvironment.mesh.bounding_box[0];
     output /= microenvironment.mesh.bounding_box[4] - microenvironment.mesh.bounding_box[1];
 //    output /= microenvironment.mesh.bounding_box[5] - microenvironment.mesh.bounding_box[2]; // use this if doing a 3D check for confluence (see choice of cell volume/area above)
