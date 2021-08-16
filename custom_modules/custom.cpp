@@ -117,7 +117,7 @@ void create_cell_types( void )
 
     // Cell_Definition* pCD = find_cell_definition( "tumor_1" );
     // pCD->functions.update_phenotype = tumor_phenotype;
-    //
+    // 
     // pCD = find_cell_definition( "tumor_2" );
     // pCD->functions.update_phenotype = tumor_phenotype;
 
@@ -186,7 +186,7 @@ void setup_tissue( void )
 //    }
     // place tumor cells
     double max_distance = parameters.doubles("max_initial_distance");
-    for( int k=0; k < cell_definitions_by_index.size()-1 ; k++ )
+    for( int k=0; k < cell_definitions_by_index.size() ; k++ )
     {
         Cell_Definition* pCD = cell_definitions_by_index[k];
         std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl;
@@ -199,20 +199,6 @@ void setup_tissue( void )
             pC->assign_position( position );
         }
     }
-
-    Cell_Definition* pCD = cell_definitions_by_index[2];
-    std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl;
-    for( int n=0 ; n < parameters.ints( "number_of_cells" ); n++ )
-    {
-        std::vector<double> position = {0,0,0};
-        position[0] = Xmin + UniformRandom()*Xrange;
-        position[1] = Ymin + UniformRandom()*Yrange;
-        position[2] = Zmin + UniformRandom()*Zrange;
-
-        pC = create_cell( *pCD );
-        pC->assign_position( position );
-    }
-
     // load cells from your CSV file (if enabled)
     load_cells_from_pugixml();
 
@@ -690,28 +676,11 @@ std::vector<std::string> damage_coloring( Cell* pCell )
 {
     static Cell_Definition* pT1 = find_cell_definition( "tumor_1" );
     static Cell_Definition* pT2 = find_cell_definition( "tumor_2" );
-    static Cell_Definition* pBy = find_cell_definition( "bystander" );
 
     static std::vector< int > T1_default_color = {178,178,178};
     static std::vector< int > T2_default_color = {78,78,78};
     static std::vector< double > T1_color_diffs = {50,-128,-100};
     static std::vector< double > T2_color_diffs = {-28,150,0};
-
-    if (pCell->phenotype.cycle.current_phase().code == PhysiCell_constants::apoptotic ) { // apoptotic - black
-        std::vector< std::string > output( 4 , "black" );
-        return output;
-    }
-
-    if (pCell->phenotype.cycle.current_phase().code != PhysiCell_constants::apoptotic && pCell->phenotype.death.dead == true) { // necrotic - brown
-        std::vector< std::string > output( 4 , "peru" );
-        return output;
-    }
-
-    if( pCell->type == pBy->type )
-    {
-        std::vector< std::string > output( 4 , "purple" );
-        return output;
-    }
 
     std::vector< std::string > output( 4 , "black" );
 
@@ -734,6 +703,16 @@ std::vector<std::string> damage_coloring( Cell* pCell )
         d_norm_val = Hill_function(d_val, parameters.doubles("d2_color_ec50"), parameters.doubles("d2_color_hp"));
         color_diffs = T2_color_diffs;
     }
+
+    if (pCell->phenotype.cycle.current_phase().code == PhysiCell_constants::apoptotic ) { // apoptotic - black
+        return output;
+    }
+
+    if (pCell->phenotype.cycle.current_phase().code != PhysiCell_constants::apoptotic && pCell->phenotype.death.dead == true) { // necrotic - brown
+        std::vector< std::string > output( 4 , "peru" );
+        return output;
+    }
+
 
     if( pCell->phenotype.death.dead == false )
     { // live cells
