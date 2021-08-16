@@ -289,7 +289,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
 
     // internalized drug 1 causes damage
     double PKPD_D1 = p.molecular.internalized_total_substrates[nPKPD_D1];
-    PKPD_D1 -= pC->custom_data["PKPD_D1_metabolism_rate"] * PKPD_D1 * dt; // create metabolism within cell to clear drug 1
+    PKPD_D1 -= pC->custom_data["PKPD_D1_metabolism_rate"] * PKPD_D1 * dt; // metabolism within cell to clear drug 1
     if(PKPD_D1<0)
     {
         PKPD_D1=0;
@@ -310,7 +310,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
 
     // internalized drug 2 causes damage
     double PKPD_D2 = p.molecular.internalized_total_substrates[nPKPD_D2];
-    PKPD_D2 -= pC->custom_data["PKPD_D2_metabolism_rate"] * PKPD_D2 * dt; // create metabolism within cell to clear drug 2
+    PKPD_D2 -= pC->custom_data["PKPD_D2_metabolism_rate"] * PKPD_D2 * dt; // metabolism within cell to clear drug 2
     if(PKPD_D2<0)
     {
         PKPD_D2=0;
@@ -345,7 +345,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
         if( pC->custom_data["PKPD_D1_moa_is_prolif"] > 0.5 )
         {
             static double fs_prolif_D1 = pC->custom_data["PKPD_D1_prolif_saturation_rate"]/pCD->phenotype.cycle.data.transition_rate(0,0); // saturation factor of proliferation for drug 1
-            if(pC->custom_data[nPKPD_D1_damage]>0)
+            if( pC->custom_data[nPKPD_D1_damage]>0 )
             {
                 if( p.cycle.model().code != PhysiCell_constants::live_cells_cycle_model )
                 {
@@ -358,14 +358,14 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
 
         if( pC->custom_data["PKPD_D2_moa_is_prolif"] > 0.5 )
         {
-            static double fs_prolif_D2 = pC->custom_data["PKPD_D2_moa_is_prolif"] > 0.5/pCD->phenotype.cycle.data.transition_rate(0,0); // saturation factor of proliferation for drug 2
-            if(pC->custom_data[nPKPD_D2_damage]>0)
+            static double fs_prolif_D2 = pC->custom_data["PKPD_D2_prolif_saturation_rate"]/pCD->phenotype.cycle.data.transition_rate(0,0); // saturation factor of proliferation for drug 2
+            if( pC->custom_data[nPKPD_D2_damage]>0 )
             {
                 if( p.cycle.model().code != PhysiCell_constants::live_cells_cycle_model )
                 {
                     return; // don't continue with proliferative effects until we've implemented them for other model types
                 }
-                temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data["PKPD_D2_moa_is_prolif"] > 0.5, pC->custom_data["PKPD_D2_moa_is_prolif"] > 0.5);
+                temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data["PKPD_D2_prolif_EC50"], pC->custom_data["PKPD_D2_prolif_hill_power"]);
                 factor_change *= 1 + (fs_prolif_D2-1)*temp;
             }
         }
@@ -418,7 +418,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     {
         static double fs_necrosis_D2 = pC->custom_data["PKPD_D2_necrosis_saturation_rate"]/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 2
         // don't need to reset necrosis because that is done with oxygen
-        if(pC->custom_data[nPKPD_D2_damage]>0)
+        if( pC->custom_data[nPKPD_D2_damage]>0 )
         {
             temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data["PKPD_D2_necrosis_EC50"], pC->custom_data["PKPD_D2_necrosis_EC50"]);
             factor_change *= 1 + (fs_necrosis_D2-1)*temp;
@@ -445,7 +445,7 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     {
         static double fs_motility_D2 = pC->custom_data["PKPD_D2_motility_saturation_rate"]/pCD->phenotype.motility.migration_speed; // saturation factor of motility for drug 2
         p.motility.migration_speed = pCD->phenotype.motility.migration_speed; // always reset to base motility rate (this is unecesary when D1 also affects motility, but this is necessary when only D2 affects motility)
-        if(pC->custom_data[nPKPD_D2_damage]>0)
+        if( pC->custom_data[nPKPD_D2_damage]>0 )
         {
             temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data["PKPD_D2_motility_EC50"], pC->custom_data["PKPD_D2_motility_hill_power"]);
             factor_change *= 1 + (fs_motility_D2-1)*temp;
@@ -463,8 +463,6 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     return;
 }
 
-// tumor_phenotype_2 went here
-
 double Hill_function( double input, double EC_50, double hill_power )
 {
     double temp = input; // x
@@ -472,7 +470,7 @@ double Hill_function( double input, double EC_50, double hill_power )
     temp = std::pow( temp, hill_power ); // (x/g)^n
     double output = temp; // (x/g)^n
     temp += 1.0; // 1 + (x/g)^n
-    output /= temp; // // (x/g)^n / ( 1 + (x/g)^n )
+    output /= temp; // (x/g)^n / ( 1 + (x/g)^n )
 
     return output;
 }
@@ -509,7 +507,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
     if( std::isnan(PKPD_D1_next_dose_time) )
     {
         if( parameters.bools("PKPD_D1_set_first_dose_time") )
-            { PKPD_D1_next_dose_time = parameters.doubles("PKPD_D1_first_dose_time"); }
+        { PKPD_D1_next_dose_time = parameters.doubles("PKPD_D1_first_dose_time"); }
         else if( (current_time > PKPD_D1_confluence_check_time - tolerance) ) // otherwise, using confluence to determine time of first dose
         {
             if( confluence_computation() > parameters.doubles("PKPD_D1_confluence_condition") )
@@ -527,7 +525,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
     if( std::isnan(PKPD_D2_next_dose_time) )
     {
         if( parameters.bools("PKPD_D2_set_first_dose_time") )
-            { PKPD_D2_next_dose_time = parameters.doubles("PKPD_D2_first_dose_time"); }
+        { PKPD_D2_next_dose_time = parameters.doubles("PKPD_D2_first_dose_time"); }
         else if( (current_time > PKPD_D2_confluence_check_time - tolerance) ) // otherwise, using confluence to determine time of first dose
         {
             if( confluence_computation() > parameters.doubles("PKPD_D2_confluence_condition") )
