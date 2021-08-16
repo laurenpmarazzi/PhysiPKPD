@@ -117,7 +117,7 @@ void create_cell_types( void )
 
     // Cell_Definition* pCD = find_cell_definition( "tumor_1" );
     // pCD->functions.update_phenotype = tumor_phenotype;
-    // 
+    //
     // pCD = find_cell_definition( "tumor_2" );
     // pCD->functions.update_phenotype = tumor_phenotype;
 
