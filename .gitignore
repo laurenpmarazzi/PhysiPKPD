@@ -9,3 +9,4 @@ output/*
 core/*
 modules/*
 README_branch.md
+Makefile
