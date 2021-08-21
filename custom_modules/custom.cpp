@@ -542,13 +542,21 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
     // add doses if time for that
     if( current_time > PKPD_D1_next_dose_time - tolerance && PKPD_D1_dose_count < parameters.ints("PKPD_D1_max_number_doses") )
     {
-        PKPD_D1_central_concentration += parameters.doubles("PKPD_D1_central_increase_on_dose");
+        if( PKPD_D1_dose_count < parameters.ints("PKPD_D1_number_loading_doses") )
+        { PKPD_D1_central_concentration += parameters.doubles("PKPD_D1_central_increase_on_loading_dose"); }
+        else
+        { PKPD_D1_central_concentration += parameters.doubles("PKPD_D1_central_increase_on_dose"); }
+
         PKPD_D1_next_dose_time += parameters.doubles("PKPD_D1_dose_interval");
         PKPD_D1_dose_count++;
     }
     if( current_time > PKPD_D2_next_dose_time - tolerance && PKPD_D2_dose_count < parameters.ints("PKPD_D2_max_number_doses") )
     {
-        PKPD_D2_central_concentration += parameters.doubles("PKPD_D2_central_increase_on_dose");
+        if( PKPD_D2_dose_count < parameters.ints("PKPD_D2_number_loading_doses") )
+        { PKPD_D2_central_concentration += parameters.doubles("PKPD_D2_central_increase_on_loading_dose"); }
+        else
+        { PKPD_D2_central_concentration += parameters.doubles("PKPD_D2_central_increase_on_dose"); }
+        
         PKPD_D2_next_dose_time += parameters.doubles("PKPD_D2_dose_interval");
         PKPD_D2_dose_count++;
     }
