@@ -556,7 +556,7 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
         { PKPD_D2_central_concentration += parameters.doubles("PKPD_D2_central_increase_on_loading_dose"); }
         else
         { PKPD_D2_central_concentration += parameters.doubles("PKPD_D2_central_increase_on_dose"); }
-        
+
         PKPD_D2_next_dose_time += parameters.doubles("PKPD_D2_dose_interval");
         PKPD_D2_dose_count++;
     }
@@ -615,8 +615,8 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
         // put drug 1 along the "floor" (y=0)
         microenvironment.update_dirichlet_node( microenvironment.voxel_index(i,0,0),
                                                nPKPD_D1, PKPD_D1_central_concentration * parameters.doubles("PKPD_D1_biot_number") );
-        // put drug 2 along the "ceiling" (y=max)
-        microenvironment.update_dirichlet_node( microenvironment.voxel_index(i,microenvironment.mesh.y_coordinates.size()-1,0),
+        // put drug 2 also along the "floor" (y=max)
+        microenvironment.update_dirichlet_node( microenvironment.voxel_index(i,0,0),
                                                nPKPD_D2, PKPD_D2_central_concentration * parameters.doubles("PKPD_D2_biot_number") );
 
     }
