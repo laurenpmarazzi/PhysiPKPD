@@ -1,0 +1,8 @@
+August 27, 2021
+Attendees:
+
+1. Feedback on current state of code
+2. How to include parameters/data in model builder
+3. Dividing up responsibilities for paper writing
+4. Timeline and team expectations
+5. Andrea (Didi) Gardner joining
