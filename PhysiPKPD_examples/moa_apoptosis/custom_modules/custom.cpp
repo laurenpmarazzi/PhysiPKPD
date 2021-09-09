@@ -187,11 +187,6 @@ void setup_tissue( void )
     // place tumor cells
     double max_distance = parameters.doubles("max_initial_distance");
     Cell_Definition* pCD = find_cell_definition( "tumor_1" );
-
-    static int nNec = pCD->phenotype.death.find_death_model_index( "Necrosis" );
-    if( pCD->custom_data["PKPD_D1_moa_is_necrosis"] > 0.5 && pCD->phenotype.death.rates[nNec] <= 0 )
-    { pCD->phenotype.death.rates[nNec] = 1e-16; }
-
     std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl;
     for( int n=0 ; n < parameters.ints( "number_of_tumor_1_cells" ); n++ )
     {
@@ -292,25 +287,26 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     }
 
     // use oxygen to increase necrosis
-    // multiplier = 0.0;
-    // if( pO2 < pC->custom_data["pO2_necrosis_threshold"] )
-    // {
-    //     // multipler = (pO2_necrosis_threshold - pO2)
-    //     // /(pO2_necrosis_threshold-pO2_necrosis_saturation)
-    //     multiplier = (pC->custom_data["pO2_necrosis_threshold"] - pO2 )
-    //     / ( pC->custom_data["pO2_necrosis_threshold"]
-    //     -pC->custom_data["pO2_necrosis_saturation"] );
-    // }
-    // // if pO2 < pO2_necrosis_saturation
-    // // multipler = 1
-    // if( pO2 < pC->custom_data["pO2_necrosis_saturation"] )
-    // { multiplier = 1.0; }
-    // // necrosis rate = max_necrosis_rate * multiplier
-    // p.death.rates[nNec] = pCD->phenotype.death.rates[nNec] + pC->custom_data["max_necrosis_rate"] * multiplier;
-    //
-    // // check for deterministic necrosis
-    // if( pC->parameters.necrosis_type == PhysiCell_constants::deterministic_necrosis && multiplier > 1e-16 )
-    // { p.death.rates[nNec] = 9e99; }
+    multiplier = 0.0;
+    if( pO2 < pC->custom_data["pO2_necrosis_threshold"] )
+    {
+        // multipler = (pO2_necrosis_threshold - pO2)
+        // /(pO2_necrosis_threshold-pO2_necrosis_saturation)
+        multiplier = (pC->custom_data["pO2_necrosis_threshold"] - pO2 )
+        / ( pC->custom_data["pO2_necrosis_threshold"]
+        -pC->custom_data["pO2_necrosis_saturation"] );
+    }
+    // if pO2 < pO2_necrosis_saturation
+    // multipler = 1
+    if( pO2 < pC->custom_data["pO2_necrosis_saturation"] )
+    { multiplier = 1.0; }
+    // necrosis rate = max_necrosis_rate * multiplier
+    p.death.rates[nNec] = pC->custom_data["max_necrosis_rate"] * multiplier;
+
+    // check for deterministic necrosis
+    if( pC->parameters.necrosis_type == PhysiCell_constants::deterministic_necrosis && multiplier > 1e-16 )
+    { pC->phenotype.death.rates[nNec] = 9e99; }
+
 
 
 
@@ -426,48 +422,32 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     }
     p.death.rates[nApop] *= factor_change;
 
-    // std::cout<< "   Necrosis rate is " << p.death.rates[nNec] << std::endl;
 
 
     // necrosis effect
     factor_change = 1.0; // set factor
     if( pC->custom_data["PKPD_D1_moa_is_necrosis"] > 0.5 )
     {
-      // // ensure that the factor increase method works when base necrosis rate is set to 0
-      // if( p.death.rates[nNec] <= 0 )
-      // { pCD->phenotype.death.rates[nNec] = 1e-16; }
-
-      static double fs_necrosis_D1 = pC->custom_data["PKPD_D1_necrosis_saturation_rate"]/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 1
-      // std::cout << "  necrosis saturation factor " << fs_necrosis_D1 << std::endl;
-
-      // std::cout << " saturation rate is " << pC->custom_data["PKPD_D1_necrosis_saturation_rate"] << " and base necrosis rate is " << pCD->phenotype.death.rates[nNec] << std::endl;
-
-      p.death.rates[nNec] = pCD->phenotype.death.rates[nNec];
-      // don't need to reset necrosis because that is done with oxygen
-      if(pC->custom_data[nPKPD_D1_damage]>0)
-      {
-          temp = Hill_function(pC->custom_data[nPKPD_D1_damage], pC->custom_data["PKPD_D1_necrosis_EC50"], pC->custom_data["PKPD_D1_necrosis_hill_power"]);
-          factor_change *= 1 + (fs_necrosis_D1-1)*temp;
-      }
+        static double fs_necrosis_D1 = pC->custom_data["PKPD_D1_necrosis_saturation_rate"]/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 1
+        // don't need to reset necrosis because that is done with oxygen
+        if(pC->custom_data[nPKPD_D1_damage]>0)
+        {
+            temp = Hill_function(pC->custom_data[nPKPD_D1_damage], pC->custom_data["PKPD_D1_necrosis_EC50"], pC->custom_data["PKPD_D1_necrosis_hill_power"]);
+            factor_change *= 1 + (fs_necrosis_D1-1)*temp;
+        }
     }
 
     if( pC->custom_data["PKPD_D2_moa_is_necrosis"] > 0.5 )
     {
-      // // ensure that the factor increase method works when base necrosis rate is set to 0
-      // if( p.death.rates[nNec] <= 0 )
-      // { pCD->phenotype.death.rates[nNec] = 1e-16; }
-
-      static double fs_necrosis_D2 = pC->custom_data["PKPD_D2_necrosis_saturation_rate"]/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 2
-      // don't need to reset necrosis because that is done with oxygen
-      if( pC->custom_data[nPKPD_D2_damage]>0 )
-      {
-          temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data["PKPD_D2_necrosis_EC50"], pC->custom_data["PKPD_D2_necrosis_EC50"]);
-          factor_change *= 1 + (fs_necrosis_D2-1)*temp;
-      }
+        static double fs_necrosis_D2 = pC->custom_data["PKPD_D2_necrosis_saturation_rate"]/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 2
+        // don't need to reset necrosis because that is done with oxygen
+        if( pC->custom_data[nPKPD_D2_damage]>0 )
+        {
+            temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data["PKPD_D2_necrosis_EC50"], pC->custom_data["PKPD_D2_necrosis_EC50"]);
+            factor_change *= 1 + (fs_necrosis_D2-1)*temp;
+        }
     }
     p.death.rates[nNec] *= factor_change;
-
-    // std::cout<< "Necrosis rate is " << p.death.rates[nNec] << std::endl;
 
 
 

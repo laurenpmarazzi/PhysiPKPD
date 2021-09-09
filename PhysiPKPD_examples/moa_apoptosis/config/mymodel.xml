@@ -227,14 +227,14 @@
                 <PKPD_D1_prolif_EC50>1e8</PKPD_D1_prolif_EC50>
                 <PKPD_D1_prolif_hill_power>2</PKPD_D1_prolif_hill_power>
 
-                <PKPD_D1_moa_is_apop>0.0</PKPD_D1_moa_is_apop>
+                <PKPD_D1_moa_is_apop>1.0</PKPD_D1_moa_is_apop>
                 <PKPD_D1_apop_saturation_rate>1e-2</PKPD_D1_apop_saturation_rate>
                 <PKPD_D1_apop_EC50>1e8</PKPD_D1_apop_EC50>
                 <PKPD_D1_apop_hill_power>2</PKPD_D1_apop_hill_power>
 
-                <PKPD_D1_moa_is_necrosis>1.0</PKPD_D1_moa_is_necrosis>
-                <PKPD_D1_necrosis_saturation_rate>1e-3</PKPD_D1_necrosis_saturation_rate>
-                <PKPD_D1_necrosis_EC50>1e8</PKPD_D1_necrosis_EC50>
+                <PKPD_D1_moa_is_necrosis>0.0</PKPD_D1_moa_is_necrosis>
+                <PKPD_D1_necrosis_saturation_rate>1E-4</PKPD_D1_necrosis_saturation_rate>
+                <PKPD_D1_necrosis_EC50>1e7</PKPD_D1_necrosis_EC50>
                 <PKPD_D1_necrosis_hill_power>2</PKPD_D1_necrosis_hill_power>
 
                 <PKPD_D1_moa_is_motility>0.0</PKPD_D1_moa_is_motility>
@@ -315,7 +315,7 @@
                         </parameters>
                     </model>
                     <model code="101" name="necrosis">
-                        <death_rate units="1/min">1e-5</death_rate>
+                        <death_rate units="1/min">0.0</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">0</duration>
                             <duration index="1" fixed_duration="true">0</duration>
@@ -430,7 +430,7 @@
                 <PKPD_D2_prolif_EC50>1e10</PKPD_D2_prolif_EC50>
                 <PKPD_D2_prolif_hill_power>2</PKPD_D2_prolif_hill_power>
 
-                <PKPD_D2_moa_is_apop>0.0</PKPD_D2_moa_is_apop>
+                <PKPD_D2_moa_is_apop>1.0</PKPD_D2_moa_is_apop>
                 <PKPD_D2_apop_saturation_rate>1e-2</PKPD_D2_apop_saturation_rate>
                 <PKPD_D2_apop_EC50>1e8</PKPD_D2_apop_EC50>
                 <PKPD_D2_apop_hill_power>2</PKPD_D2_apop_hill_power>
