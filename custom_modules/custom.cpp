@@ -728,30 +728,11 @@ std::vector<std::string> damage_coloring( Cell* pCell )
 
     static std::vector< int > T1_default_color = {178,178,178};
     static std::vector< int > T2_default_color = {78,78,78};
-    static std::vector< double > T1_color_diffs = {50,-128,-100};
+    static std::vector< double > T1_color_diffs_nucl = {50,-128,-100};
+    static std::vector< double > T1_color_diffs_cyto = {-128,-100,50};
     static std::vector< double > T2_color_diffs = {-28,150,0};
 
     std::vector< std::string > output( 4 , "black" );
-
-    std::vector< int > default_color;
-    std::vector< double > color_diffs;
-    double d_val;
-    double d_norm_val;
-
-    if( pCell->type == pT1->type )
-    {
-        default_color = T1_default_color;
-        d_val = pCell->custom_data["PKPD_D1_damage"];
-        d_norm_val = Hill_function(d_val, parameters.doubles("d1_color_ec50"), parameters.doubles("d1_color_hp"));
-        color_diffs = T1_color_diffs;
-    }
-    else
-    {
-        default_color = T2_default_color;
-        d_val = pCell->custom_data["PKPD_D2_damage"];
-        d_norm_val = Hill_function(d_val, parameters.doubles("d2_color_ec50"), parameters.doubles("d2_color_hp"));
-        color_diffs = T2_color_diffs;
-    }
 
     if (pCell->phenotype.cycle.current_phase().code == PhysiCell_constants::apoptotic ) { // apoptotic - black
         return output;
@@ -760,29 +741,75 @@ std::vector<std::string> damage_coloring( Cell* pCell )
     if (pCell->phenotype.cycle.current_phase().code != PhysiCell_constants::apoptotic && pCell->phenotype.death.dead == true) { // necrotic - brown
         std::vector< std::string > output( 4 , "peru" );
         return output;
+    }if (pCell->phenotype.cycle.current_phase().code == PhysiCell_constants::apoptotic ) { // apoptotic - black
+        return output;
     }
+
+    if (pCell->phenotype.cycle.current_phase().code != PhysiCell_constants::apoptotic && pCell->phenotype.death.dead == true) { // necrotic - brown
+        std::vector< std::string > output( 4 , "peru" );
+        return output;
+    }
+
+    std::vector< int > default_color_nucl;
+    std::vector< int > default_color_cyto;
+    std::vector< double > color_diffs_nucl;
+    std::vector< double > color_diffs_cyto;
+    double d_val1;
+    double d_norm_val1;
+    double d_val2;
+    double d_norm_val2;
+
+    if( pCell->type == pT1->type )
+    {
+      default_color_nucl = T1_default_color;
+      default_color_cyto = T1_default_color;
+      color_diffs_nucl = T1_color_diffs_nucl;
+      color_diffs_cyto = T1_color_diffs_cyto;
+    }
+    // else
+    // {
+    //   default_color = T2_default_color;
+    //   d_val = pCell->custom_data["PKPD_D2_damage"];
+    //   d_norm_val = Hill_function(d_val, parameters.doubles("d2_color_ec50"), parameters.doubles("d2_color_hp"));
+    //   color_diffs = T2_color_diffs;
+    // }
+
+    d_val1 = pCell->custom_data["PKPD_D1_damage"];
+    d_norm_val1 = Hill_function(d_val1, parameters.doubles("d1_color_ec50"), parameters.doubles("d1_color_hp"));
+    d_val2 = pCell->custom_data["PKPD_D2_damage"];
+    d_norm_val2 = Hill_function(d_val2, parameters.doubles("d2_color_ec50"), parameters.doubles("d2_color_hp"));
+
+
 
 
     if( pCell->phenotype.death.dead == false )
     { // live cells
-        char colorTempString [128];
-        if ( d_norm_val < 0 ) {
-            sprintf(colorTempString, "rgb(%u, %u, %u)", default_color[0], default_color[1], default_color[2]);
-        } else if ( d_norm_val >= 1 ) {
-            sprintf(colorTempString, "rgb(0, 0, 0)");
+        char colorTempString_nucl [128];
+        char colorTempString_cyto [128];
+        if ( d_norm_val1 < 0 ) {
+            sprintf(colorTempString_nucl, "rgb(%u, %u, %u)", default_color_nucl[0], default_color_nucl[1], default_color_nucl[2]);
+            sprintf(colorTempString_cyto, "rgb(%u, %u, %u)", default_color_cyto[0], default_color_cyto[1], default_color_cyto[2]);
+        } else if ( d_norm_val1 >= 1 ) {
+            sprintf(colorTempString_nucl, "rgb(0, 0, 0)");
+            sprintf(colorTempString_cyto, "rgb(0, 0, 0)");
         } else {
             // T1 gradient goes from (178, 178, 178) to (228, 50, 78)
             // Green gradient goes from (78, 78, 78) to (50, 228, 78)
-            int rd = (int) round(d_norm_val*color_diffs[0]); // red differential
-            int gd = (int) round(d_norm_val*color_diffs[1]); // green differential
-            int bd = (int) round(d_norm_val*color_diffs[2]); // blue differential
-            sprintf(colorTempString, "rgb(%u, %u, %u)", default_color[0]+rd, default_color[1]+gd, default_color[2]+bd);
+            int rd_nucl = (int) round(d_norm_val1*color_diffs_nucl[0]); // red differential
+            int gd_nucl = (int) round(d_norm_val1*color_diffs_nucl[1]); // green differential
+            int bd_nucl = (int) round(d_norm_val1*color_diffs_nucl[2]); // blue differential
+            sprintf(colorTempString_nucl, "rgb(%u, %u, %u)", default_color_nucl[0]+rd_nucl, default_color_nucl[1]+gd_nucl, default_color_nucl[2]+bd_nucl);
+
+            int rd_cyto = (int) round(d_norm_val2*color_diffs_cyto[0]); // red differential
+            int gd_cyto = (int) round(d_norm_val2*color_diffs_cyto[1]); // green differential
+            int bd_cyto = (int) round(d_norm_val2*color_diffs_cyto[2]); // blue differential
+            sprintf(colorTempString_cyto, "rgb(%u, %u, %u)", default_color_cyto[0]+rd_cyto, default_color_cyto[1]+gd_cyto, default_color_cyto[2]+bd_cyto);
         }
 
 
 
-		output[0].assign( colorTempString ); //cytoplasm
-		output[2].assign( colorTempString ); //nucleus
+		output[0].assign( colorTempString_cyto ); //cytoplasm
+		output[2].assign( colorTempString_nucl ); //nucleus
 //		output[3].assign( colorTempString1 ); //outline of nucleus
 	}
 	return output;
