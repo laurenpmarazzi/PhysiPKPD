@@ -226,3 +226,13 @@ movie:
 
 data-plots:
 	python custom_modules/createDataPlots.py -i $(OUTPUT)/cell_counts.csv -o $(OUTPUT)/cell_plot.png
+
+# resetting project
+
+redo:
+	make reset
+	make moa_necrosis
+	make
+
+rc: # reconfig
+	cp ./PhysiPKPD_examples/moa_necrosis/config/mymodel.xml ./config/
