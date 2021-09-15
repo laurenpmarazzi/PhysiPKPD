@@ -113,7 +113,7 @@ void create_cell_types( void )
     for( int k=0; k < cell_definitions_by_index.size() ; k++ )
     {
         cell_definitions_by_index[k]->functions.update_phenotype = tumor_phenotype;
-        cell_definitions_by_index[k]->functions.update_migration_bias = motility_rule;
+        
     }
 
     // Cell_Definition* pCD = find_cell_definition( "tumor_1" );
@@ -188,6 +188,11 @@ void setup_tissue( void )
     // place tumor cells
     double max_distance = parameters.doubles("max_initial_distance");
     Cell_Definition* pCD = find_cell_definition( "tumor_1" );
+
+    static int nNec = pCD->phenotype.death.find_death_model_index( "Necrosis" );
+    if( pCD->custom_data["PKPD_D1_moa_is_necrosis"] > 0.5 && pCD->phenotype.death.rates[nNec] <= 0 )
+    { pCD->phenotype.death.rates[nNec] = 1e-16; }
+
     std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl;
     for( int n=0 ; n < parameters.ints( "number_of_tumor_1_cells" ); n++ )
     {
@@ -202,11 +207,12 @@ void setup_tissue( void )
     std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl;
     for( int n=0 ; n < parameters.ints( "number_of_tumor_2_cells" ); n++ )
     {
-        std::vector<double> position = {0,0,0};
-        double r = sqrt(UniformRandom())* max_distance; double theta = UniformRandom() * 6.2831853; position[0] = r*cos(theta);
-        position[1] = r*sin(theta);
-        pC = create_cell( *pCD );
-        pC->assign_position( position );
+      std::vector<double> position = {0,0,0};
+      double r = sqrt(UniformRandom())* max_distance; double theta = UniformRandom() * 6.2831853;
+      position[0] = r*cos(theta);
+      position[1] = r*sin(theta);
+      pC = create_cell( *pCD );
+      pC->assign_position( position );
     }
 
     // for( int k=0; k < cell_definitions_by_index.size() ; k++ )
@@ -228,13 +234,13 @@ void setup_tissue( void )
     return;
 }
 
-std::vector<std::string> my_coloring_function( Cell* pCell )
-{ return damage_coloring(pCell); }
+std::vector<std::string> my_coloring_function( Cell* pC )
+{ return damage_coloring(pC); }
 
-void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt )
+void phenotype_function( Cell* pC, Phenotype& phenotype, double dt )
 { return; }
 
-void custom_function( Cell* pCell, Phenotype& phenotype , double dt )
+void custom_function( Cell* pC, Phenotype& phenotype , double dt )
 { return; }
 
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt )
@@ -300,9 +306,7 @@ void pd_function( Cell* pC, Phenotype& p, double dt )
       pC->custom_data[nPKPD_D2_damage]=0; // very likely that cells will end up with negative damage without this because the repair rate is assumed constant (not proportional to amount of damage)
   }
 
-
-
-
+  // Now start deciding how drug affects cell
 
   double temp; // used for Hill calculations
 
@@ -411,6 +415,32 @@ void pd_function( Cell* pC, Phenotype& p, double dt )
     }
   }
   p.death.rates[nNec] *= factor_change;
+
+  // motility effect
+  factor_change = 1.0; // set factor
+  if( pC->custom_data["PKPD_D1_moa_is_motility"] > 0.5 )
+  {
+      double fs_motility_D1 = pC->custom_data["PKPD_D1_motility_saturation_rate"]/pCD->phenotype.motility.migration_speed; // saturation factor of motility for drug 1
+      p.motility.migration_speed = pCD->phenotype.motility.migration_speed; // always reset to base motility rate
+      if(pC->custom_data[nPKPD_D1_damage]>0)
+      {
+          temp = Hill_function(pC->custom_data[nPKPD_D1_damage], pC->custom_data["PKPD_D1_motility_EC50"], pC->custom_data["PKPD_D1_motility_hill_power"]);
+          factor_change *= 1 + (fs_motility_D1-1)*temp;
+      }
+  }
+
+  if( pC->custom_data["PKPD_D2_moa_is_motility"] > 0.5 )
+  {
+      double fs_motility_D2 = pC->custom_data["PKPD_D2_motility_saturation_rate"]/pCD->phenotype.motility.migration_speed; // saturation factor of motility for drug 2
+      p.motility.migration_speed = pCD->phenotype.motility.migration_speed; // always reset to base motility rate (this is unecesary when D1 also affects motility, but this is necessary when only D2 affects motility)
+      if( pC->custom_data[nPKPD_D2_damage]>0 )
+      {
+          temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data["PKPD_D2_motility_EC50"], pC->custom_data["PKPD_D2_motility_hill_power"]);
+          factor_change *= 1 + (fs_motility_D2-1)*temp;
+      }
+  }
+  p.motility.migration_speed *= factor_change;
+
 }
 
 void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
@@ -580,13 +610,13 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
     }
     if( current_time > PKPD_D2_next_dose_time - tolerance && PKPD_D2_dose_count < parameters.ints("PKPD_D2_max_number_doses") )
     {
-        if( PKPD_D2_dose_count < parameters.ints("PKPD_D2_number_loading_doses") )
-        { PKPD_D2_central_concentration += parameters.doubles("PKPD_D2_central_increase_on_loading_dose"); }
-        else
-        { PKPD_D2_central_concentration += parameters.doubles("PKPD_D2_central_increase_on_dose"); }
+      if( PKPD_D2_dose_count < parameters.ints("PKPD_D2_number_loading_doses") )
+      { PKPD_D2_central_concentration += parameters.doubles("PKPD_D2_central_increase_on_loading_dose"); }
+      else
+      { PKPD_D2_central_concentration += parameters.doubles("PKPD_D2_central_increase_on_dose"); }
 
-        PKPD_D2_next_dose_time += parameters.doubles("PKPD_D2_dose_interval");
-        PKPD_D2_dose_count++;
+      PKPD_D2_next_dose_time += parameters.doubles("PKPD_D2_dose_interval");
+      PKPD_D2_dose_count++;
     }
 
     // update PK model for drug 1
@@ -600,12 +630,12 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
 
     if( PKPD_D1_central_concentration<0 )
     {
-        PKPD_D1_central_concentration = 0;
+      PKPD_D1_central_concentration = 0;
     }
 
     if( PKPD_D1_periphery_concentration<0 )
     {
-        PKPD_D1_periphery_concentration = 0;
+      PKPD_D1_periphery_concentration = 0;
     }
 
     // update PK model for drug 2
@@ -619,32 +649,21 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
 
     if( PKPD_D2_central_concentration<0 )
     {
-        PKPD_D2_central_concentration = 0;
+      PKPD_D2_central_concentration = 0;
     }
 
     if( PKPD_D2_periphery_concentration<0 )
     {
-        PKPD_D2_periphery_concentration = 0;
+      PKPD_D2_periphery_concentration = 0;
     }
-
-    /* this block works when both drugs are entering at the same spatial location (same Dirichlet nodes)
-    for( int n=0; n < microenvironment.number_of_voxels(); n++ )
-    {
-        if( microenvironment.is_dirichlet_node( n ) )
-        {
-            microenvironment.update_dirichlet_node( n, nPKPD_D1, PKPD_D1_central_concentration * parameters.doubles("PKPD_D1_biot_number") );
-            microenvironment.update_dirichlet_node( n, nPKPD_D2, PKPD_D2_central_concentration * parameters.doubles("PKPD_D2_biot_number") );
-        }
-    }
-    */
 
     for( int i=0; i < microenvironment.mesh.x_coordinates.size() ; i++ )
     {
-        // put drug 1 along the "floor" (y=0)
-        microenvironment.update_dirichlet_node( microenvironment.voxel_index(i,0,0),
-                                               nPKPD_D1, PKPD_D1_central_concentration * parameters.doubles("PKPD_D1_biot_number") );
-        // put drug 2 also along the "floor" (y=max)
-        microenvironment.update_dirichlet_node( microenvironment.voxel_index(i,0,0),
+      // put drug 1 along the "floor" (y=0)
+      microenvironment.update_dirichlet_node( microenvironment.voxel_index(i,0,0),
+                                             nPKPD_D1, PKPD_D1_central_concentration * parameters.doubles("PKPD_D1_biot_number") );
+      // put drug 2 also along the "floor" (y=max)
+      microenvironment.update_dirichlet_node( microenvironment.voxel_index(i,0,0),
                                                nPKPD_D2, PKPD_D2_central_concentration * parameters.doubles("PKPD_D2_biot_number") );
 
     }
@@ -706,72 +725,78 @@ void write_cell_data_for_plots( double current_time, char delim = ',') {
 
 }
 
-std::vector<std::string> damage_coloring( Cell* pCell )
+std::vector<std::string> damage_coloring( Cell* pC )
 {
-    static Cell_Definition* pT1 = find_cell_definition( "tumor_1" );
-    static Cell_Definition* pT2 = find_cell_definition( "tumor_2" );
+  std::vector< std::string > output( 4 , "black" );
 
-    static std::vector< int > T1_default_color = {178,178,178};
-    static std::vector< int > T2_default_color = {78,78,78};
-    static std::vector< double > T1_color_diffs = {50,-128,-100};
-    static std::vector< double > T2_color_diffs = {-28,150,0};
+  if (pC->phenotype.cycle.current_phase().code == PhysiCell_constants::apoptotic ) { // apoptotic - black
+      return output;
+  }
 
-    std::vector< std::string > output( 4 , "black" );
+  if (pC->phenotype.cycle.current_phase().code != PhysiCell_constants::apoptotic && pC->phenotype.death.dead == true) { // necrotic - brown
+      std::vector< std::string > output( 4 , "peru" );
+      return output;
+  }
 
-    std::vector< int > default_color;
-    std::vector< double > color_diffs;
-    double d_val;
-    double d_norm_val;
+  static int nCD = cell_definitions_by_index.size(); // number of cell types
 
-    if( pCell->type == pT1->type )
+  std::vector<std::vector<int>> default_colors;
+  std::vector<std::vector<int>> color_diffs_D1; // red shift
+  std::vector<std::vector<int>> color_diffs_D2; // blue shift
+
+  for( int i=0; i<nCD; i++ )
+  {
+    int grey = (int) round( 255 * (i+1)/(nCD+1) );
+    default_colors.push_back({grey,grey,grey});
+    default_colors[i].resize(3, grey);
+
+    if( cell_definitions_by_index[i]->custom_data["PKPD_D1_moa_is_prolif"] || cell_definitions_by_index[i]->custom_data["PKPD_D1_moa_is_apop"] || cell_definitions_by_index[i]->custom_data["PKPD_D1_moa_is_necrosis"] || cell_definitions_by_index[i]->custom_data["PKPD_D1_moa_is_motility"] )
     {
-        default_color = T1_default_color;
-        d_val = pCell->custom_data["PKPD_D1_damage"];
-        d_norm_val = Hill_function(d_val, parameters.doubles("d1_color_ec50"), parameters.doubles("d1_color_hp"));
-        color_diffs = T1_color_diffs;
+      color_diffs_D1.push_back({(int) round( (255-grey)/2 ),(int) round( -grey/2 ),(int) round( -grey/2 )});
     }
     else
+    { color_diffs_D1.push_back({0,0,0}); }
+
+    if( cell_definitions_by_index[i]->custom_data["PKPD_D2_moa_is_prolif"] || cell_definitions_by_index[i]->custom_data["PKPD_D2_moa_is_apop"] || cell_definitions_by_index[i]->custom_data["PKPD_D2_moa_is_necrosis"] || cell_definitions_by_index[i]->custom_data["PKPD_D2_moa_is_motility"] )
     {
-        default_color = T2_default_color;
-        d_val = pCell->custom_data["PKPD_D2_damage"];
-        d_norm_val = Hill_function(d_val, parameters.doubles("d2_color_ec50"), parameters.doubles("d2_color_hp"));
-        color_diffs = T2_color_diffs;
+      color_diffs_D2.push_back({(int) round( -grey/2 ),(int) round( -grey/2 ),(int) round( (255-grey)/2 )});
     }
+    else
+    { color_diffs_D2.push_back({0,0,0}); }
 
-    if (pCell->phenotype.cycle.current_phase().code == PhysiCell_constants::apoptotic ) { // apoptotic - black
-        return output;
-    }
-
-    if (pCell->phenotype.cycle.current_phase().code != PhysiCell_constants::apoptotic && pCell->phenotype.death.dead == true) { // necrotic - brown
-        std::vector< std::string > output( 4 , "peru" );
-        return output;
-    }
+  }
 
 
-    if( pCell->phenotype.death.dead == false )
-    { // live cells
-        char colorTempString [128];
-        if ( d_norm_val < 0 ) {
-            sprintf(colorTempString, "rgb(%u, %u, %u)", default_color[0], default_color[1], default_color[2]);
-        } else if ( d_norm_val >= 1 ) {
-            sprintf(colorTempString, "rgb(0, 0, 0)");
-        } else {
-            // T1 gradient goes from (178, 178, 178) to (228, 50, 78)
-            // Green gradient goes from (78, 78, 78) to (50, 228, 78)
-            int rd = (int) round(d_norm_val*color_diffs[0]); // red differential
-            int gd = (int) round(d_norm_val*color_diffs[1]); // green differential
-            int bd = (int) round(d_norm_val*color_diffs[2]); // blue differential
-            sprintf(colorTempString, "rgb(%u, %u, %u)", default_color[0]+rd, default_color[1]+gd, default_color[2]+bd);
-        }
+    std::vector< int > default_color = default_colors[pC->type];
+    std::vector< double > color_diffs;
+    char colorTempString [128];
+    double d1_val;
+    double d1_norm_val;
+    double d2_val;
+    double d2_norm_val;
+
+    d1_val = pC->custom_data["PKPD_D1_damage"];
+    d1_norm_val = Hill_function(d1_val, parameters.doubles("d1_color_ec50"), parameters.doubles("d1_color_hp"));
+
+    int rd = (int) round(d1_norm_val*color_diffs_D1[pC->type][0]); // red differential
+    int gd = (int) round(d1_norm_val*color_diffs_D1[pC->type][1]); // green differential
+    int bd = (int) round(d1_norm_val*color_diffs_D1[pC->type][2]); // blue differential
+
+    sprintf(colorTempString, "rgb(%u, %u, %u)", default_color[0]+rd, default_color[1]+gd, default_color[2]+bd);
+    output[0].assign( colorTempString ); //cytoplasm
 
 
+    d2_val = pC->custom_data["PKPD_D2_damage"];
+    d2_norm_val = Hill_function(d2_val, parameters.doubles("d2_color_ec50"), parameters.doubles("d2_color_hp"));
 
-		output[0].assign( colorTempString ); //cytoplasm
-		output[2].assign( colorTempString ); //nucleus
-//		output[3].assign( colorTempString1 ); //outline of nucleus
-	}
-	return output;
+    rd = (int) round(d2_norm_val*color_diffs_D2[pC->type][0]); // red differential
+    gd = (int) round(d2_norm_val*color_diffs_D2[pC->type][1]); // green differential
+    bd = (int) round(d2_norm_val*color_diffs_D2[pC->type][2]); // blue differential
 
+    sprintf(colorTempString, "rgb(%u, %u, %u)", default_color[0]+rd, default_color[1]+gd, default_color[2]+bd);
+    output[2].assign( colorTempString ); //cytoplasm
+
+    return output;
 }
 
 // compute confluence as total cellular volume divided by 2D area of TME
