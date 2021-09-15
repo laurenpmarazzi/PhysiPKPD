@@ -514,7 +514,7 @@
 <div_drug2 type="divider" description="---Drug 2 Settings---"/>
 
         <PKPD_D2_number_loading_doses type="int" units="none" description="number of loading doses of drug 2">1</PKPD_D2_number_loading_doses>
-        <PKPD_D2_max_number_doses type="int" units="none" description="max doses of drug 2">3</PKPD_D2_max_number_doses>
+        <PKPD_D2_max_number_doses type="int" units="none" description="max doses of drug 2">0</PKPD_D2_max_number_doses>
         <PKPD_D2_dose_interval type="double" units="min" description="time between dosings of drug 2">360.0</PKPD_D2_dose_interval>
         <PKPD_D2_set_first_dose_time type="bool" units="none" description="user sets first dose time to start therapy for drug 2; false=user gives confluence condition">True</PKPD_D2_set_first_dose_time>
         <PKPD_D2_first_dose_time type="double" units="min" description="time of first dose for drug 2">180.0</PKPD_D2_first_dose_time>
