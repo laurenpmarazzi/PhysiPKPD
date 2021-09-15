@@ -113,7 +113,6 @@ void create_cell_types( void )
     for( int k=0; k < cell_definitions_by_index.size() ; k++ )
     {
         cell_definitions_by_index[k]->functions.update_phenotype = tumor_phenotype;
-        cell_definitions_by_index[k]->functions.update_migration_bias = motility_rule;
     }
 
     // Cell_Definition* pCD = find_cell_definition( "tumor_1" );
@@ -188,6 +187,11 @@ void setup_tissue( void )
     // place tumor cells
     double max_distance = parameters.doubles("max_initial_distance");
     Cell_Definition* pCD = find_cell_definition( "tumor_1" );
+
+    static int nNec = pCD->phenotype.death.find_death_model_index( "Necrosis" );
+    if( pCD->custom_data["PKPD_D1_moa_is_necrosis"] > 0.5 && pCD->phenotype.death.rates[nNec] <= 0 )
+    { pCD->phenotype.death.rates[nNec] = 1e-16; }
+
     std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl;
     for( int n=0 ; n < parameters.ints( "number_of_tumor_1_cells" ); n++ )
     {
@@ -202,11 +206,12 @@ void setup_tissue( void )
     std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl;
     for( int n=0 ; n < parameters.ints( "number_of_tumor_2_cells" ); n++ )
     {
-        std::vector<double> position = {0,0,0};
-        double r = sqrt(UniformRandom())* max_distance; double theta = UniformRandom() * 6.2831853; position[0] = r*cos(theta);
-        position[1] = r*sin(theta);
-        pC = create_cell( *pCD );
-        pC->assign_position( position );
+      std::vector<double> position = {0,0,0};
+      double r = sqrt(UniformRandom())* max_distance; double theta = UniformRandom() * 6.2831853;
+      position[0] = r*cos(theta);
+      position[1] = r*sin(theta);
+      pC = create_cell( *pCD );
+      pC->assign_position( position );
     }
 
     // for( int k=0; k < cell_definitions_by_index.size() ; k++ )
@@ -239,83 +244,6 @@ void custom_function( Cell* pCell, Phenotype& phenotype , double dt )
 
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt )
 { return; }
-
-void motility_rule( Cell* pC, Phenotype& p, double dt )
-{
-	// find my cell definition
-	Cell_Definition* pCD = find_cell_definition( pC->type );
-
-  // find index of drug 1 in the microenvironment
-  static int nPKPD_D1 = microenvironment.find_density_index( "PKPD_drug_number_1" );
-  // find index of drug 2 in the microenvironment
-  static int nPKPD_D2 = microenvironment.find_density_index( "PKPD_drug_number_2" );
-
-  // find index of damage variable for drug 1
-  int nPKPD_D1_damage = pC->custom_data.find_variable_index( "PKPD_D1_damage" );
-  // find index of damage variable for drug 2
-  int nPKPD_D2_damage = pC->custom_data.find_variable_index( "PKPD_D2_damage" );
-
-	// find index of O2 in the microenvironment
-	static int nO2 = microenvironment.find_density_index( "oxygen" );
-
-	// sample pO2
-	double pO2 = pC->nearest_density_vector()[nO2];
-
-	// sample pO2 gradient
-	// set migration bias direction to grad(pO2)
-	p.motility.migration_bias_direction = pC->nearest_gradient(nO2);
-
-	// normalize
-	normalize( &(p.motility.migration_bias_direction) );
-
-	// set the Hill multiplier
-		// s = (pO2/pO2_half_max)^pO2_hill_power
-		// hill = s / ( 1+s );
-	double temp = pow( pO2 / pC->custom_data["pO2_half_max"] , pC->custom_data["pO2_hill_power"] );
-	double hill = temp / (1.0 + temp );
-
-	// set speed
-		// speed = base_speed * hill
-	p.motility.migration_speed = pCD->phenotype.motility.migration_speed * (1-hill);
-
-	// migration bias
-		// bias = multiplier
-	p.motility.migration_bias = hill;
-
-
-
-
-  // motility effect
-  double factor_change = 1.0; // set factor
-  if( pC->custom_data["PKPD_D1_moa_is_motility"] > 0.5 )
-  {
-      static double fs_motility_D1 = pC->custom_data["PKPD_D1_motility_saturation_rate"]/pCD->phenotype.motility.migration_speed; // saturation factor of motility for drug 1
-      // p.motility.migration_speed = pCD->phenotype.motility.migration_speed; // always reset to base motility rate
-      if(pC->custom_data[nPKPD_D1_damage]>0)
-      {
-          temp = Hill_function(pC->custom_data[nPKPD_D1_damage], pC->custom_data["PKPD_D1_motility_EC50"], pC->custom_data["PKPD_D1_motility_hill_power"]);
-          factor_change *= 1 + (fs_motility_D1-1)*temp;
-      }
-  }
-
-  if( pC->custom_data["PKPD_D2_moa_is_motility"] > 0.5 )
-  {
-      static double fs_motility_D2 = pC->custom_data["PKPD_D2_motility_saturation_rate"]/pCD->phenotype.motility.migration_speed; // saturation factor of motility for drug 2
-      // p.motility.migration_speed = pCD->phenotype.motility.migration_speed; // always reset to base motility rate (this is unecesary when D1 also affects motility, but this is necessary when only D2 affects motility)
-      if( pC->custom_data[nPKPD_D2_damage]>0 )
-      {
-          temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data["PKPD_D2_motility_EC50"], pC->custom_data["PKPD_D2_motility_hill_power"]);
-          factor_change *= 1 + (fs_motility_D2-1)*temp;
-      }
-  }
-  p.motility.migration_speed *= factor_change;
-
-
-
-	// trick: if dead, overwrite with NULL function pointer.
-	if( p.death.dead == true )
-	{ pC->functions.update_migration_bias = NULL; }
-}
 
 void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
 {
@@ -364,26 +292,25 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     }
 
     // use oxygen to increase necrosis
-    multiplier = 0.0;
-    if( pO2 < pC->custom_data["pO2_necrosis_threshold"] )
-    {
-        // multipler = (pO2_necrosis_threshold - pO2)
-        // /(pO2_necrosis_threshold-pO2_necrosis_saturation)
-        multiplier = (pC->custom_data["pO2_necrosis_threshold"] - pO2 )
-        / ( pC->custom_data["pO2_necrosis_threshold"]
-        -pC->custom_data["pO2_necrosis_saturation"] );
-    }
-    // if pO2 < pO2_necrosis_saturation
-    // multipler = 1
-    if( pO2 < pC->custom_data["pO2_necrosis_saturation"] )
-    { multiplier = 1.0; }
-    // necrosis rate = max_necrosis_rate * multiplier
-    p.death.rates[nNec] = pC->custom_data["max_necrosis_rate"] * multiplier;
-
-    // check for deterministic necrosis
-    if( pC->parameters.necrosis_type == PhysiCell_constants::deterministic_necrosis && multiplier > 1e-16 )
-    { pC->phenotype.death.rates[nNec] = 9e99; }
-
+    // multiplier = 0.0;
+    // if( pO2 < pC->custom_data["pO2_necrosis_threshold"] )
+    // {
+    //     // multipler = (pO2_necrosis_threshold - pO2)
+    //     // /(pO2_necrosis_threshold-pO2_necrosis_saturation)
+    //     multiplier = (pC->custom_data["pO2_necrosis_threshold"] - pO2 )
+    //     / ( pC->custom_data["pO2_necrosis_threshold"]
+    //     -pC->custom_data["pO2_necrosis_saturation"] );
+    // }
+    // // if pO2 < pO2_necrosis_saturation
+    // // multipler = 1
+    // if( pO2 < pC->custom_data["pO2_necrosis_saturation"] )
+    // { multiplier = 1.0; }
+    // // necrosis rate = max_necrosis_rate * multiplier
+    // p.death.rates[nNec] = pCD->phenotype.death.rates[nNec] + pC->custom_data["max_necrosis_rate"] * multiplier;
+    //
+    // // check for deterministic necrosis
+    // if( pC->parameters.necrosis_type == PhysiCell_constants::deterministic_necrosis && multiplier > 1e-16 )
+    // { p.death.rates[nNec] = 9e99; }
 
 
 
@@ -499,32 +426,48 @@ void tumor_phenotype( Cell* pC, Phenotype& p, double dt)
     }
     p.death.rates[nApop] *= factor_change;
 
+    // std::cout<< "   Necrosis rate is " << p.death.rates[nNec] << std::endl;
 
 
     // necrosis effect
     factor_change = 1.0; // set factor
     if( pC->custom_data["PKPD_D1_moa_is_necrosis"] > 0.5 )
     {
-        static double fs_necrosis_D1 = pC->custom_data["PKPD_D1_necrosis_saturation_rate"]/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 1
-        // don't need to reset necrosis because that is done with oxygen
-        if(pC->custom_data[nPKPD_D1_damage]>0)
-        {
-            temp = Hill_function(pC->custom_data[nPKPD_D1_damage], pC->custom_data["PKPD_D1_necrosis_EC50"], pC->custom_data["PKPD_D1_necrosis_hill_power"]);
-            factor_change *= 1 + (fs_necrosis_D1-1)*temp;
-        }
+      // // ensure that the factor increase method works when base necrosis rate is set to 0
+      // if( p.death.rates[nNec] <= 0 )
+      // { pCD->phenotype.death.rates[nNec] = 1e-16; }
+
+      static double fs_necrosis_D1 = pC->custom_data["PKPD_D1_necrosis_saturation_rate"]/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 1
+      // std::cout << "  necrosis saturation factor " << fs_necrosis_D1 << std::endl;
+
+      // std::cout << " saturation rate is " << pC->custom_data["PKPD_D1_necrosis_saturation_rate"] << " and base necrosis rate is " << pCD->phenotype.death.rates[nNec] << std::endl;
+
+      p.death.rates[nNec] = pCD->phenotype.death.rates[nNec];
+      // don't need to reset necrosis because that is done with oxygen
+      if(pC->custom_data[nPKPD_D1_damage]>0)
+      {
+          temp = Hill_function(pC->custom_data[nPKPD_D1_damage], pC->custom_data["PKPD_D1_necrosis_EC50"], pC->custom_data["PKPD_D1_necrosis_hill_power"]);
+          factor_change *= 1 + (fs_necrosis_D1-1)*temp;
+      }
     }
 
     if( pC->custom_data["PKPD_D2_moa_is_necrosis"] > 0.5 )
     {
-        static double fs_necrosis_D2 = pC->custom_data["PKPD_D2_necrosis_saturation_rate"]/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 2
-        // don't need to reset necrosis because that is done with oxygen
-        if( pC->custom_data[nPKPD_D2_damage]>0 )
-        {
-            temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data["PKPD_D2_necrosis_EC50"], pC->custom_data["PKPD_D2_necrosis_EC50"]);
-            factor_change *= 1 + (fs_necrosis_D2-1)*temp;
-        }
+      // // ensure that the factor increase method works when base necrosis rate is set to 0
+      // if( p.death.rates[nNec] <= 0 )
+      // { pCD->phenotype.death.rates[nNec] = 1e-16; }
+
+      static double fs_necrosis_D2 = pC->custom_data["PKPD_D2_necrosis_saturation_rate"]/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 2
+      // don't need to reset necrosis because that is done with oxygen
+      if( pC->custom_data[nPKPD_D2_damage]>0 )
+      {
+          temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data["PKPD_D2_necrosis_EC50"], pC->custom_data["PKPD_D2_necrosis_EC50"]);
+          factor_change *= 1 + (fs_necrosis_D2-1)*temp;
+      }
     }
     p.death.rates[nNec] *= factor_change;
+
+    // std::cout<< "Necrosis rate is " << p.death.rates[nNec] << std::endl;
 
 
 
@@ -785,30 +728,11 @@ std::vector<std::string> damage_coloring( Cell* pCell )
 
     static std::vector< int > T1_default_color = {178,178,178};
     static std::vector< int > T2_default_color = {78,78,78};
-    static std::vector< double > T1_color_diffs = {50,-128,-100};
+    static std::vector< double > T1_color_diffs_nucl = {50,-128,-100};
+    static std::vector< double > T1_color_diffs_cyto = {-128,-100,50};
     static std::vector< double > T2_color_diffs = {-28,150,0};
 
     std::vector< std::string > output( 4 , "black" );
-
-    std::vector< int > default_color;
-    std::vector< double > color_diffs;
-    double d_val;
-    double d_norm_val;
-
-    if( pCell->type == pT1->type )
-    {
-        default_color = T1_default_color;
-        d_val = pCell->custom_data["PKPD_D1_damage"];
-        d_norm_val = Hill_function(d_val, parameters.doubles("d1_color_ec50"), parameters.doubles("d1_color_hp"));
-        color_diffs = T1_color_diffs;
-    }
-    else
-    {
-        default_color = T2_default_color;
-        d_val = pCell->custom_data["PKPD_D2_damage"];
-        d_norm_val = Hill_function(d_val, parameters.doubles("d2_color_ec50"), parameters.doubles("d2_color_hp"));
-        color_diffs = T2_color_diffs;
-    }
 
     if (pCell->phenotype.cycle.current_phase().code == PhysiCell_constants::apoptotic ) { // apoptotic - black
         return output;
@@ -817,29 +741,75 @@ std::vector<std::string> damage_coloring( Cell* pCell )
     if (pCell->phenotype.cycle.current_phase().code != PhysiCell_constants::apoptotic && pCell->phenotype.death.dead == true) { // necrotic - brown
         std::vector< std::string > output( 4 , "peru" );
         return output;
+    }if (pCell->phenotype.cycle.current_phase().code == PhysiCell_constants::apoptotic ) { // apoptotic - black
+        return output;
     }
+
+    if (pCell->phenotype.cycle.current_phase().code != PhysiCell_constants::apoptotic && pCell->phenotype.death.dead == true) { // necrotic - brown
+        std::vector< std::string > output( 4 , "peru" );
+        return output;
+    }
+
+    std::vector< int > default_color_nucl;
+    std::vector< int > default_color_cyto;
+    std::vector< double > color_diffs_nucl;
+    std::vector< double > color_diffs_cyto;
+    double d_val1;
+    double d_norm_val1;
+    double d_val2;
+    double d_norm_val2;
+
+    if( pCell->type == pT1->type )
+    {
+      default_color_nucl = T1_default_color;
+      default_color_cyto = T1_default_color;
+      color_diffs_nucl = T1_color_diffs_nucl;
+      color_diffs_cyto = T1_color_diffs_cyto;
+    }
+    // else
+    // {
+    //   default_color = T2_default_color;
+    //   d_val = pCell->custom_data["PKPD_D2_damage"];
+    //   d_norm_val = Hill_function(d_val, parameters.doubles("d2_color_ec50"), parameters.doubles("d2_color_hp"));
+    //   color_diffs = T2_color_diffs;
+    // }
+
+    d_val1 = pCell->custom_data["PKPD_D1_damage"];
+    d_norm_val1 = Hill_function(d_val1, parameters.doubles("d1_color_ec50"), parameters.doubles("d1_color_hp"));
+    d_val2 = pCell->custom_data["PKPD_D2_damage"];
+    d_norm_val2 = Hill_function(d_val2, parameters.doubles("d2_color_ec50"), parameters.doubles("d2_color_hp"));
+
+
 
 
     if( pCell->phenotype.death.dead == false )
     { // live cells
-        char colorTempString [128];
-        if ( d_norm_val < 0 ) {
-            sprintf(colorTempString, "rgb(%u, %u, %u)", default_color[0], default_color[1], default_color[2]);
-        } else if ( d_norm_val >= 1 ) {
-            sprintf(colorTempString, "rgb(0, 0, 0)");
+        char colorTempString_nucl [128];
+        char colorTempString_cyto [128];
+        if ( d_norm_val1 < 0 ) {
+            sprintf(colorTempString_nucl, "rgb(%u, %u, %u)", default_color_nucl[0], default_color_nucl[1], default_color_nucl[2]);
+            sprintf(colorTempString_cyto, "rgb(%u, %u, %u)", default_color_cyto[0], default_color_cyto[1], default_color_cyto[2]);
+        } else if ( d_norm_val1 >= 1 ) {
+            sprintf(colorTempString_nucl, "rgb(0, 0, 0)");
+            sprintf(colorTempString_cyto, "rgb(0, 0, 0)");
         } else {
             // T1 gradient goes from (178, 178, 178) to (228, 50, 78)
             // Green gradient goes from (78, 78, 78) to (50, 228, 78)
-            int rd = (int) round(d_norm_val*color_diffs[0]); // red differential
-            int gd = (int) round(d_norm_val*color_diffs[1]); // green differential
-            int bd = (int) round(d_norm_val*color_diffs[2]); // blue differential
-            sprintf(colorTempString, "rgb(%u, %u, %u)", default_color[0]+rd, default_color[1]+gd, default_color[2]+bd);
+            int rd_nucl = (int) round(d_norm_val1*color_diffs_nucl[0]); // red differential
+            int gd_nucl = (int) round(d_norm_val1*color_diffs_nucl[1]); // green differential
+            int bd_nucl = (int) round(d_norm_val1*color_diffs_nucl[2]); // blue differential
+            sprintf(colorTempString_nucl, "rgb(%u, %u, %u)", default_color_nucl[0]+rd_nucl, default_color_nucl[1]+gd_nucl, default_color_nucl[2]+bd_nucl);
+
+            int rd_cyto = (int) round(d_norm_val2*color_diffs_cyto[0]); // red differential
+            int gd_cyto = (int) round(d_norm_val2*color_diffs_cyto[1]); // green differential
+            int bd_cyto = (int) round(d_norm_val2*color_diffs_cyto[2]); // blue differential
+            sprintf(colorTempString_cyto, "rgb(%u, %u, %u)", default_color_cyto[0]+rd_cyto, default_color_cyto[1]+gd_cyto, default_color_cyto[2]+bd_cyto);
         }
 
 
 
-		output[0].assign( colorTempString ); //cytoplasm
-		output[2].assign( colorTempString ); //nucleus
+		output[0].assign( colorTempString_cyto ); //cytoplasm
+		output[2].assign( colorTempString_nucl ); //nucleus
 //		output[3].assign( colorTempString1 ); //outline of nucleus
 	}
 	return output;

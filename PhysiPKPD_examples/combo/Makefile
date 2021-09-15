@@ -231,8 +231,8 @@ data-plots:
 
 redo:
 	make reset
-	make moa_motility
+	make combo
 	make
 
 rc: # reconfig
-	cp ./PhysiPKPD_examples/moa_motility/config/mymodel.xml ./config/
+	cp ./PhysiPKPD_examples/combo/config/mymodel.xml ./config/
