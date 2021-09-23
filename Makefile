@@ -297,8 +297,8 @@ PhysiCell_geometry.o: ./modules/PhysiCell_geometry.cpp
 # cleanup
 
 reset:
-	rm -f *.cpp PhysiCell_cell.o
-	cp ./sample_projects/Makefile-default Makefile 
+	rm -f *.cpp
+	cp ./PhysiPKPD_examples/Makefile-default Makefile
 	rm -f ./custom_modules/*
 	touch ./custom_modules/empty.txt 
 	touch ALL_CITATIONS.txt 
@@ -323,13 +323,13 @@ checkpoint:
 	zip -r $$(date +%b_%d_%Y_%H%M).zip Makefile *.cpp *.h config/*.xml custom_modules/* 
 	
 zip:
-	zip -r latest.zip Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* sample_projects/* 
+	zip -r latest.zip Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* PhysiPKPD_examples/*
 	cp latest.zip $$(date +%b_%d_%Y_%H%M).zip
 	cp latest.zip VERSION_$(VERSION).zip 
 	mv *.zip archives/
 	
 tar:
-	tar --ignore-failed-read -czf latest.tar Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* sample_projects/* 
+	tar --ignore-failed-read -czf latest.tar Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* PhysiPKPD_examples/*
 	cp latest.tar $$(date +%b_%d_%Y_%H%M).tar
 	cp latest.tar VERSION_$(VERSION).tar
 	mv *.tar archives/
@@ -364,29 +364,15 @@ movie:
 	
 # upgrade rules 
 
-SOURCE := PhysiCell_upgrade.zip 
-get-upgrade: 
-	@echo $$(curl https://raw.githubusercontent.com/MathCancer/PhysiCell/master/VERSION.txt) >> VER.txt 
-	@echo https://github.com/MathCancer/PhysiCell/releases/download/$$(grep . VER.txt)/PhysiCell_V.$$(grep . VER.txt).zip >> DL_FILE.txt 
-	rm -f VER.txt
-	$$(curl -L $$(grep . DL_FILE.txt) --output PhysiCell_upgrade.zip)
-	rm -f DL_FILE.txt 
+data-plots:
+	python custom_modules/createDataPlots.py -i $(OUTPUT)/cell_counts.csv -o $(OUTPUT)/cell_plot.png
 
-PhysiCell_upgrade.zip: 
-	make get-upgrade 
+# resetting project
 
-upgrade: $(SOURCE)
-	unzip $(SOURCE) PhysiCell/VERSION.txt
-	mv -f PhysiCell/VERSION.txt . 
-	unzip $(SOURCE) PhysiCell/core/* 
-	cp -r PhysiCell/core/* core 
-	unzip $(SOURCE) PhysiCell/modules/* 
-	cp -r PhysiCell/modules/* modules 
-	unzip $(SOURCE) PhysiCell/sample_projects/* 
-	cp -r PhysiCell/sample_projects/* sample_projects 
-	unzip $(SOURCE) PhysiCell/BioFVM/* 
-	cp -r PhysiCell/BioFVM/* BioFVM
-	unzip $(SOURCE) PhysiCell/documentation/User_Guide.pdf
-	mv -f PhysiCell/documentation/User_Guide.pdf documentation
-	rm -f -r PhysiCell
-	rm -f $(SOURCE) 
+redo:
+	make reset
+	make combo
+	make
+
+rc: # reconfig
+	cp ./PhysiPKPD_examples/combo/config/mymodel.xml ./config/
