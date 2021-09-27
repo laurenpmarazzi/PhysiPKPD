@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <PhysiCell_settings version="devel-version">
     <domain>
         <x_min>-400</x_min>
@@ -14,7 +13,7 @@
     </domain>
 
     <overall>
-        <max_time units="min">1440</max_time>
+        <max_time units="min">2880</max_time>
         <time_units>min</time_units>
         <space_units>micron</space_units>
 

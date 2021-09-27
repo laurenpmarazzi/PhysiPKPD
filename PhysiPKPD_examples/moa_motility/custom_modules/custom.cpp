@@ -113,6 +113,7 @@ void create_cell_types( void )
     for( int k=0; k < cell_definitions_by_index.size() ; k++ )
     {
         cell_definitions_by_index[k]->functions.update_phenotype = tumor_phenotype;
+        cell_definitions_by_index[k]->functions.update_migration_bias = motility_rule;
     }
 
     // Cell_Definition* pCD = find_cell_definition( "tumor_1" );
@@ -206,12 +207,12 @@ void setup_tissue( void )
     std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl;
     for( int n=0 ; n < parameters.ints( "number_of_tumor_2_cells" ); n++ )
     {
-      std::vector<double> position = {0,0,0};
-      double r = sqrt(UniformRandom())* max_distance; double theta = UniformRandom() * 6.2831853;
-      position[0] = r*cos(theta);
-      position[1] = r*sin(theta);
-      pC = create_cell( *pCD );
-      pC->assign_position( position );
+        std::vector<double> position = {0,0,0};
+        double r = sqrt(UniformRandom())* max_distance; double theta = UniformRandom() * 6.2831853;
+        position[0] = r*cos(theta);
+        position[1] = r*sin(theta);
+        pC = create_cell( *pCD );
+        pC->assign_position( position );
     }
 
     // for( int k=0; k < cell_definitions_by_index.size() ; k++ )
@@ -233,17 +234,94 @@ void setup_tissue( void )
     return;
 }
 
-std::vector<std::string> my_coloring_function( Cell* pC )
-{ return damage_coloring(pC); }
+std::vector<std::string> my_coloring_function( Cell* pCell )
+{ return damage_coloring(pCell); }
 
-void phenotype_function( Cell* pC, Phenotype& phenotype, double dt )
+void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt )
 { return; }
 
-void custom_function( Cell* pC, Phenotype& phenotype , double dt )
+void custom_function( Cell* pCell, Phenotype& phenotype , double dt )
 { return; }
 
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt )
 { return; }
+
+void motility_rule( Cell* pC, Phenotype& p, double dt )
+{
+	// find my cell definition
+	Cell_Definition* pCD = find_cell_definition( pC->type );
+
+  // find index of drug 1 in the microenvironment
+  static int nPKPD_D1 = microenvironment.find_density_index( "PKPD_drug_number_1" );
+  // find index of drug 2 in the microenvironment
+  static int nPKPD_D2 = microenvironment.find_density_index( "PKPD_drug_number_2" );
+
+  // find index of damage variable for drug 1
+  int nPKPD_D1_damage = pC->custom_data.find_variable_index( "PKPD_D1_damage" );
+  // find index of damage variable for drug 2
+  int nPKPD_D2_damage = pC->custom_data.find_variable_index( "PKPD_D2_damage" );
+
+	// find index of O2 in the microenvironment
+	static int nO2 = microenvironment.find_density_index( "oxygen" );
+
+	// sample pO2
+	double pO2 = pC->nearest_density_vector()[nO2];
+
+	// sample pO2 gradient
+	// set migration bias direction to grad(pO2)
+	p.motility.migration_bias_direction = pC->nearest_gradient(nO2);
+
+	// normalize
+	normalize( &(p.motility.migration_bias_direction) );
+
+	// set the Hill multiplier
+		// s = (pO2/pO2_half_max)^pO2_hill_power
+		// hill = s / ( 1+s );
+	double temp = pow( pO2 / pC->custom_data["pO2_half_max"] , pC->custom_data["pO2_hill_power"] );
+	double hill = temp / (1.0 + temp );
+
+	// set speed
+		// speed = base_speed * hill
+	p.motility.migration_speed = pCD->phenotype.motility.migration_speed * (1-hill);
+
+	// migration bias
+		// bias = multiplier
+	p.motility.migration_bias = hill;
+
+
+
+
+  // motility effect
+  double factor_change = 1.0; // set factor
+  if( pC->custom_data["PKPD_D1_moa_is_motility"] > 0.5 )
+  {
+      static double fs_motility_D1 = pC->custom_data["PKPD_D1_motility_saturation_rate"]/pCD->phenotype.motility.migration_speed; // saturation factor of motility for drug 1
+      // p.motility.migration_speed = pCD->phenotype.motility.migration_speed; // always reset to base motility rate
+      if(pC->custom_data[nPKPD_D1_damage]>0)
+      {
+          temp = Hill_function(pC->custom_data[nPKPD_D1_damage], pC->custom_data["PKPD_D1_motility_EC50"], pC->custom_data["PKPD_D1_motility_hill_power"]);
+          factor_change *= 1 + (fs_motility_D1-1)*temp;
+      }
+  }
+
+  if( pC->custom_data["PKPD_D2_moa_is_motility"] > 0.5 )
+  {
+      static double fs_motility_D2 = pC->custom_data["PKPD_D2_motility_saturation_rate"]/pCD->phenotype.motility.migration_speed; // saturation factor of motility for drug 2
+      // p.motility.migration_speed = pCD->phenotype.motility.migration_speed; // always reset to base motility rate (this is unecesary when D1 also affects motility, but this is necessary when only D2 affects motility)
+      if( pC->custom_data[nPKPD_D2_damage]>0 )
+      {
+          temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data["PKPD_D2_motility_EC50"], pC->custom_data["PKPD_D2_motility_hill_power"]);
+          factor_change *= 1 + (fs_motility_D2-1)*temp;
+      }
+  }
+  p.motility.migration_speed *= factor_change;
+
+
+
+	// trick: if dead, overwrite with NULL function pointer.
+	if( p.death.dead == true )
+	{ pC->functions.update_migration_bias = NULL; }
+}
 
 void pd_function( Cell* pC, Phenotype& p, double dt )
 {
@@ -381,14 +459,7 @@ void pd_function( Cell* pC, Phenotype& p, double dt )
   factor_change = 1.0; // set factor
   if( pC->custom_data["PKPD_D1_moa_is_necrosis"] > 0.5 )
   {
-    // // ensure that the factor increase method works when base necrosis rate is set to 0
-    // if( p.death.rates[nNec] <= 0 )
-    // { pCD->phenotype.death.rates[nNec] = 1e-16; }
-
     double fs_necrosis_D1 = pC->custom_data["PKPD_D1_necrosis_saturation_rate"]/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 1
-    // std::cout << "  necrosis saturation factor " << fs_necrosis_D1 << std::endl;
-
-    // std::cout << " saturation rate is " << pC->custom_data["PKPD_D1_necrosis_saturation_rate"] << " and base necrosis rate is " << pCD->phenotype.death.rates[nNec] << std::endl;
 
     p.death.rates[nNec] = pCD->phenotype.death.rates[nNec];
     // don't need to reset necrosis because that is done with oxygen
@@ -401,10 +472,6 @@ void pd_function( Cell* pC, Phenotype& p, double dt )
 
   if( pC->custom_data["PKPD_D2_moa_is_necrosis"] > 0.5 )
   {
-    // // ensure that the factor increase method works when base necrosis rate is set to 0
-    // if( p.death.rates[nNec] <= 0 )
-    // { pCD->phenotype.death.rates[nNec] = 1e-16; }
-
     double fs_necrosis_D2 = pC->custom_data["PKPD_D2_necrosis_saturation_rate"]/pCD->phenotype.death.rates[nNec]; // saturation factor of necrosis for drug 2
     // don't need to reset necrosis because that is done with oxygen
     if( pC->custom_data[nPKPD_D2_damage]>0 )
@@ -414,31 +481,6 @@ void pd_function( Cell* pC, Phenotype& p, double dt )
     }
   }
   p.death.rates[nNec] *= factor_change;
-
-  // motility effect
-  factor_change = 1.0; // set factor
-  if( pC->custom_data["PKPD_D1_moa_is_motility"] > 0.5 )
-  {
-      double fs_motility_D1 = pC->custom_data["PKPD_D1_motility_saturation_rate"]/pCD->phenotype.motility.migration_speed; // saturation factor of motility for drug 1
-      p.motility.migration_speed = pCD->phenotype.motility.migration_speed; // always reset to base motility rate
-      if(pC->custom_data[nPKPD_D1_damage]>0)
-      {
-          temp = Hill_function(pC->custom_data[nPKPD_D1_damage], pC->custom_data["PKPD_D1_motility_EC50"], pC->custom_data["PKPD_D1_motility_hill_power"]);
-          factor_change *= 1 + (fs_motility_D1-1)*temp;
-      }
-  }
-
-  if( pC->custom_data["PKPD_D2_moa_is_motility"] > 0.5 )
-  {
-      double fs_motility_D2 = pC->custom_data["PKPD_D2_motility_saturation_rate"]/pCD->phenotype.motility.migration_speed; // saturation factor of motility for drug 2
-      p.motility.migration_speed = pCD->phenotype.motility.migration_speed; // always reset to base motility rate (this is unecesary when D1 also affects motility, but this is necessary when only D2 affects motility)
-      if( pC->custom_data[nPKPD_D2_damage]>0 )
-      {
-          temp = Hill_function(pC->custom_data[nPKPD_D2_damage], pC->custom_data["PKPD_D2_motility_EC50"], pC->custom_data["PKPD_D2_motility_hill_power"]);
-          factor_change *= 1 + (fs_motility_D2-1)*temp;
-      }
-  }
-  p.motility.migration_speed *= factor_change;
 
 }
 
@@ -609,13 +651,13 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
     }
     if( current_time > PKPD_D2_next_dose_time - tolerance && PKPD_D2_dose_count < parameters.ints("PKPD_D2_max_number_doses") )
     {
-      if( PKPD_D2_dose_count < parameters.ints("PKPD_D2_number_loading_doses") )
-      { PKPD_D2_central_concentration += parameters.doubles("PKPD_D2_central_increase_on_loading_dose"); }
-      else
-      { PKPD_D2_central_concentration += parameters.doubles("PKPD_D2_central_increase_on_dose"); }
+        if( PKPD_D2_dose_count < parameters.ints("PKPD_D2_number_loading_doses") )
+        { PKPD_D2_central_concentration += parameters.doubles("PKPD_D2_central_increase_on_loading_dose"); }
+        else
+        { PKPD_D2_central_concentration += parameters.doubles("PKPD_D2_central_increase_on_dose"); }
 
-      PKPD_D2_next_dose_time += parameters.doubles("PKPD_D2_dose_interval");
-      PKPD_D2_dose_count++;
+        PKPD_D2_next_dose_time += parameters.doubles("PKPD_D2_dose_interval");
+        PKPD_D2_dose_count++;
     }
 
     // update PK model for drug 1
@@ -629,12 +671,12 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
 
     if( PKPD_D1_central_concentration<0 )
     {
-      PKPD_D1_central_concentration = 0;
+        PKPD_D1_central_concentration = 0;
     }
 
     if( PKPD_D1_periphery_concentration<0 )
     {
-      PKPD_D1_periphery_concentration = 0;
+        PKPD_D1_periphery_concentration = 0;
     }
 
     // update PK model for drug 2
@@ -648,21 +690,32 @@ void PK_model( double current_time ) // update the Dirichlet boundary conditions
 
     if( PKPD_D2_central_concentration<0 )
     {
-      PKPD_D2_central_concentration = 0;
+        PKPD_D2_central_concentration = 0;
     }
 
     if( PKPD_D2_periphery_concentration<0 )
     {
-      PKPD_D2_periphery_concentration = 0;
+        PKPD_D2_periphery_concentration = 0;
     }
+
+    /* this block works when both drugs are entering at the same spatial location (same Dirichlet nodes)
+    for( int n=0; n < microenvironment.number_of_voxels(); n++ )
+    {
+        if( microenvironment.is_dirichlet_node( n ) )
+        {
+            microenvironment.update_dirichlet_node( n, nPKPD_D1, PKPD_D1_central_concentration * parameters.doubles("PKPD_D1_biot_number") );
+            microenvironment.update_dirichlet_node( n, nPKPD_D2, PKPD_D2_central_concentration * parameters.doubles("PKPD_D2_biot_number") );
+        }
+    }
+    */
 
     for( int i=0; i < microenvironment.mesh.x_coordinates.size() ; i++ )
     {
-      // put drug 1 along the "floor" (y=0)
-      microenvironment.update_dirichlet_node( microenvironment.voxel_index(i,0,0),
-                                             nPKPD_D1, PKPD_D1_central_concentration * parameters.doubles("PKPD_D1_biot_number") );
-      // put drug 2 also along the "floor" (y=max)
-      microenvironment.update_dirichlet_node( microenvironment.voxel_index(i,0,0),
+        // put drug 1 along the "floor" (y=0)
+        microenvironment.update_dirichlet_node( microenvironment.voxel_index(i,0,0),
+                                               nPKPD_D1, PKPD_D1_central_concentration * parameters.doubles("PKPD_D1_biot_number") );
+        // put drug 2 also along the "floor" (y=max)
+        microenvironment.update_dirichlet_node( microenvironment.voxel_index(i,0,0),
                                                nPKPD_D2, PKPD_D2_central_concentration * parameters.doubles("PKPD_D2_biot_number") );
 
     }

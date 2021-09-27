@@ -113,6 +113,7 @@ void create_cell_types( void )
     for( int k=0; k < cell_definitions_by_index.size() ; k++ )
     {
         cell_definitions_by_index[k]->functions.update_phenotype = tumor_phenotype;
+        
     }
 
     // Cell_Definition* pCD = find_cell_definition( "tumor_1" );
