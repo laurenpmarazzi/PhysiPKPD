@@ -5,6 +5,11 @@ using Plots
 using StatsPlots
 using Statistics
 
+## first make sure that you have done all the make commands you need to get the right project ready to run
+
+## set path to csv file for saving output
+csv_filename = "../Documents/PhysiPKPD/last_dataframe.csv";
+
 ## set up which simulations you want to run
 nsamps = 5;
 
@@ -22,7 +27,7 @@ max_time = find_element(overall,"max_time")
 mt = parse(Int64,content(max_time))
 csv_datainterval = find_element(up,"csv_data_interval")
 
-# set up output variables
+## set up output variables
 t_vals = 0:parse(Int64,content(csv_datainterval)):mt # time values we'll get cell counts at
 DF = DataFrame(time_series=Vector{Int64}[],dose=Float64[]) # the data frame we'll use to plot
 export_df = DataFrame(time=[NaN;t_vals]) # the data frame we'll use to export to csv (I know we only want one data frame, but I need to level up my Julia powers first)
@@ -52,7 +57,7 @@ for i = 1:length(gDF)
 end
 plot(t_vals,mean_DF.time_series,label = mean_DF.dose') # plot mean time series
 
-CSV.write("../Documents/PhysiPKPD/last_dataframe.csv", export_df;writeheader=false) # write output
+CSV.write(csv_filename, export_df;writeheader=false) # write output
 
 ## graveyard
 
