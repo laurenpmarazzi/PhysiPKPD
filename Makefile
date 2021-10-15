@@ -14,17 +14,8 @@ endif
 ARCH := native # best auto-tuning
 # ARCH := core2 # a reasonably safe default for most CPUs since 2007
 # ARCH := corei7
-# ARCH := corei7-avx # earlier i7
 # ARCH := core-avx-i # i7 ivy bridge or newer
 # ARCH := core-avx2 # i7 with Haswell or newer
-# ARCH := nehalem
-# ARCH := westmere
-# ARCH := sandybridge # circa 2011
-# ARCH := ivybridge   # circa 2012
-# ARCH := haswell     # circa 2013
-# ARCH := broadwell   # circa 2014
-# ARCH := skylake     # circa 2015
-# ARCH := bonnell
 # ARCH := silvermont
 # ARCH := skylake-avx512
 # ARCH := nocona #64-bit pentium 4 or later
@@ -55,17 +46,68 @@ PhysiCell_pugixml.o PhysiCell_settings.o PhysiCell_geometry.o
 
 # put your custom objects here (they should be in the custom_modules directory)
 
-PhysiCell_custom_module_OBJECTS := custom.o
+PhysiCell_custom_module_OBJECTS := .o
 
 pugixml_OBJECTS := pugixml.o
 
 PhysiCell_OBJECTS := $(BioFVM_OBJECTS)  $(pugixml_OBJECTS) $(PhysiCell_core_OBJECTS) $(PhysiCell_module_OBJECTS)
 ALL_OBJECTS := $(PhysiCell_OBJECTS) $(PhysiCell_custom_module_OBJECTS)
 
-# compile the project
+EXAMPLES := ./examples/PhysiCell_test_mechanics_1.cpp ./examples/PhysiCell_test_mechanics_2.cpp \
+ ./examples/PhysiCell_test_DCIS.cpp ./examples/PhysiCell_test_HDS.cpp \
+ ./examples/PhysiCell_test_cell_cycle.cpp ./examples/PhysiCell_test_volume.cpp
 
-all: main.cpp $(ALL_OBJECTS)
-	$(COMPILE_COMMAND) -o $(PROGRAM_NAME) $(ALL_OBJECTS) main.cpp
+all:
+	make moa_proliferation
+	make
+
+# PhysiPKPD examples
+moa_proliferation:
+	cp ./PhysiPKPD_examples/moa_proliferation/custom_modules/* ./custom_modules/
+	touch main.cpp && cp main.cpp main-backup.cpp
+	cp ./PhysiPKPD_examples/moa_proliferation/main.cpp ./main.cpp
+	cp Makefile Makefile-backup
+	cp ./PhysiPKPD_examples/moa_proliferation/Makefile .
+	cp ./config/PhysiCell_settings.xml ./config/PhysiCell_settings-backup.xml
+	cp ./PhysiPKPD_examples/moa_proliferation/config/* ./config/
+
+moa_apoptosis:
+	cp ./PhysiPKPD_examples/moa_apoptosis/custom_modules/* ./custom_modules/
+	touch main.cpp && cp main.cpp main-backup.cpp
+	cp ./PhysiPKPD_examples/moa_apoptosis/main.cpp ./main.cpp
+	cp Makefile Makefile-backup
+	cp ./PhysiPKPD_examples/moa_apoptosis/Makefile .
+	cp ./config/PhysiCell_settings.xml ./config/PhysiCell_settings-backup.xml
+	cp ./PhysiPKPD_examples/moa_apoptosis/config/* ./config/
+
+moa_necrosis:
+	cp ./PhysiPKPD_examples/moa_necrosis/custom_modules/* ./custom_modules/
+	touch main.cpp && cp main.cpp main-backup.cpp
+	cp ./PhysiPKPD_examples/moa_necrosis/main.cpp ./main.cpp
+	cp Makefile Makefile-backup
+	cp ./PhysiPKPD_examples/moa_necrosis/Makefile .
+	cp ./config/PhysiCell_settings.xml ./config/PhysiCell_settings-backup.xml
+	cp ./PhysiPKPD_examples/moa_necrosis/config/* ./config/
+
+moa_motility:
+	cp ./PhysiPKPD_examples/moa_motility/custom_modules/* ./custom_modules/
+	touch main.cpp && cp main.cpp main-backup.cpp
+	cp ./PhysiPKPD_examples/moa_motility/main.cpp ./main.cpp
+	cp Makefile Makefile-backup
+	cp ./PhysiPKPD_examples/moa_motility/Makefile .
+	cp ./config/PhysiCell_settings.xml ./config/PhysiCell_settings-backup.xml
+	cp ./PhysiPKPD_examples/moa_motility/config/* ./config/
+
+combo:
+	cp ./PhysiPKPD_examples/combo/custom_modules/* ./custom_modules/
+	touch main.cpp && cp main.cpp main-backup.cpp
+	cp ./PhysiPKPD_examples/combo/main.cpp ./main.cpp
+	cp Makefile Makefile-backup
+	cp ./PhysiPKPD_examples/combo/Makefile .
+	cp ./config/PhysiCell_settings.xml ./config/PhysiCell_settings-backup.xml
+	cp ./PhysiPKPD_examples/combo/config/* ./config/
+
+# PhysiPKPD examples
 
 # PhysiCell core components
 
@@ -153,13 +195,10 @@ PhysiCell_geometry.o: ./modules/PhysiCell_geometry.cpp
 
 # user-defined PhysiCell modules
 
-custom.o: ./custom_modules/custom.cpp
-	$(COMPILE_COMMAND) -c ./custom_modules/custom.cpp
-
 # cleanup
 
 reset:
-	rm -f *.cpp
+	rm -f *.cpp PhysiCell_cell.o
 	cp ./PhysiPKPD_examples/Makefile-default Makefile
 	rm -f ./custom_modules/*
 	touch ./custom_modules/empty.txt
@@ -168,7 +207,7 @@ reset:
 	rm ALL_CITATIONS.txt
 	cp ./config/PhysiCell_settings-backup.xml ./config/PhysiCell_settings.xml
 	touch ./config/empty.csv
-	rm -f ./config/*.csv
+	rm ./config/*.csv
 
 clean:
 	rm -f *.o
@@ -224,15 +263,6 @@ gif:
 movie:
 	ffmpeg -r $(FRAMERATE) -f image2 -i $(OUTPUT)/snapshot%08d.jpg -vcodec libx264 -pix_fmt yuv420p -strict -2 -tune animation -crf 15 -acodec none $(OUTPUT)/out.mp4
 
+
 data-plots:
 	python custom_modules/createDataPlots.py -i $(OUTPUT)/cell_counts.csv -o $(OUTPUT)/cell_plot.png
-
-# resetting project
-
-redo:
-	make reset
-	make moa_necrosis
-	make
-
-rc: # reconfig
-	cp ./PhysiPKPD_examples/moa_necrosis/config/mymodel.xml ./config/
