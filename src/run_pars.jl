@@ -6,7 +6,7 @@ using StatsPlots
 using Statistics
 
 ## first make sure that you have done all the make commands you need to get the right project ready to run
-
+nothing
 ## set path to csv file for saving output
 csv_filename = "../Documents/PhysiPKPD/last_dataframe.csv";
 
@@ -43,7 +43,7 @@ for dvi = 1:length(dvals)
         run(cleanup_command) # make sure output folder is clean
         run(mycommand) # run code
         df = CSV.File("./output/cell_counts.csv"; header=["time","cell_count"]) |> DataFrame; # store the alive cell counts
-        next_col_name = string(dvals[dvi],"-",si) # column names are given by [dose amount]-[sample number]
+        next_col_name = string(dvals[dvi],"-",si) # column names are given by [dose amount]-[sample number] (these headers are not printed to csv)
         export_df[:,next_col_name] = [dvals[dvi];df.cell_count] # append column to the output csv file
 
         push!(DF,(df.cell_count,dvals[dvi])) # append data to the plotting data frame (including the dose amount)

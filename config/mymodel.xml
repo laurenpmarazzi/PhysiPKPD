@@ -30,12 +30,12 @@
         <folder>output</folder>
 
         <full_data>
-            <interval units="min">6</interval>
+            <interval units="min">360</interval>
             <enable>true</enable>
         </full_data>
 
         <SVG>
-            <interval units="min">6</interval>
+            <interval units="min">15</interval>
             <enable>true</enable>
         </SVG>
 
@@ -232,9 +232,9 @@
                 <PKPD_D1_apop_EC50>1e8</PKPD_D1_apop_EC50>
                 <PKPD_D1_apop_hill_power>2</PKPD_D1_apop_hill_power>
 
-                <PKPD_D1_moa_is_necrosis>0.0</PKPD_D1_moa_is_necrosis>
-                <PKPD_D1_necrosis_saturation_rate>1E-4</PKPD_D1_necrosis_saturation_rate>
-                <PKPD_D1_necrosis_EC50>1e7</PKPD_D1_necrosis_EC50>
+                <PKPD_D1_moa_is_necrosis>1.0</PKPD_D1_moa_is_necrosis>
+                <PKPD_D1_necrosis_saturation_rate>1e-3</PKPD_D1_necrosis_saturation_rate>
+                <PKPD_D1_necrosis_EC50>1e8</PKPD_D1_necrosis_EC50>
                 <PKPD_D1_necrosis_hill_power>2</PKPD_D1_necrosis_hill_power>
 
                 <PKPD_D1_moa_is_motility>0.0</PKPD_D1_moa_is_motility>
@@ -315,7 +315,7 @@
                         </parameters>
                     </model>
                     <model code="101" name="necrosis">
-                        <death_rate units="1/min">0.0</death_rate>
+                        <death_rate units="1/min">1e-5</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">0</duration>
                             <duration index="1" fixed_duration="true">0</duration>
@@ -430,7 +430,7 @@
                 <PKPD_D2_prolif_EC50>1e10</PKPD_D2_prolif_EC50>
                 <PKPD_D2_prolif_hill_power>2</PKPD_D2_prolif_hill_power>
 
-                <PKPD_D2_moa_is_apop>1.0</PKPD_D2_moa_is_apop>
+                <PKPD_D2_moa_is_apop>0.0</PKPD_D2_moa_is_apop>
                 <PKPD_D2_apop_saturation_rate>1e-2</PKPD_D2_apop_saturation_rate>
                 <PKPD_D2_apop_EC50>1e8</PKPD_D2_apop_EC50>
                 <PKPD_D2_apop_hill_power>2</PKPD_D2_apop_hill_power>
@@ -513,8 +513,8 @@
 
 <div_drug2 type="divider" description="---Drug 2 Settings---"/>
 
-        <PKPD_D2_number_loading_doses type="int" units="none" description="number of loading doses of drug 2">1</PKPD_D2_number_loading_doses>
-        <PKPD_D2_max_number_doses type="int" units="none" description="max doses of drug 2">3</PKPD_D2_max_number_doses>
+        <PKPD_D2_number_loading_doses type="int" units="none" description="number of loading doses of drug 2">0</PKPD_D2_number_loading_doses>
+        <PKPD_D2_max_number_doses type="int" units="none" description="max doses of drug 2">0</PKPD_D2_max_number_doses>
         <PKPD_D2_dose_interval type="double" units="min" description="time between dosings of drug 2">360.0</PKPD_D2_dose_interval>
         <PKPD_D2_set_first_dose_time type="bool" units="none" description="user sets first dose time to start therapy for drug 2; false=user gives confluence condition">True</PKPD_D2_set_first_dose_time>
         <PKPD_D2_first_dose_time type="double" units="min" description="time of first dose for drug 2">180.0</PKPD_D2_first_dose_time>
