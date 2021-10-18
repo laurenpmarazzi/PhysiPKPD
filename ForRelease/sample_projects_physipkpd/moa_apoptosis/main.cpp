@@ -217,6 +217,9 @@ int main( int argc, char* argv[] )
 			// update the microenvironment
 			microenvironment.simulate_diffusion_decay( diffusion_dt );
 
+			// update PD dynamics (resulting phenotypic changes happen in phenotype and motility functions)
+			PD_model( PhysiCell_globals.current_time );
+
 			// run PhysiCell
 			((Cell_Container *)microenvironment.agent_container)->update_all_cells( PhysiCell_globals.current_time );
 

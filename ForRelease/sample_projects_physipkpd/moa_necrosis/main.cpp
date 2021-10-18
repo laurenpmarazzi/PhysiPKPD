@@ -148,7 +148,7 @@ int main( int argc, char* argv[] )
 
 	// for simplicity, set a pathology coloring function
 
-	std::vector<std::string> (*cell_coloring_function)(Cell*) = my_coloring_function;
+	std::vector<std::string> (*cell_coloring_function)(Cell*) = damage_coloring;
 
 	sprintf( filename , "%s/initial.svg" , PhysiCell_settings.folder.c_str() );
 	SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
@@ -216,6 +216,9 @@ int main( int argc, char* argv[] )
 
 			// update the microenvironment
 			microenvironment.simulate_diffusion_decay( diffusion_dt );
+
+			// update PD dynamics (resulting phenotypic changes happen in phenotype and motility functions)
+			PD_model( PhysiCell_globals.current_time );
 
 			// run PhysiCell
 			((Cell_Container *)microenvironment.agent_container)->update_all_cells( PhysiCell_globals.current_time );

@@ -55,12 +55,15 @@ PhysiCell_pugixml.o PhysiCell_settings.o PhysiCell_geometry.o
 
 # put your custom objects here (they should be in the custom_modules directory)
 
+# PhysiPKPD objects
+PhysiPKPD_OBJECTS := PhysiPKPD.o
+
 PhysiCell_custom_module_OBJECTS := custom.o
 
 pugixml_OBJECTS := pugixml.o
 
 PhysiCell_OBJECTS := $(BioFVM_OBJECTS)  $(pugixml_OBJECTS) $(PhysiCell_core_OBJECTS) $(PhysiCell_module_OBJECTS)
-ALL_OBJECTS := $(PhysiCell_OBJECTS) $(PhysiCell_custom_module_OBJECTS)
+ALL_OBJECTS := $(PhysiCell_OBJECTS) $(PhysiCell_custom_module_OBJECTS) $(PhysiPKPD_OBJECTS)
 
 # compile the project
 
@@ -151,6 +154,11 @@ PhysiCell_basic_signaling.o: ./core/PhysiCell_basic_signaling.cpp
 PhysiCell_geometry.o: ./modules/PhysiCell_geometry.cpp
 	$(COMPILE_COMMAND) -c ./modules/PhysiCell_geometry.cpp
 
+# PhysiPKPD modules
+
+PhysiPKPD.o: ./addons/PhysiPKPD/src/PhysiPKPD.cpp
+	$(COMPILE_COMMAND) -c ./addons/PhysiPKPD/src/PhysiPKPD.cpp
+
 # user-defined PhysiCell modules
 
 custom.o: ./custom_modules/custom.cpp
@@ -185,13 +193,13 @@ checkpoint:
 	zip -r $$(date +%b_%d_%Y_%H%M).zip Makefile *.cpp *.h config/*.xml custom_modules/*
 
 zip:
-	zip -r latest.zip Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* addons/PhysiPKPD/sample_projects_physipkpd/combo/*
+	zip -r latest.zip Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* sample_projects_physipkpd/combo/*
 	cp latest.zip $$(date +%b_%d_%Y_%H%M).zip
 	cp latest.zip VERSION_$(VERSION).zip
 	mv *.zip archives/
 
 tar:
-	tar --ignore-failed-read -czf latest.tar Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* addons/PhysiPKPD/sample_projects_physipkpd/combo/*
+	tar --ignore-failed-read -czf latest.tar Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* sample_projects_physipkpd/combo/*
 	cp latest.tar $$(date +%b_%d_%Y_%H%M).tar
 	cp latest.tar VERSION_$(VERSION).tar
 	mv *.tar archives/
@@ -235,4 +243,4 @@ redo:
 	make
 
 rc: # reconfig
-	cp ./addons/PhysiPKPD/sample_projects_physipkpd/combo/config/mymodel.xml ./config/
+	cp ./sample_projects_physipkpd/combo/config/mymodel.xml ./config/
