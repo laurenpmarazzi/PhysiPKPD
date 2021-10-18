@@ -160,7 +160,7 @@ custom.o: ./custom_modules/custom.cpp
 
 reset:
 	rm -f *.cpp
-	cp ./PhysiPKPD_examples/Makefile-default Makefile
+	cp ./sample_projects/Makefile-default Makefile
 	rm -f ./custom_modules/*
 	touch ./custom_modules/empty.txt
 	touch ALL_CITATIONS.txt
@@ -185,13 +185,13 @@ checkpoint:
 	zip -r $$(date +%b_%d_%Y_%H%M).zip Makefile *.cpp *.h config/*.xml custom_modules/*
 
 zip:
-	zip -r latest.zip Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* PhysiPKPD_examples/*
+	zip -r latest.zip Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* addons/PhysiPKPD/sample_projects_physipkpd/moa_motility/*
 	cp latest.zip $$(date +%b_%d_%Y_%H%M).zip
 	cp latest.zip VERSION_$(VERSION).zip
 	mv *.zip archives/
 
 tar:
-	tar --ignore-failed-read -czf latest.tar Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* PhysiPKPD_examples/*
+	tar --ignore-failed-read -czf latest.tar Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* addons/PhysiPKPD/sample_projects_physipkpd/moa_motility/*
 	cp latest.tar $$(date +%b_%d_%Y_%H%M).tar
 	cp latest.tar VERSION_$(VERSION).tar
 	mv *.tar archives/
@@ -227,10 +227,12 @@ movie:
 data-plots:
 	python custom_modules/createDataPlots.py -i $(OUTPUT)/cell_counts.csv -o $(OUTPUT)/cell_plot.png
 
+# resetting project
+
 redo:
 	make reset
-	make moa_apoptosis
+	make moa_motility
 	make
 
 rc: # reconfig
-	cp ./PhysiPKPD_examples/moa_apoptosis/config/mymodel.xml ./config/
+	cp ./addons/PhysiPKPD/sample_projects_physipkpd/moa_motility/config/mymodel.xml ./config/
