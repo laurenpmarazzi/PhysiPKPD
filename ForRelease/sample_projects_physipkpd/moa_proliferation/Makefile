@@ -193,13 +193,13 @@ checkpoint:
 	zip -r $$(date +%b_%d_%Y_%H%M).zip Makefile *.cpp *.h config/*.xml custom_modules/*
 
 zip:
-	zip -r latest.zip Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* sample_projects_physipkpd/moa_motility/*
+	zip -r latest.zip Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* sample_projects_physipkpd/moa_proliferation/*
 	cp latest.zip $$(date +%b_%d_%Y_%H%M).zip
 	cp latest.zip VERSION_$(VERSION).zip
 	mv *.zip archives/
 
 tar:
-	tar --ignore-failed-read -czf latest.tar Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* sample_projects_physipkpd/moa_motility/*
+	tar --ignore-failed-read -czf latest.tar Makefile* *.cpp *.h BioFVM/* config/* core/* custom_modules/* matlab/* modules/* sample_projects_physipkpd/moa_proliferation/*
 	cp latest.tar $$(date +%b_%d_%Y_%H%M).tar
 	cp latest.tar VERSION_$(VERSION).tar
 	mv *.tar archives/
@@ -239,8 +239,8 @@ data-plots:
 
 redo:
 	make reset
-	make moa_motility
+	make moa_proliferation
 	make
 
 rc: # reconfig
-	cp ./sample_projects_physipkpd/moa_motility/config/mymodel.xml ./config/
+	cp ./sample_projects_physipkpd/moa_proliferation/config/mymodel.xml ./config/
