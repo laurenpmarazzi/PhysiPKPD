@@ -2676,28 +2676,93 @@ class CellDef(QWidget):
         self.param_d[self.current_cell_def]["secretion"][self.current_secretion_substrate]['net_export_rate'] = text
 
     # --- PKPD
-    def pAO_min_prolif_factor_changed(self, text):
-        self.param_d[self.current_cell_def]['pAO_min_prolif_factor'] = text
-    def pAO_half_change_changed(self, text):
-        self.param_d[self.current_cell_def]['pAO_half_change'] = text
-    def pAO_hill_power_changed(self, text):
-        self.param_d[self.current_cell_def]['pAO_hill_power'] = text
-    def pAO_max_apop_factor_changed(self, text):
-        self.param_d[self.current_cell_def]['pAO_max_apop_factor'] = text
-    def pressure_threshold_changed(self, text):
-        self.param_d[self.current_cell_def]['pressure_threshold'] = text
-    def arrested_changed(self, text):
-        self.param_d[self.current_cell_def]['arrested'] = text
-    def damage_changed(self, text):
-        self.param_d[self.current_cell_def]['damage'] = text
-    def repair_rate_changed(self, text):
-        self.param_d[self.current_cell_def]['repair_rate'] = text
-    def damage_accumulation_rate_changed(self, text):
-        self.param_d[self.current_cell_def]['damage_accumulation_rate'] = text
-    def AO_metabolism_rate_changed(self, text):
-        self.param_d[self.current_cell_def]['AO_metabolism_rate'] = text
-    def drug_effect_changed(self, text):
-        self.param_d[self.current_cell_def]['drug_effect'] = text
+    def PKPD_D1_moa_is_prolif_changed(self,text):
+        self.param_d[self.current_cell_def]['PKPD_D1_moa_is_prolif'] =text
+    def PKPD_D1_prolif_saturation_rate_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_prolif_saturation_rate'] = text
+    def PKPD_D1_prolif_hill_power_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_prolif_hill_power'] = text
+    def PKPD_D1_prolif_EC50_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_prolif_EC50'] = text
+
+    def PKPD_D1_moa_is_apop_changed(self,text):
+        self.param_d[self.current_cell_def]['PKPD_D1_moa_is_apop'] =text
+    def PKPD_D1_apop_saturation_rate_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_apop_saturation_rate'] = text
+    def PKPD_D1_apop_hill_power_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_apop_hill_power'] = text
+    def PKPD_D1_apop_EC50_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_apop_EC50'] = text
+
+    def PKPD_D1_moa_is_necrosis_changed(self,text):
+        self.param_d[self.current_cell_def]['PKPD_D1_moa_is_necrosis'] =text
+    def PKPD_D1_necrosis_saturation_rate_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_necrosis_saturation_rate'] = text
+    def PKPD_D1_necrosis_hill_power_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_necrosis_hill_power'] = text
+    def PKPD_D1_necrosis_EC50_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_necrosis_EC50'] = text
+    
+    def PKPD_D1_moa_is_motility_changed(self,text):
+        self.param_d[self.current_cell_def]['PKPD_D1_moa_is_motility'] =text
+    def PKPD_D1_motility_saturation_rate_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_motility_saturation_rate'] = text
+    def PKPD_D1_motility_hill_power_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_motility_hill_power'] = text
+    def PKPD_D1_motility_EC50_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_motility_EC50'] = text
+
+    def PKPD_D1_damage_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_damage'] = text
+    def PKPD_D1_repair_rate_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_repair_rate'] = text
+    def PKPD_D1_metabolism_rate_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D1_metabolism_rate'] = text
+
+    def PKPD_D2_moa_is_prolif_changed(self,text):
+        self.param_d[self.current_cell_def]['PKPD_D2_moa_is_prolif'] =text
+    def PKPD_D2_prolif_saturation_rate_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_prolif_saturation_rate'] = text
+    def PKPD_D2_prolif_hill_power_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_prolif_hill_power'] = text
+    def PKPD_D2_prolif_EC50_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_prolif_EC50'] = text
+
+    def PKPD_D2_moa_is_apop_changed(self,text):
+        self.param_d[self.current_cell_def]['PKPD_D2_moa_is_apop'] =text
+    def PKPD_D2_apop_saturation_rate_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_apop_saturation_rate'] = text
+    def PKPD_D2_apop_hill_power_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_apop_hill_power'] = text
+    def PKPD_D2_apop_EC50_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_apop_EC50'] = text
+
+    def PKPD_D2_moa_is_necrosis_changed(self,text):
+        self.param_d[self.current_cell_def]['PKPD_D2_moa_is_necrosis'] =text
+    def PKPD_D2_necrosis_saturation_rate_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_necrosis_saturation_rate'] = text
+    def PKPD_D2_necrosis_hill_power_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_necrosis_hill_power'] = text
+    def PKPD_D2_necrosis_EC50_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_necrosis_EC50'] = text
+    
+    def PKPD_D2_moa_is_motility_changed(self,text):
+        self.param_d[self.current_cell_def]['PKPD_D2_moa_is_motility'] =text
+    def PKPD_D2_motility_saturation_rate_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_motility_saturation_rate'] = text
+    def PKPD_D2_motility_hill_power_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_motility_hill_power'] = text
+    def PKPD_D2_motility_EC50_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_motility_EC50'] = text  
+
+    def PKPD_D2_damage_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_damage'] = text
+    def PKPD_D2_repair_rate_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_repair_rate'] = text
+    def PKPD_D2_metabolism_rate_changed(self, text):
+        self.param_d[self.current_cell_def]['PKPD_D2_metabolism_rate'] = text  
+
+          
           
     # --- custom data (rwh: OMG, this took a lot of time to solve!)
     def custom_data_value_changed(self, text):
@@ -2720,181 +2785,502 @@ class CellDef(QWidget):
         glayout = QGridLayout()
         idr = 0
         
-        label = QLabel("Minimum proliferation rate in presence of drug")
+        #--------------------
+
+        label = QLabel("Drug 1 Damage threshold")
         label.setAlignment(QtCore.Qt.AlignRight)
         idr += 1
         glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
-
-        self.pAO_min_prolif_factor = QLineEdit()
-        self.pAO_min_prolif_factor.textChanged.connect(self.pAO_min_prolif_factor_changed)
-        self.pAO_min_prolif_factor.setValidator(QtGui.QDoubleValidator())
-        glayout.addWidget(self.pAO_min_prolif_factor, idr,1, 1,1) # w, row, column, rowspan, colspan
-
+        self.PKPD_D1_damage = QLineEdit()
+        self.PKPD_D1_damage.textChanged.connect(self.PKPD_D1_damage_changed)
+        self.PKPD_D1_damage.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_damage, idr,1, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("Drug 1 repair rate")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D1_repair_rate = QLineEdit()
+        self.PKPD_D1_repair_rate.textChanged.connect(self.PKPD_D1_repair_rate_changed)
+        self.PKPD_D1_repair_rate.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_repair_rate, idr,1, 1,1) # w, row, column, rowspan, colspan
         units = QLabel("1/min")
         units.setFixedWidth(self.units_width)
         units.setAlignment(QtCore.Qt.AlignLeft)
         glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
-        
-        #--------------------
-        label = QLabel("Half-life of the drug")
+        label = QLabel("Drug 1 metabolism rate")
         label.setAlignment(QtCore.Qt.AlignRight)
         idr += 1
         glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
-
-        self.pAO_half_change = QLineEdit()
-        self.pAO_half_change.textChanged.connect(self.pAO_half_change_changed)
-        self.pAO_half_change.setValidator(QtGui.QDoubleValidator())
-        glayout.addWidget(self.pAO_half_change, idr,1, 1,1) # w, row, column, rowspan, colspan
-
-        units = QLabel("min")
+        self.PKPD_D1_metabolism_rate = QLineEdit()
+        self.PKPD_D1_metabolism_rate.textChanged.connect(self.PKPD_D1_metabolism_rate_changed)
+        self.PKPD_D1_metabolism_rate.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_metabolism_rate, idr,1, 1,1) # w, row, column, rowspan, colspan
+        units = QLabel("1/min")
         units.setFixedWidth(self.units_width)
         units.setAlignment(QtCore.Qt.AlignLeft)
-        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan        
-        
-        #--------------------
+        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
+        idr += 1
+        glayout.addWidget(QHLine(), idr,0, 1,4) # w, row, column, rowspan, colspan
+
+        label = QLabel("Drug 1 MOA: Proliferation")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D1_moa_is_prolif = QLineEdit()
+        self.PKPD_D1_moa_is_prolif.textChanged.connect(self.PKPD_D1_moa_is_prolif_changed)
+        self.PKPD_D1_moa_is_prolif.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_moa_is_prolif, idr,1, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("saturation rate")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D1_prolif_saturation_rate = QLineEdit()
+        self.PKPD_D1_prolif_saturation_rate.textChanged.connect(self.PKPD_D1_prolif_saturation_rate_changed)
+        self.PKPD_D1_prolif_saturation_rate.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_prolif_saturation_rate, idr,2, 1,1) # w, row, column, rowspan, colspan
+        units = QLabel("1/min")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
         label = QLabel("Hill coefficient of the drug")
         label.setAlignment(QtCore.Qt.AlignRight)
         idr += 1
-        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
-
-        self.pAO_hill_power = QLineEdit()
-        self.pAO_hill_power.textChanged.connect(self.pAO_hill_power_changed)
-        self.pAO_hill_power.setValidator(QtGui.QDoubleValidator())
-        glayout.addWidget(self.pAO_hill_power, idr,1, 1,1) # w, row, column, rowspan, colspan
-
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D1_prolif_hill_power = QLineEdit()
+        self.PKPD_D1_prolif_hill_power.textChanged.connect(self.PKPD_D1_prolif_hill_power_changed)
+        self.PKPD_D1_prolif_hill_power.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_prolif_hill_power, idr,2, 1,1) # w, row, column, rowspan, colspan
         units = QLabel("dimensionless")
         units.setFixedWidth(self.units_width)
         units.setAlignment(QtCore.Qt.AlignLeft)
-        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
-        
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("EC50 of the drug")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D1_prolif_EC50 = QLineEdit()
+        self.PKPD_D1_prolif_EC50.textChanged.connect(self.PKPD_D1_prolif_EC50_changed)
+        self.PKPD_D1_prolif_EC50.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_prolif_EC50, idr,2, 1,1) # w, row, column, rowspan, colspan
         #--------------------
-        label = QLabel("Maximum apoptosis rate in presence of drug")
+        #--------------------
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+       
+        label = QLabel("Drug 1 MOA: Apoptosis")
         label.setAlignment(QtCore.Qt.AlignRight)
         idr += 1
         glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
 
-        self.pAO_max_apop_factor = QLineEdit()
-        self.pAO_max_apop_factor.textChanged.connect(self.pAO_max_apop_factor_changed)
-        self.pAO_max_apop_factor.setValidator(QtGui.QDoubleValidator())
-        glayout.addWidget(self.pAO_max_apop_factor, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D1_moa_is_apop = QLineEdit()
+        self.PKPD_D1_moa_is_apop.textChanged.connect(self.PKPD_D1_moa_is_apop_changed)
+        self.PKPD_D1_moa_is_apop.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_moa_is_apop, idr,1, 1,1) # w, row, column, rowspan, colspan
+
+        #--------------------
+        label = QLabel("saturation rate")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+
+        self.PKPD_D1_apop_saturation_rate = QLineEdit()
+        self.PKPD_D1_apop_saturation_rate.textChanged.connect(self.PKPD_D1_apop_saturation_rate_changed)
+        self.PKPD_D1_apop_saturation_rate.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_apop_saturation_rate, idr,2, 1,1) # w, row, column, rowspan, colspan
 
         units = QLabel("1/min")
         units.setFixedWidth(self.units_width)
         units.setAlignment(QtCore.Qt.AlignLeft)
-        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
-        
-        #--------------------
-        label = QLabel("Pressure threshold")
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+
+        label = QLabel("Hill coefficient of the drug")
         label.setAlignment(QtCore.Qt.AlignRight)
         idr += 1
-        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
 
-        self.pressure_threshold = QLineEdit()
-        self.pressure_threshold.textChanged.connect(self.pressure_threshold_changed)
-        self.pressure_threshold.setValidator(QtGui.QDoubleValidator())
-        glayout.addWidget(self.pressure_threshold, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D1_apop_hill_power = QLineEdit()
+        self.PKPD_D1_apop_hill_power.textChanged.connect(self.PKPD_D1_apop_hill_power_changed)
+        self.PKPD_D1_apop_hill_power.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_apop_hill_power, idr,2, 1,1) # w, row, column, rowspan, colspan
 
         units = QLabel("dimensionless")
         units.setFixedWidth(self.units_width)
         units.setAlignment(QtCore.Qt.AlignLeft)
-        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
-        
-        #--------------------
-        label = QLabel("Arrested flag")
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+
+        label = QLabel("EC50 of the drug")
         label.setAlignment(QtCore.Qt.AlignRight)
         idr += 1
-        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
 
-        self.arrested = QLineEdit()
-        self.arrested.textChanged.connect(self.arrested_changed)
-        self.arrested.setValidator(QtGui.QDoubleValidator())
-        glayout.addWidget(self.arrested, idr,1, 1,1) # w, row, column, rowspan, colspan
-
+        self.PKPD_D1_apop_EC50 = QLineEdit()
+        self.PKPD_D1_apop_EC50.textChanged.connect(self.PKPD_D1_apop_EC50_changed)
+        self.PKPD_D1_apop_EC50.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_apop_EC50, idr,2, 1,1) # w, row, column, rowspan, colspan
+        #--------------------
         units = QLabel("dimensionless")
         units.setFixedWidth(self.units_width)
         units.setAlignment(QtCore.Qt.AlignLeft)
-        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
-        
-        #--------------------
-        label = QLabel("Damage in cell")
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+       
+        label = QLabel("Drug 1 MOA: Necrosis")
         label.setAlignment(QtCore.Qt.AlignRight)
         idr += 1
         glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
 
-        self.damage = QLineEdit()
-        self.damage.textChanged.connect(self.damage_changed)
-        self.damage.setValidator(QtGui.QDoubleValidator())
-        glayout.addWidget(self.damage, idr,1, 1,1) # w, row, column, rowspan, colspan
-
-        units = QLabel("dimensionless")
-        units.setFixedWidth(self.units_width)
-        units.setAlignment(QtCore.Qt.AlignLeft)
-        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
-        
-        #--------------------
-        label = QLabel("Maximum repair rate of cell")
+        self.PKPD_D1_moa_is_necrosis = QLineEdit()
+        self.PKPD_D1_moa_is_necrosis.textChanged.connect(self.PKPD_D1_moa_is_necrosis_changed)
+        self.PKPD_D1_moa_is_necrosis.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_moa_is_necrosis, idr,1, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("saturation rate")
         label.setAlignment(QtCore.Qt.AlignRight)
         idr += 1
-        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
 
-        self.repair_rate = QLineEdit()
-        self.repair_rate.textChanged.connect(self.repair_rate_changed)
-        self.repair_rate.setValidator(QtGui.QDoubleValidator())
-        glayout.addWidget(self.repair_rate, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D1_necrosis_saturation_rate = QLineEdit()
+        self.PKPD_D1_necrosis_saturation_rate.textChanged.connect(self.PKPD_D1_necrosis_saturation_rate_changed)
+        self.PKPD_D1_necrosis_saturation_rate.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_necrosis_saturation_rate, idr,2, 1,1) # w, row, column, rowspan, colspan
 
         units = QLabel("1/min")
         units.setFixedWidth(self.units_width)
         units.setAlignment(QtCore.Qt.AlignLeft)
-        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
- 
-        #--------------------
-        label = QLabel("Damage accumulation rate in the cell")
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+
+        label = QLabel("Hill coefficient of the drug")
         label.setAlignment(QtCore.Qt.AlignRight)
         idr += 1
-        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
 
-        self.damage_accumulation_rate = QLineEdit()
-        self.damage_accumulation_rate.textChanged.connect(self.damage_accumulation_rate_changed)
-        self.damage_accumulation_rate.setValidator(QtGui.QDoubleValidator())
-        glayout.addWidget(self.damage_accumulation_rate, idr,1, 1,1) # w, row, column, rowspan, colspan
-
-        units = QLabel("1/min")
-        units.setFixedWidth(self.units_width)
-        units.setAlignment(QtCore.Qt.AlignLeft)
-        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
-        
-        #--------------------
-        label = QLabel("Metabolism rate of the drug")
-        label.setAlignment(QtCore.Qt.AlignRight)
-        idr += 1
-        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
-
-        self.AO_metabolism_rate = QLineEdit()
-        self.AO_metabolism_rate.textChanged.connect(self.AO_metabolism_rate_changed)
-        self.AO_metabolism_rate.setValidator(QtGui.QDoubleValidator())
-        glayout.addWidget(self.AO_metabolism_rate, idr,1, 1,1) # w, row, column, rowspan, colspan
-
-        units = QLabel("1/min")
-        units.setFixedWidth(self.units_width)
-        units.setAlignment(QtCore.Qt.AlignLeft)
-        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
-        
-        #--------------------
-        label = QLabel("Drug effect")
-        label.setAlignment(QtCore.Qt.AlignRight)
-        idr += 1
-        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
-
-        self.drug_effect = QLineEdit()
-        self.drug_effect.textChanged.connect(self.drug_effect_changed)
-        self.drug_effect.setValidator(QtGui.QDoubleValidator())
-        glayout.addWidget(self.drug_effect, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D1_necrosis_hill_power = QLineEdit()
+        self.PKPD_D1_necrosis_hill_power.textChanged.connect(self.PKPD_D1_necrosis_hill_power_changed)
+        self.PKPD_D1_necrosis_hill_power.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_necrosis_hill_power, idr,2, 1,1) # w, row, column, rowspan, colspan
 
         units = QLabel("dimensionless")
         units.setFixedWidth(self.units_width)
         units.setAlignment(QtCore.Qt.AlignLeft)
-        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+
+        label = QLabel("EC50 of the drug")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+
+        self.PKPD_D1_necrosis_EC50 = QLineEdit()
+        self.PKPD_D1_necrosis_EC50.textChanged.connect(self.PKPD_D1_necrosis_EC50_changed)
+        self.PKPD_D1_necrosis_EC50.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_necrosis_EC50, idr,2, 1,1) # w, row, column, rowspan, colspan
+
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+
+        #--------------------
+        #--------------------
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+       
+        label = QLabel("Drug 1 MOA: Motility")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D1_moa_is_motility = QLineEdit()
+        self.PKPD_D1_moa_is_motility.textChanged.connect(self.PKPD_D1_moa_is_motility_changed)
+        self.PKPD_D1_moa_is_motility.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_moa_is_motility, idr,1, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("saturation rate")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D1_motility_saturation_rate = QLineEdit()
+        self.PKPD_D1_motility_saturation_rate.textChanged.connect(self.PKPD_D1_motility_saturation_rate_changed)
+        self.PKPD_D1_motility_saturation_rate.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_motility_saturation_rate, idr,2, 1,1) # w, row, column, rowspan, colspan
+        units = QLabel("1/min")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("Hill coefficient of the drug")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D1_motility_hill_power = QLineEdit()
+        self.PKPD_D1_motility_hill_power.textChanged.connect(self.PKPD_D1_motility_hill_power_changed)
+        self.PKPD_D1_motility_hill_power.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_motility_hill_power, idr,2, 1,1) # w, row, column, rowspan, colspan
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("EC50 of the drug")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D1_motility_EC50 = QLineEdit()
+        self.PKPD_D1_motility_EC50.textChanged.connect(self.PKPD_D1_motility_EC50_changed)
+        self.PKPD_D1_motility_EC50.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D1_motility_EC50, idr,2, 1,1) # w, row, column, rowspan, colspan
         
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+       
+        #---------drug2-----------
+        #--------------------     
+        idr += 1
+        glayout.addWidget(QHLine(), idr,0, 1,4) # w, row, column, rowspan, colspan        
+        
+        label = QLabel("Drug 2 Damage threshold")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D2_damage = QLineEdit()
+        self.PKPD_D2_damage.textChanged.connect(self.PKPD_D2_damage_changed)
+        self.PKPD_D2_damage.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_damage, idr,1, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("Drug 2 repair rate")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D2_repair_rate = QLineEdit()
+        self.PKPD_D2_repair_rate.textChanged.connect(self.PKPD_D2_repair_rate_changed)
+        self.PKPD_D2_repair_rate.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_repair_rate, idr,1, 1,1) # w, row, column, rowspan, colspan
+        units = QLabel("1/min")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("Drug 2 metabolism rate")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D2_metabolism_rate = QLineEdit()
+        self.PKPD_D2_metabolism_rate.textChanged.connect(self.PKPD_D2_metabolism_rate_changed)
+        self.PKPD_D2_metabolism_rate.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_metabolism_rate, idr,1, 1,1) # w, row, column, rowspan, colspan
+        units = QLabel("1/min")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,2, 1,1) # w, row, column, rowspan, colspan
+        idr += 1
+        glayout.addWidget(QHLine(), idr,0, 1,4) # w, row, column, rowspan, colspan 
+        
+        label = QLabel("Drug 2 MOA: Proliferation")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D2_moa_is_prolif = QLineEdit()
+        self.PKPD_D2_moa_is_prolif.textChanged.connect(self.PKPD_D2_moa_is_prolif_changed)
+        self.PKPD_D2_moa_is_prolif.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_moa_is_prolif, idr,1, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("saturation rate")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D2_prolif_saturation_rate = QLineEdit()
+        self.PKPD_D2_prolif_saturation_rate.textChanged.connect(self.PKPD_D2_prolif_saturation_rate_changed)
+        self.PKPD_D2_prolif_saturation_rate.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_prolif_saturation_rate, idr,2, 1,1) # w, row, column, rowspan, colspan
+        units = QLabel("1/min")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("Hill coefficient of the drug")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D2_prolif_hill_power = QLineEdit()
+        self.PKPD_D2_prolif_hill_power.textChanged.connect(self.PKPD_D2_prolif_hill_power_changed)
+        self.PKPD_D2_prolif_hill_power.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_prolif_hill_power, idr,2, 1,1) # w, row, column, rowspan, colspan
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("EC50 of the drug")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D2_prolif_EC50 = QLineEdit()
+        self.PKPD_D2_prolif_EC50.textChanged.connect(self.PKPD_D2_prolif_EC50_changed)
+        self.PKPD_D2_prolif_EC50.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_prolif_EC50, idr,2, 1,1) # w, row, column, rowspan, colspan
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+
+        label = QLabel("Drug 2 MOA: Apoptosis")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+
+        self.PKPD_D2_moa_is_apop = QLineEdit()
+        self.PKPD_D2_moa_is_apop.textChanged.connect(self.PKPD_D2_moa_is_apop_changed)
+        self.PKPD_D2_moa_is_apop.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_moa_is_apop, idr,1, 1,1) # w, row, column, rowspan, colspan
+
+        #--------------------
+        label = QLabel("saturation rate")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+
+        self.PKPD_D2_apop_saturation_rate = QLineEdit()
+        self.PKPD_D2_apop_saturation_rate.textChanged.connect(self.PKPD_D2_apop_saturation_rate_changed)
+        self.PKPD_D2_apop_saturation_rate.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_apop_saturation_rate, idr,2, 1,1) # w, row, column, rowspan, colspan
+
+        units = QLabel("1/min")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+
+        label = QLabel("Hill coefficient of the drug")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+
+        self.PKPD_D2_apop_hill_power = QLineEdit()
+        self.PKPD_D2_apop_hill_power.textChanged.connect(self.PKPD_D2_apop_hill_power_changed)
+        self.PKPD_D2_apop_hill_power.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_apop_hill_power, idr,2, 1,1) # w, row, column, rowspan, colspan
+
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+
+        label = QLabel("EC50 of the drug")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+
+        self.PKPD_D2_apop_EC50 = QLineEdit()
+        self.PKPD_D2_apop_EC50.textChanged.connect(self.PKPD_D2_apop_EC50_changed)
+        self.PKPD_D2_apop_EC50.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_apop_EC50, idr,2, 1,1) # w, row, column, rowspan, colspan
+        #--------------------
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+       
+        label = QLabel("Drug 2 MOA: Necrosis")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+
+        self.PKPD_D2_moa_is_necrosis = QLineEdit()
+        self.PKPD_D2_moa_is_necrosis.textChanged.connect(self.PKPD_D2_moa_is_necrosis_changed)
+        self.PKPD_D2_moa_is_necrosis.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_moa_is_necrosis, idr,1, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("saturation rate")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+
+        self.PKPD_D2_necrosis_saturation_rate = QLineEdit()
+        self.PKPD_D2_necrosis_saturation_rate.textChanged.connect(self.PKPD_D2_necrosis_saturation_rate_changed)
+        self.PKPD_D2_necrosis_saturation_rate.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_necrosis_saturation_rate, idr,2, 1,1) # w, row, column, rowspan, colspan
+
+        units = QLabel("1/min")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+
+        label = QLabel("Hill coefficient of the drug")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+
+        self.PKPD_D2_necrosis_hill_power = QLineEdit()
+        self.PKPD_D2_necrosis_hill_power.textChanged.connect(self.PKPD_D2_necrosis_hill_power_changed)
+        self.PKPD_D2_necrosis_hill_power.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_necrosis_hill_power, idr,2, 1,1) # w, row, column, rowspan, colspan
+
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+
+        label = QLabel("EC50 of the drug")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+
+        self.PKPD_D2_necrosis_EC50 = QLineEdit()
+        self.PKPD_D2_necrosis_EC50.textChanged.connect(self.PKPD_D2_necrosis_EC50_changed)
+        self.PKPD_D2_necrosis_EC50.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_necrosis_EC50, idr,2, 1,1) # w, row, column, rowspan, colspan
+
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+
+        #--------------------
+        #--------------------
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+       
+        label = QLabel("Drug 2 MOA: Motility")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,0, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D2_moa_is_motility = QLineEdit()
+        self.PKPD_D2_moa_is_motility.textChanged.connect(self.PKPD_D2_moa_is_motility_changed)
+        self.PKPD_D2_moa_is_motility.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_moa_is_motility, idr,1, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("saturation rate")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D2_motility_saturation_rate = QLineEdit()
+        self.PKPD_D2_motility_saturation_rate.textChanged.connect(self.PKPD_D2_motility_saturation_rate_changed)
+        self.PKPD_D2_motility_saturation_rate.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_motility_saturation_rate, idr,2, 1,1) # w, row, column, rowspan, colspan
+        units = QLabel("1/min")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("Hill coefficient of the drug")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D2_motility_hill_power = QLineEdit()
+        self.PKPD_D2_motility_hill_power.textChanged.connect(self.PKPD_D2_motility_hill_power_changed)
+        self.PKPD_D2_motility_hill_power.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_motility_hill_power, idr,2, 1,1) # w, row, column, rowspan, colspan
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+        label = QLabel("EC50 of the drug")
+        label.setAlignment(QtCore.Qt.AlignRight)
+        idr += 1
+        glayout.addWidget(label, idr,1, 1,1) # w, row, column, rowspan, colspan
+        self.PKPD_D2_motility_EC50 = QLineEdit()
+        self.PKPD_D2_motility_EC50.textChanged.connect(self.PKPD_D2_motility_EC50_changed)
+        self.PKPD_D2_motility_EC50.setValidator(QtGui.QDoubleValidator())
+        glayout.addWidget(self.PKPD_D2_motility_EC50, idr,2, 1,1) # w, row, column, rowspan, colspan
+        units = QLabel("dimensionless")
+        units.setFixedWidth(self.units_width)
+        units.setAlignment(QtCore.Qt.AlignLeft)
+        glayout.addWidget(units, idr,3, 1,1) # w, row, column, rowspan, colspan
+
+
+
         for idx in range(11):  # rwh: hack solution to align rows
             blank_line = QLabel("")
             idr += 1
@@ -3631,18 +4017,56 @@ class CellDef(QWidget):
 
     def new_pkpd_params(self, cdname):
         sval = self.default_sval
-        self.param_d[cdname]['pAO_min_prolif_factor'] = sval
-        self.param_d[cdname]['pAO_half_change'] = sval
-        self.param_d[cdname]['pAO_hill_power'] = sval
-        self.param_d[cdname]["pAO_max_apop_factor"] = sval
-        self.param_d[cdname]["pressure_threshold"] = sval
-        self.param_d[cdname]['arrested'] = sval
-        self.param_d[cdname]['damage'] = sval
-        self.param_d[cdname]['repair_rate'] = sval
-        self.param_d[cdname]["damage_accumulation_rate"] = sval
-        self.param_d[cdname]["AO_metabolism_rate"] = sval
-        self.param_d[cdname]["drug_effect"] = sval
+        self.param_d[cdname]["PKPD_D1_moa_is_prolif"] = sval
+        self.param_d[cdname]['PKPD_D1_prolif_saturation_rate'] = sval
+        self.param_d[cdname]['PKPD_D1_prolif_hill_power'] = sval
+        self.param_d[cdname]['PKPD_D1_prolif_EC50'] = sval
         
+        self.param_d[cdname]["PKPD_D1_moa_is_apop"] = sval
+        self.param_d[cdname]['PKPD_D1_apop_saturation_rate'] = sval
+        self.param_d[cdname]['PKPD_D1_apop_hill_power'] = sval
+        self.param_d[cdname]['PKPD_D1_apop_EC50'] = sval
+
+        self.param_d[cdname]["PKPD_D1_moa_is_necrosis"] = sval
+        self.param_d[cdname]['PKPD_D1_necrosis_saturation_rate'] = sval
+        self.param_d[cdname]['PKPD_D1_necrosis_hill_power'] = sval
+        self.param_d[cdname]['PKPD_D1_necrosis_EC50'] = sval
+
+        self.param_d[cdname]["PKPD_D1_moa_is_motility"] = sval
+        self.param_d[cdname]['PKPD_D1_motility_saturation_rate'] = sval
+        self.param_d[cdname]['PKPD_D1_motility_hill_power'] = sval
+        self.param_d[cdname]['PKPD_D1_motility_EC50'] = sval
+
+        self.param_d[cdname]["PKPD_D1_damage"] = sval
+        self.param_d[cdname]['PKPD_D1_repair_rate'] = sval
+        self.param_d[cdname]['PKPD_D1_metabolism_rate'] = sval
+
+
+
+        self.param_d[cdname]["PKPD_D2_moa_is_prolif"] = sval
+        self.param_d[cdname]['PKPD_D2_prolif_saturation_rate'] = sval
+        self.param_d[cdname]['PKPD_D2_prolif_hill_power'] = sval
+        self.param_d[cdname]['PKPD_D2_prolif_EC50'] = sval
+        
+        self.param_d[cdname]["PKPD_D2_moa_is_apop"] = sval
+        self.param_d[cdname]['PKPD_D2_apop_saturation_rate'] = sval
+        self.param_d[cdname]['PKPD_D2_apop_hill_power'] = sval
+        self.param_d[cdname]['PKPD_D2_apop_EC50'] = sval
+
+        self.param_d[cdname]["PKPD_D2_moa_is_necrosis"] = sval
+        self.param_d[cdname]['PKPD_D2_necrosis_saturation_rate'] = sval
+        self.param_d[cdname]['PKPD_D2_necrosis_hill_power'] = sval
+        self.param_d[cdname]['PKPD_D2_necrosis_EC50'] = sval
+
+        self.param_d[cdname]["PKPD_D2_moa_is_motility"] = sval
+        self.param_d[cdname]['PKPD_D2_motility_saturation_rate'] = sval
+        self.param_d[cdname]['PKPD_D2_motility_hill_power'] = sval
+        self.param_d[cdname]['PKPD_D2_motility_EC50'] = sval
+
+        self.param_d[cdname]["PKPD_D2_damage"] = sval
+        self.param_d[cdname]['PKPD_D2_repair_rate'] = sval
+        self.param_d[cdname]['PKPD_D2_metabolism_rate'] = sval
+
     def add_new_substrate(self, sub_name):
         self.add_new_substrate_comboboxes(sub_name)
 
@@ -3907,17 +4331,54 @@ class CellDef(QWidget):
     #-----------------------------------------------------------------------------------------
     def update_pkpd_params(self):
         cdname = self.current_cell_def
-        self.pAO_min_prolif_factor.setText(self.param_d[cdname]['pAO_min_prolif_factor'])
-        self.pAO_half_change.setText(self.param_d[cdname]['pAO_half_change'])
-        self.pAO_hill_power.setText(self.param_d[cdname]['pAO_hill_power'])
-        self.pAO_max_apop_factor.setText(self.param_d[cdname]["pAO_max_apop_factor"])
-        self.pressure_threshold.setText(self.param_d[cdname]["pressure_threshold"])
-        self.arrested.setText(self.param_d[cdname]['arrested'])
-        self.damage.setText(self.param_d[cdname]['damage'])
-        self.repair_rate.setText(self.param_d[cdname]['repair_rate'])
-        self.damage_accumulation_rate.setText(self.param_d[cdname]["damage_accumulation_rate"])
-        self.AO_metabolism_rate.setText(self.param_d[cdname]["AO_metabolism_rate"])
-        self.drug_effect.setText(self.param_d[cdname]["drug_effect"])
+        self.PKPD_D1_moa_is_prolif.setText(self.param_d[cdname]["PKPD_D1_moa_is_prolif"])
+        self.PKPD_D1_prolif_saturation_rate.setText(self.param_d[cdname]['PKPD_D1_prolif_saturation_rate'])
+        self.PKPD_D1_prolif_hill_power.setText(self.param_d[cdname]['PKPD_D1_prolif_hill_power'])
+        self.PKPD_D1_prolif_EC50.setText(self.param_d[cdname]['PKPD_D1_prolif_EC50'])
+
+        self.PKPD_D1_moa_is_apop.setText(self.param_d[cdname]["PKPD_D1_moa_is_apop"])
+        self.PKPD_D1_apop_saturation_rate.setText(self.param_d[cdname]['PKPD_D1_apop_saturation_rate'])
+        self.PKPD_D1_apop_hill_power.setText(self.param_d[cdname]['PKPD_D1_apop_hill_power'])
+        self.PKPD_D1_apop_EC50.setText(self.param_d[cdname]['PKPD_D1_apop_EC50'])
+
+        self.PKPD_D1_moa_is_necrosis.setText(self.param_d[cdname]["PKPD_D1_moa_is_necrosis"])
+        self.PKPD_D1_necrosis_saturation_rate.setText(self.param_d[cdname]['PKPD_D1_necrosis_saturation_rate'])
+        self.PKPD_D1_necrosis_hill_power.setText(self.param_d[cdname]['PKPD_D1_necrosis_hill_power'])
+        self.PKPD_D1_necrosis_EC50.setText(self.param_d[cdname]['PKPD_D1_necrosis_EC50'])
+
+        self.PKPD_D1_moa_is_motility.setText(self.param_d[cdname]["PKPD_D1_moa_is_motility"])
+        self.PKPD_D1_motility_saturation_rate.setText(self.param_d[cdname]['PKPD_D1_motility_saturation_rate'])
+        self.PKPD_D1_motility_hill_power.setText(self.param_d[cdname]['PKPD_D1_motility_hill_power'])
+        self.PKPD_D1_motility_EC50.setText(self.param_d[cdname]['PKPD_D1_motility_EC50'])
+
+        self.PKPD_D1_damage.setText(self.param_d[cdname]["PKPD_D1_damage"])
+        self.PKPD_D1_repair_rate.setText(self.param_d[cdname]['PKPD_D1_repair_rate'])
+        self.PKPD_D1_metabolism_rate.setText(self.param_d[cdname]['PKPD_D1_metabolism_rate'])
+
+
+        self.PKPD_D2_moa_is_prolif.setText(self.param_d[cdname]["PKPD_D2_moa_is_prolif"])
+        self.PKPD_D2_prolif_saturation_rate.setText(self.param_d[cdname]['PKPD_D2_prolif_saturation_rate'])
+        self.PKPD_D2_prolif_hill_power.setText(self.param_d[cdname]['PKPD_D2_prolif_hill_power'])
+        self.PKPD_D2_prolif_EC50.setText(self.param_d[cdname]['PKPD_D2_prolif_EC50'])
+
+        self.PKPD_D2_moa_is_apop.setText(self.param_d[cdname]["PKPD_D2_moa_is_apop"])
+        self.PKPD_D2_apop_saturation_rate.setText(self.param_d[cdname]['PKPD_D2_apop_saturation_rate'])
+        self.PKPD_D2_apop_hill_power.setText(self.param_d[cdname]['PKPD_D2_apop_hill_power'])
+        self.PKPD_D2_apop_EC50.setText(self.param_d[cdname]['PKPD_D2_apop_EC50'])
+
+        self.PKPD_D2_moa_is_necrosis.setText(self.param_d[cdname]["PKPD_D2_moa_is_necrosis"])
+        self.PKPD_D2_necrosis_saturation_rate.setText(self.param_d[cdname]['PKPD_D2_necrosis_saturation_rate'])
+        self.PKPD_D2_necrosis_hill_power.setText(self.param_d[cdname]['PKPD_D2_necrosis_hill_power'])
+        self.PKPD_D2_necrosis_EC50.setText(self.param_d[cdname]['PKPD_D2_necrosis_EC50'])
+
+        self.PKPD_D2_moa_is_motility.setText(self.param_d[cdname]["PKPD_D2_moa_is_motility"])
+        self.PKPD_D2_motility_saturation_rate.setText(self.param_d[cdname]['PKPD_D2_motility_saturation_rate'])
+        self.PKPD_D2_motility_hill_power.setText(self.param_d[cdname]['PKPD_D2_motility_hill_power'])
+        self.PKPD_D2_motility_EC50.setText(self.param_d[cdname]['PKPD_D2_motility_EC50'])
+
+        self.PKPD_D2_damage.setText(self.param_d[cdname]["PKPD_D2_damage"])
+        self.PKPD_D2_repair_rate.setText(self.param_d[cdname]['PKPD_D2_repair_rate'])
+        self.PKPD_D2_metabolism_rate.setText(self.param_d[cdname]['PKPD_D2_metabolism_rate'])
 
     #-----------------------------------------------------------------------------------------
     def update_secretion_params(self):
@@ -4838,38 +5299,91 @@ class CellDef(QWidget):
                 print('pkpd_path=',pkpd_path)
                 print(uep.find(pkpd_path))
 
-                val = uep.find(pkpd_path+"pAO_min_prolif_factor").text
-                self.param_d[cell_def_name]["pAO_min_prolif_factor"] = val
-                
-                val = uep.find(pkpd_path+"pAO_half_change").text
-                self.param_d[cell_def_name]["pAO_half_change"] = val
-                
-                val = uep.find(pkpd_path+"pAO_hill_power").text
-                self.param_d[cell_def_name]["pAO_hill_power"] = val
-                
-                val = uep.find(pkpd_path+"pAO_max_apop_factor").text
-                self.param_d[cell_def_name]["pAO_max_apop_factor"] = val
-                
-                val = uep.find(pkpd_path+"pressure_threshold").text
-                self.param_d[cell_def_name]["pressure_threshold"] = val
-                
-                val = uep.find(pkpd_path+"arrested").text
-                self.param_d[cell_def_name]["arrested"] = val
-                
-                val = uep.find(pkpd_path+"damage").text
-                self.param_d[cell_def_name]["damage"] = val
-                
-                val = uep.find(pkpd_path+"repair_rate").text
-                self.param_d[cell_def_name]["repair_rate"] = val
-                
-                val = uep.find(pkpd_path+"damage_accumulation_rate").text
-                self.param_d[cell_def_name]["damage_accumulation_rate"] = val
-                
-                val = uep.find(pkpd_path+"AO_metabolism_rate").text
-                self.param_d[cell_def_name]["AO_metabolism_rate"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_moa_is_prolif").text
+                self.param_d[cell_def_name]["PKPD_D1_moa_is_prolif"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_prolif_saturation_rate").text
+                self.param_d[cell_def_name]["PKPD_D1_prolif_saturation_rate"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_prolif_hill_power").text
+                self.param_d[cell_def_name]["PKPD_D1_prolif_hill_power"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_prolif_EC50").text
+                self.param_d[cell_def_name]["PKPD_D1_prolif_EC50"] = val
 
-                val = uep.find(pkpd_path+"drug_effect").text
-                self.param_d[cell_def_name]["drug_effect"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_moa_is_apop").text
+                self.param_d[cell_def_name]["PKPD_D1_moa_is_apop"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_apop_saturation_rate").text
+                self.param_d[cell_def_name]["PKPD_D1_apop_saturation_rate"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_apop_hill_power").text
+                self.param_d[cell_def_name]["PKPD_D1_apop_hill_power"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_apop_EC50").text
+                self.param_d[cell_def_name]["PKPD_D1_apop_EC50"] = val
+
+                val = uep.find(pkpd_path+"PKPD_D1_moa_is_necrosis").text
+                self.param_d[cell_def_name]["PKPD_D1_moa_is_necrosis"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_necrosis_saturation_rate").text
+                self.param_d[cell_def_name]["PKPD_D1_necrosis_saturation_rate"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_necrosis_hill_power").text
+                self.param_d[cell_def_name]["PKPD_D1_necrosis_hill_power"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_necrosis_EC50").text
+                self.param_d[cell_def_name]["PKPD_D1_necrosis_EC50"] = val
+
+                val = uep.find(pkpd_path+"PKPD_D1_moa_is_motility").text
+                self.param_d[cell_def_name]["PKPD_D1_moa_is_motility"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_motility_saturation_rate").text
+                self.param_d[cell_def_name]["PKPD_D1_motility_saturation_rate"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_motility_hill_power").text
+                self.param_d[cell_def_name]["PKPD_D1_motility_hill_power"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_motility_EC50").text
+                self.param_d[cell_def_name]["PKPD_D1_motility_EC50"] = val
+
+                val = uep.find(pkpd_path+"PKPD_D1_damage").text
+                self.param_d[cell_def_name]["PKPD_D1_damage"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_repair_rate").text
+                self.param_d[cell_def_name]["PKPD_D1_repair_rate"] = val
+                val = uep.find(pkpd_path+"PKPD_D1_metabolism_rate").text
+                self.param_d[cell_def_name]["PKPD_D1_metabolism_rate"] = val
+
+                val = uep.find(pkpd_path+"PKPD_D2_moa_is_prolif").text
+                self.param_d[cell_def_name]["PKPD_D2_moa_is_prolif"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_prolif_saturation_rate").text
+                self.param_d[cell_def_name]["PKPD_D2_prolif_saturation_rate"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_prolif_hill_power").text
+                self.param_d[cell_def_name]["PKPD_D2_prolif_hill_power"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_prolif_EC50").text
+                self.param_d[cell_def_name]["PKPD_D2_prolif_EC50"] = val
+
+                val = uep.find(pkpd_path+"PKPD_D2_moa_is_apop").text
+                self.param_d[cell_def_name]["PKPD_D2_moa_is_apop"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_apop_saturation_rate").text
+                self.param_d[cell_def_name]["PKPD_D2_apop_saturation_rate"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_apop_hill_power").text
+                self.param_d[cell_def_name]["PKPD_D2_apop_hill_power"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_apop_EC50").text
+                self.param_d[cell_def_name]["PKPD_D2_apop_EC50"] = val
+
+                val = uep.find(pkpd_path+"PKPD_D2_moa_is_necrosis").text
+                self.param_d[cell_def_name]["PKPD_D2_moa_is_necrosis"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_necrosis_saturation_rate").text
+                self.param_d[cell_def_name]["PKPD_D2_necrosis_saturation_rate"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_necrosis_hill_power").text
+                self.param_d[cell_def_name]["PKPD_D2_necrosis_hill_power"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_necrosis_EC50").text
+                self.param_d[cell_def_name]["PKPD_D2_necrosis_EC50"] = val
+
+                val = uep.find(pkpd_path+"PKPD_D2_moa_is_motility").text
+                self.param_d[cell_def_name]["PKPD_D2_moa_is_motility"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_motility_saturation_rate").text
+                self.param_d[cell_def_name]["PKPD_D2_motility_saturation_rate"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_motility_hill_power").text
+                self.param_d[cell_def_name]["PKPD_D2_motility_hill_power"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_motility_EC50").text
+                self.param_d[cell_def_name]["PKPD_D2_motility_EC50"] = val
+
+                val = uep.find(pkpd_path+"PKPD_D2_damage").text
+                self.param_d[cell_def_name]["PKPD_D2_damage"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_repair_rate").text
+                self.param_d[cell_def_name]["PKPD_D2_repair_rate"] = val
+                val = uep.find(pkpd_path+"PKPD_D2_metabolism_rate").text
+                self.param_d[cell_def_name]["PKPD_D2_metabolism_rate"] = val
 
                 # # ---------  custom data 
                 print("\n===== populate():  custom data")
@@ -5725,49 +6239,130 @@ class CellDef(QWidget):
     #-------------------------------------------------------------------
     # Read values from the GUI widgets and generate/write a new XML
     def fill_xml_pkpd_data(self,pkpd_data,cdef):
-    
-        elm = ET.SubElement(pkpd_data, 'pAO_min_prolif_factor')
-        elm.text = self.param_d[cdef]['pAO_min_prolif_factor']
-        elm.tail = self.indent10
         
-        elm = ET.SubElement(pkpd_data, 'pAO_half_change')
-        elm.text = self.param_d[cdef]['pAO_half_change']
+        elm = ET.SubElement(pkpd_data,'PKPD_D1_moa_is_prolif')
+        elm.text = self.param_d[cdef]['PKPD_D1_moa_is_prolif']
         elm.tail = self.indent10
-        
-        elm = ET.SubElement(pkpd_data, 'pAO_hill_power')
-        elm.text = self.param_d[cdef]['pAO_hill_power']
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_prolif_saturation_rate')
+        elm.text = self.param_d[cdef]['PKPD_D1_prolif_saturation_rate']
         elm.tail = self.indent10
-        
-        elm = ET.SubElement(pkpd_data, 'pAO_max_apop_factor')
-        elm.text = self.param_d[cdef]['pAO_max_apop_factor']
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_prolif_hill_power')
+        elm.text = self.param_d[cdef]['PKPD_D1_prolif_hill_power']
         elm.tail = self.indent10
-        
-        elm = ET.SubElement(pkpd_data, 'pressure_threshold')
-        elm.text = self.param_d[cdef]['pressure_threshold']
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_prolif_EC50')
+        elm.text = self.param_d[cdef]['PKPD_D1_prolif_EC50']
         elm.tail = self.indent10
-        
-        elm = ET.SubElement(pkpd_data, 'arrested')
-        elm.text = self.param_d[cdef]['arrested']
+
+        elm = ET.SubElement(pkpd_data,'PKPD_D1_moa_is_apop')
+        elm.text = self.param_d[cdef]['PKPD_D1_moa_is_apop']
         elm.tail = self.indent10
-        
-        elm = ET.SubElement(pkpd_data, 'damage')
-        elm.text = self.param_d[cdef]['damage']
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_apop_saturation_rate')
+        elm.text = self.param_d[cdef]['PKPD_D1_apop_saturation_rate']
         elm.tail = self.indent10
-        
-        elm = ET.SubElement(pkpd_data, 'repair_rate')
-        elm.text = self.param_d[cdef]['repair_rate']
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_apop_hill_power')
+        elm.text = self.param_d[cdef]['PKPD_D1_apop_hill_power']
         elm.tail = self.indent10
-        
-        elm = ET.SubElement(pkpd_data, 'damage_accumulation_rate')
-        elm.text = self.param_d[cdef]['damage_accumulation_rate']
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_apop_EC50')
+        elm.text = self.param_d[cdef]['PKPD_D1_apop_EC50']
         elm.tail = self.indent10
-        
-        elm = ET.SubElement(pkpd_data, 'AO_metabolism_rate')
-        elm.text = self.param_d[cdef]['AO_metabolism_rate']
+
+        elm = ET.SubElement(pkpd_data,'PKPD_D1_moa_is_necrosis')
+        elm.text = self.param_d[cdef]['PKPD_D1_moa_is_necrosis']
         elm.tail = self.indent10
-        
-        elm = ET.SubElement(pkpd_data, 'drug_effect')
-        elm.text = self.param_d[cdef]['drug_effect']
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_necrosis_saturation_rate')
+        elm.text = self.param_d[cdef]['PKPD_D1_necrosis_saturation_rate']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_necrosis_hill_power')
+        elm.text = self.param_d[cdef]['PKPD_D1_necrosis_hill_power']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_necrosis_EC50')
+        elm.text = self.param_d[cdef]['PKPD_D1_necrosis_EC50']
+        elm.tail = self.indent10
+
+        elm = ET.SubElement(pkpd_data,'PKPD_D1_moa_is_motility')
+        elm.text = self.param_d[cdef]['PKPD_D1_moa_is_motility']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_motility_saturation_rate')
+        elm.text = self.param_d[cdef]['PKPD_D1_motility_saturation_rate']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_motility_hill_power')
+        elm.text = self.param_d[cdef]['PKPD_D1_motility_hill_power']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_motility_EC50')
+        elm.text = self.param_d[cdef]['PKPD_D1_motility_EC50']
+        elm.tail = self.indent10
+
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_damage')
+        elm.text = self.param_d[cdef]['PKPD_D1_damage']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_repair_rate')
+        elm.text = self.param_d[cdef]['PKPD_D1_repair_rate']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D1_metabolism_rate')
+        elm.text = self.param_d[cdef]['PKPD_D1_metabolism_rate']
+        elm.tail = self.indent10
+
+
+        elm = ET.SubElement(pkpd_data,'PKPD_D2_moa_is_prolif')
+        elm.text = self.param_d[cdef]['PKPD_D2_moa_is_prolif']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_prolif_saturation_rate')
+        elm.text = self.param_d[cdef]['PKPD_D2_prolif_saturation_rate']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_prolif_hill_power')
+        elm.text = self.param_d[cdef]['PKPD_D2_prolif_hill_power']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_prolif_EC50')
+        elm.text = self.param_d[cdef]['PKPD_D2_prolif_EC50']
+        elm.tail = self.indent10
+
+        elm = ET.SubElement(pkpd_data,'PKPD_D2_moa_is_apop')
+        elm.text = self.param_d[cdef]['PKPD_D2_moa_is_apop']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_apop_saturation_rate')
+        elm.text = self.param_d[cdef]['PKPD_D2_apop_saturation_rate']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_apop_hill_power')
+        elm.text = self.param_d[cdef]['PKPD_D2_apop_hill_power']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_apop_EC50')
+        elm.text = self.param_d[cdef]['PKPD_D2_apop_EC50']
+        elm.tail = self.indent10
+
+        elm = ET.SubElement(pkpd_data,'PKPD_D2_moa_is_necrosis')
+        elm.text = self.param_d[cdef]['PKPD_D2_moa_is_necrosis']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_necrosis_saturation_rate')
+        elm.text = self.param_d[cdef]['PKPD_D2_necrosis_saturation_rate']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_necrosis_hill_power')
+        elm.text = self.param_d[cdef]['PKPD_D2_necrosis_hill_power']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_necrosis_EC50')
+        elm.text = self.param_d[cdef]['PKPD_D2_necrosis_EC50']
+        elm.tail = self.indent10
+
+        elm = ET.SubElement(pkpd_data,'PKPD_D2_moa_is_motility')
+        elm.text = self.param_d[cdef]['PKPD_D2_moa_is_motility']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_motility_saturation_rate')
+        elm.text = self.param_d[cdef]['PKPD_D2_motility_saturation_rate']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_motility_hill_power')
+        elm.text = self.param_d[cdef]['PKPD_D2_motility_hill_power']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_motility_EC50')
+        elm.text = self.param_d[cdef]['PKPD_D2_motility_EC50']
+        elm.tail = self.indent10
+
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_damage')
+        elm.text = self.param_d[cdef]['PKPD_D2_damage']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_repair_rate')
+        elm.text = self.param_d[cdef]['PKPD_D2_repair_rate']
+        elm.tail = self.indent10
+        elm = ET.SubElement(pkpd_data, 'PKPD_D2_metabolism_rate')
+        elm.text = self.param_d[cdef]['PKPD_D2_metabolism_rate']
         elm.tail = self.indent10
 
     #-------------------------------------------------------------------
@@ -5871,17 +6466,15 @@ class CellDef(QWidget):
                 self.fill_xml_motility(pheno,cdef)
                 # ------- secretion ------- 
                 self.fill_xml_secretion(pheno,cdef)
+                
 
-                # ------- pkpd_data -------
-                pkpddata = ET.SubElement(elm, 'pkpd_data')
-                pkpddata.text = self.indent10
-                pkpddata.tail = self.indent10
-                self.fill_xml_pkpd_data(pkpddata,cdef)
-
-                # ------- custom data ------- 
+                # ------- custom data (pkkpd and custom) ------- 
                 customdata = ET.SubElement(elm, 'custom_data')
                 customdata.text = self.indent10
                 customdata.tail = self.indent10
+                # ------- pkpd_data -------
+                self.fill_xml_pkpd_data(customdata,cdef)
+                # ------- custom data ------- 
                 self.fill_xml_custom_data(customdata,cdef)
 
 

@@ -145,10 +145,11 @@ class PhysiCellXMLCreator(QWidget):
         self.user_params_tab = UserParams()
         self.user_params_tab.xml_root = self.xml_root
         self.user_params_tab.fill_gui()
-        
-        self.pkpd_params_tab = PKPDParams()
-        self.pkpd_params_tab.xml_root = self.xml_root
-        self.pkpd_params_tab.fill_gui()
+
+
+        # self.pkpd_params_tab = PKPDParams()
+        # self.pkpd_params_tab.xml_root = self.xml_root
+        # self.pkpd_params_tab.fill_gui()
         # self.sbml_tab = SBMLParams()
         # self.sbml_tab.xml_root = self.xml_root
         # self.sbml_tab.fill_gui()
@@ -160,7 +161,7 @@ class PhysiCellXMLCreator(QWidget):
         tabWidget.addTab(self.celldef_tab,"Cell Types")
         tabWidget.addTab(self.cell_customdata_tab,"Cell Custom Data")
         tabWidget.addTab(self.user_params_tab,"User Params")
-        tabWidget.addTab(self.pkpd_params_tab, "PKPD Params")
+        # tabWidget.addTab(self.pkpd_params_tab, "PKPD Params")
 
         vlayout.addWidget(tabWidget)
         # self.addTab(self.sbml_tab,"SBML")
@@ -305,7 +306,7 @@ class PhysiCellXMLCreator(QWidget):
         self.celldef_tab.xml_root = self.xml_root
         self.cell_customdata_tab.xml_root = self.xml_root
         self.user_params_tab.xml_root = self.xml_root
-        self.pkpd_params_tab.xml_root = self.xml_root
+        # self.pkpd_params_tab.xml_root = self.xml_root
 
         self.config_tab.fill_gui()
 
@@ -332,8 +333,8 @@ class PhysiCellXMLCreator(QWidget):
         self.user_params_tab.clear_gui()
         self.user_params_tab.fill_gui()
         
-        self.pkpd_params_tab.clear_gui()
-        self.pkpd_params_tab.fill_gui()
+        # self.pkpd_params_tab.clear_gui()
+        # self.pkpd_params_tab.fill_gui()
 
     def show_sample_model(self):
         print("show_sample_model: self.config_file = ", self.config_file)
@@ -402,7 +403,7 @@ class PhysiCellXMLCreator(QWidget):
         self.microenv_tab.fill_xml()
         self.celldef_tab.fill_xml()
         self.user_params_tab.fill_xml()
-        self.pkpd_params_tab.fill_xml()
+        # self.pkpd_params_tab.fill_xml()
 
         # filePath = QFileDialog.getOpenFileName(self,'',".",'*.xml')
         # print("gui4xml:  save_cb: writing to: ",self.config_file)
@@ -455,7 +456,7 @@ class PhysiCellXMLCreator(QWidget):
         self.microenv_tab.fill_xml()
         self.celldef_tab.fill_xml()
         self.user_params_tab.fill_xml()
-        self.pkpd_params_tab.fill_xml()
+        # self.pkpd_params_tab.fill_xml()
 
         save_as_file = "mymodel.xml"
         print("gui4xml:  save_as_cb: writing to: ",save_as_file) # writing to:  ('/Users/heiland/git/PhysiCell-model-builder/rwh.xml', 'All Files (*)')

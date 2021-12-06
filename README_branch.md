@@ -1,1 +1,1 @@
-want to allow the option to map AUC into [0,1] for saturation of damage effect. Will keep the model of unlimited damage effect as the default option for now.
+to implement PKPD into the model builder, copy the files into their relevant folders in the model builder (bin and data)
