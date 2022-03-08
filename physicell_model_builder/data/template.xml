@@ -286,34 +286,35 @@
 				<molecular />
 			</phenotype>
 			<pkpd_data>  
-				<PKPD_D1_moa_is_prolif>0.0</PKPD_D1_moa_is_prolif>
-                <PKPD_D1_prolif_saturation_rate>1e-6</PKPD_D1_prolif_saturation_rate>
-                <PKPD_D1_prolif_EC50>1e8</PKPD_D1_prolif_EC50>
-                <PKPD_D1_prolif_hill_power>2</PKPD_D1_prolif_hill_power>
+				<PKPD_D1 name="PKPD_D1">
+					<PKPD_D1_moa_is_prolif>0.0</PKPD_D1_moa_is_prolif>
+					<PKPD_D1_prolif_saturation_rate>1e-6</PKPD_D1_prolif_saturation_rate>
+					<PKPD_D1_prolif_EC50>1e8</PKPD_D1_prolif_EC50>
+					<PKPD_D1_prolif_hill_power>2</PKPD_D1_prolif_hill_power>
 
-                <PKPD_D1_moa_is_apop>0.0</PKPD_D1_moa_is_apop>
-                <PKPD_D1_apop_saturation_rate>1E-4</PKPD_D1_apop_saturation_rate>
-                <PKPD_D1_apop_EC50>1e7</PKPD_D1_apop_EC50>
-                <PKPD_D1_apop_hill_power>2</PKPD_D1_apop_hill_power>
+					<PKPD_D1_moa_is_apop>0.0</PKPD_D1_moa_is_apop>
+					<PKPD_D1_apop_saturation_rate>1E-4</PKPD_D1_apop_saturation_rate>
+					<PKPD_D1_apop_EC50>1e8</PKPD_D1_apop_EC50>
+					<PKPD_D1_apop_hill_power>2</PKPD_D1_apop_hill_power>
 
-                <PKPD_D1_moa_is_necrosis>0.0</PKPD_D1_moa_is_necrosis>
-                <PKPD_D1_necrosis_saturation_rate>1E-4</PKPD_D1_necrosis_saturation_rate>
-                <PKPD_D1_necrosis_EC50>1e7</PKPD_D1_necrosis_EC50>
-                <PKPD_D1_necrosis_hill_power>2</PKPD_D1_necrosis_hill_power>
+					<PKPD_D1_moa_is_necrosis>0.0</PKPD_D1_moa_is_necrosis>
+					<PKPD_D1_necrosis_saturation_rate>1E-4</PKPD_D1_necrosis_saturation_rate>
+					<PKPD_D1_necrosis_EC50>1e8</PKPD_D1_necrosis_EC50>
+					<PKPD_D1_necrosis_hill_power>2</PKPD_D1_necrosis_hill_power>
 
-                <PKPD_D1_moa_is_motility>0.0</PKPD_D1_moa_is_motility>
-                <PKPD_D1_motility_saturation_rate>1</PKPD_D1_motility_saturation_rate>
-                <PKPD_D1_motility_EC50>1e7</PKPD_D1_motility_EC50>
-                <PKPD_D1_motility_hill_power>2</PKPD_D1_motility_hill_power>
+					<PKPD_D1_moa_is_motility>0.0</PKPD_D1_moa_is_motility>
+					<PKPD_D1_motility_saturation_rate>1</PKPD_D1_motility_saturation_rate>
+					<PKPD_D1_motility_EC50>1e8</PKPD_D1_motility_EC50>
+					<PKPD_D1_motility_hill_power>2</PKPD_D1_motility_hill_power>
 
-                <PKPD_D1_damage>0</PKPD_D1_damage>
-                <PKPD_D1_repair_rate>1e7</PKPD_D1_repair_rate>
-                <PKPD_D1_metabolism_rate>0.05</PKPD_D1_metabolism_rate>
-
+					<PKPD_D1_damage>0</PKPD_D1_damage>
+					<PKPD_D1_repair_rate>1e8</PKPD_D1_repair_rate>
+					<PKPD_D1_metabolism_rate>0.05</PKPD_D1_metabolism_rate>
+				</PKPD_D1>
 
 <!-- <div_drugs type="divider" description="-Starting Drug 2 PD parameters-"/> -->
 
-
+				<PKPD_D2 name="PKPD_D2">
                 <PKPD_D2_moa_is_prolif>0.0</PKPD_D2_moa_is_prolif>
                 <PKPD_D2_prolif_saturation_rate>1E-6</PKPD_D2_prolif_saturation_rate>
                 <PKPD_D2_prolif_EC50>1e10</PKPD_D2_prolif_EC50>
@@ -326,17 +327,18 @@
 
                 <PKPD_D2_moa_is_necrosis>0.0</PKPD_D2_moa_is_necrosis>
                 <PKPD_D2_necrosis_saturation_rate>1E-4</PKPD_D2_necrosis_saturation_rate>
-                <PKPD_D2_necrosis_EC50>1e7</PKPD_D2_necrosis_EC50>
+                <PKPD_D2_necrosis_EC50>1e8</PKPD_D2_necrosis_EC50>
                 <PKPD_D2_necrosis_hill_power>2</PKPD_D2_necrosis_hill_power>
 
                 <PKPD_D2_moa_is_motility>0.0</PKPD_D2_moa_is_motility>
                 <PKPD_D2_motility_saturation_rate>1</PKPD_D2_motility_saturation_rate>
-                <PKPD_D2_motility_EC50>1e7</PKPD_D2_motility_EC50>
+                <PKPD_D2_motility_EC50>1e8</PKPD_D2_motility_EC50>
                 <PKPD_D2_motility_hill_power>2</PKPD_D2_motility_hill_power>
 
                 <PKPD_D2_damage>0</PKPD_D2_damage>
                 <PKPD_D2_repair_rate>5e6</PKPD_D2_repair_rate>
                 <PKPD_D2_metabolism_rate>0.05</PKPD_D2_metabolism_rate>
+				</PKPD_D2>
 
 			</pkpd_data>
 			<custom_data>  
@@ -359,7 +361,7 @@
         <number_of_tumor_1_cells type="int" units="none" description="initial number of tumor_1 cells">500</number_of_tumor_1_cells>
         <number_of_tumor_2_cells type="int" units="none" description="initial number of tumor_2 cells">0</number_of_tumor_2_cells>
         <csv_data_interval type="double" units="min" description="time between writing data to CSV">100</csv_data_interval>
-        <max_initial_distance type="double" units="micron" description="max initial cell distance from origin">250.0</max_initial_distance>
+        <!-- <max_initial_distance type="double" units="micron" description="max initial cell distance from origin">250.0</max_initial_distance> -->
 
 
 

@@ -2676,6 +2676,8 @@ class CellDef(QWidget):
         self.param_d[self.current_cell_def]["secretion"][self.current_secretion_substrate]['net_export_rate'] = text
 
     # --- PKPD
+
+
     def PKPD_D1_moa_is_prolif_changed(self,text):
         self.param_d[self.current_cell_def]['PKPD_D1_moa_is_prolif'] =text
     def PKPD_D1_prolif_saturation_rate_changed(self, text):
@@ -2784,7 +2786,10 @@ class CellDef(QWidget):
         pkpd_data_tab = QWidget()
         glayout = QGridLayout()
         idr = 0
-        
+        self.pkpd_substrate_dropdown = QComboBox()
+        idr = 0
+        glayout.addWidget(self.pkpd_substrate_dropdown, idr,0, 1,1) # w, row, column, rowspan, colspan
+        self.pkpd_substrate_dropdown.currentIndexChanged.connect(self.secretion_substrate_changed_cb)  # beware: will be triggered on a ".clear" too
         #--------------------
 
         label = QLabel("Drug 1 Damage threshold")
@@ -3598,6 +3603,17 @@ class CellDef(QWidget):
             return
 
         self.update_secretion_params()
+    
+        # @QtCore.Slot()
+    def pkpd_substrate_changed_cb(self, idx):
+        # print('------ secretion_substrate_changed_cb(): idx = ',idx)
+        self.current_pkpd_substrate = self.pkpd_substrate_dropdown.currentText()
+        # print("    self.current_secretion_substrate = ",self.current_secretion_substrate)
+        if idx == -1:
+            return
+
+        self.update_pkpd_params()
+
 
         # uep = self.xml_root.find('.//microenvironment_setup')  # find unique entry point
         # secretion_substrate_path = self.xml_root.find(".//cell_definitions//cell_definition[" + str(self.idx_current_cell_def) + "]//phenotype//secretion//substrate[" + str(idx+1) + "]")
@@ -3748,6 +3764,7 @@ class CellDef(QWidget):
         self.substrate_list.clear()  # rwh/todo: where/why/how is this list maintained?
         self.motility_substrate_dropdown.clear()
         self.secretion_substrate_dropdown.clear()
+        self.pkpd_substrate_dropdown.clear()
         uep = self.xml_root.find('.//microenvironment_setup')  # find unique entry point
         # vp = []   # pointers to <variable> nodes
         if uep:
@@ -3759,6 +3776,7 @@ class CellDef(QWidget):
                 self.substrate_list.append(name)
                 self.motility_substrate_dropdown.addItem(name)
                 self.secretion_substrate_dropdown.addItem(name)
+                self.pkpd_substrate_dropdown.addItem(name)
         print("cell_def_tab.py: ------- fill_substrates_comboboxes:  self.substrate_list = ",self.substrate_list)
 
     #-----------------------------------------------------------------------------------------
@@ -3774,6 +3792,7 @@ class CellDef(QWidget):
         # print("self.substrate_list = ",self.substrate_list)
         self.motility_substrate_dropdown.removeItem(item_idx)
         self.secretion_substrate_dropdown.removeItem(item_idx)
+        self.pkpd_substrate_dropdown.removeItem(item_idx)
         # self.motility_substrate_dropdown.clear()
         # self.secretion_substrate_dropdown.clear()
 
@@ -3808,6 +3827,7 @@ class CellDef(QWidget):
         # self.substrate_list.append(name)
         self.motility_substrate_dropdown.addItem(substrate_name)
         self.secretion_substrate_dropdown.addItem(substrate_name)
+        self.pkpd_substrate_dropdown.addItem(substrate_name)
 
     #-----------------------------------------------------------------------------------------
     # When a user renames a substrate in the Microenv tab, we need to update all 
@@ -3828,6 +3848,8 @@ class CellDef(QWidget):
                 self.motility_substrate_dropdown.setItemText(idx, new_name)
             if old_name == self.secretion_substrate_dropdown.itemText(idx):
                 self.secretion_substrate_dropdown.setItemText(idx, new_name)
+            if old_name == self.pkpd_substrate_dropdown.itemText(idx):
+                self.pkpd_substrate_dropdown.setItemText(idx, new_name)
 
         # 2) update in the param_d dict
         for cdname in self.param_d.keys():  # for all cell defs, rename motility/chemotaxis and secretion substrate
