@@ -85,5 +85,6 @@ double Hill_function( double input, double Hill_power , double EC_50 );
 double confluence_computation( void );
 void pd_function( Cell* pC, Phenotype& p, double dt );
 void intialize_damage_coloring(int nCD, std::vector<std::vector<int>> &default_colors, std::vector<std::vector<int>> &color_diffs_D1, std::vector<std::vector<int>> &color_diffs_D2);
+void pk_explicit_euler( double dt, double &periphery_concentration, double &central_concentration, double elimination_rate, double flux_rate );
 
 #endif
